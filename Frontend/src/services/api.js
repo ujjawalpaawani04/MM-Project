@@ -8,7 +8,7 @@ import axios from "axios";
  * third-party API keys ever live in the frontend — the backend proxies those.
  */
 const baseURL =
-  import.meta.env.VITE_API_URL?.replace(/\/$/, "") || "http://localhost:5000";
+  import.meta.env.VITE_API_URL?.replace(/\/$/, "") || "http://localhost:7000";
 
 export const api = axios.create({
   baseURL,
