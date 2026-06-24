@@ -1,119 +1,141 @@
 import { useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import { FiYoutube, FiInstagram, FiFacebook } from "react-icons/fi";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
 import Seo from "../../components/common/Seo";
 import PageHero from "../../components/common/PageHero";
 import useYouTubeVideos from "../../hooks/useYouTubeVideos";
+import useChannel from "../../hooks/useChannel";
+import { cn } from "../../utils/cn";
 
 import CommunityTabs from "./Components/CommunityTabs";
-import ChannelStats from "./Components/ChannelStats";
+import ChannelHeader from "./Components/ChannelHeader";
 import YouTubeGrid from "./Components/YouTubeGrid";
-import SocialPanel from "./Components/SocialPanel";
+import ComingSoon from "./Components/ComingSoon";
 import VideoModal from "./Components/VideoModal";
+import { PLATFORM_THEMES, PLATFORM_ORDER, getTheme } from "./Components/platformThemes";
 import { SOCIALS } from "./socials";
 
-const TABS = [
-  { id: "youtube", label: "YouTube", icon: FiYoutube },
-  { id: "instagram", label: "Instagram", icon: FiInstagram },
-  { id: "facebook", label: "Facebook", icon: FiFacebook },
-];
+const TABS = PLATFORM_ORDER.map((id) => ({
+  id,
+  label: PLATFORM_THEMES[id].name,
+  icon: PLATFORM_THEMES[id].Icon,
+}));
 
 const socialUrl = (id) => SOCIALS.find((s) => s.id === id)?.url || "#";
+
+/** Slow-drifting coloured orb that gives each theme its ambient atmosphere. */
+function FloatingBlob({ className, index }) {
+  const reduceMotion = useReducedMotion();
+  return (
+    <motion.span
+      aria-hidden="true"
+      className={cn("pointer-events-none absolute rounded-full blur-3xl", className)}
+      animate={
+        reduceMotion ? undefined : { y: [0, -28, 0], x: [0, 18, 0], scale: [1, 1.08, 1] }
+      }
+      transition={{ duration: 14 + index * 3, repeat: Infinity, ease: "easeInOut" }}
+    />
+  );
+}
 
 export default function Community() {
   const [active, setActive] = useState("youtube");
   const [activeVideo, setActiveVideo] = useState(null);
 
-  // Fetched once at the page level so switching tabs never re-fetches the feed.
-  const {
-    videos,
-    status,
-    error,
-    isLoadingMore,
-    hasMore,
-    loadMore,
-    retry,
-  } = useYouTubeVideos({ pageSize: 9 });
+  // Both feeds are fetched once at the page level so switching tabs never
+  // re-fetches. pageSize matches the grid's PER_PAGE (one fetch == one page).
+  const { videos, status, error, isLoadingMore, total, hasMore, loadMore, retry } =
+    useYouTubeVideos({ pageSize: 12 });
+  const { channel, loading: channelLoading } = useChannel();
+
+  const theme = getTheme(active);
 
   return (
     <>
       <Seo
         title="Community"
         url="https://mohanmaya.com/community"
-        description="Join the MohanMaya community - watch our latest YouTube stories, shorts and behind-the-scenes from the world of handcrafted devotional miniatures."
+        description="Join the MohanMaya community — watch our latest YouTube stories and behind-the-scenes from the world of handcrafted devotional miniatures."
       />
 
+      {/* ---- Hero (unchanged) ---- */}
       <PageHero
         image="/website/images/heroBg.webp"
         eyebrow="Our Community"
         title="Stories from"
         highlight="MohanMaya"
-        description="Heartfelt shorts, devotional stories and behind-the-scenes moments - straight from our channel to you. Follow along and become part of the family."
+        description="Heartfelt shorts, devotional stories and behind-the-scenes moments — straight from our channel to you. Follow along and become part of the family."
       />
 
-      <section className="relative bg-ink-50 py-16 dark:bg-ink-900 lg:py-20">
+      {/* ---- Dynamically themed community environment ---- */}
+      <section className="relative isolate overflow-hidden py-16 lg:py-24">
+        {/* Crossfading per-platform background + floating ambient blobs */}
+        <AnimatePresence mode="popLayout">
+          <motion.div
+            key={theme.id}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+            className={cn("absolute inset-0 -z-10", theme.pageBg)}
+          >
+            <div className={cn("absolute inset-0", theme.overlay)} />
+            {theme.blobs.map((blob, i) => (
+              <FloatingBlob key={i} className={blob} index={i} />
+            ))}
+          </motion.div>
+        </AnimatePresence>
+
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          {/* Live channel stats */}
-          <div className="mx-auto max-w-3xl">
-            <ChannelStats />
-          </div>
-
           {/* Tab switcher */}
-          <div className="mt-12">
-            <CommunityTabs tabs={TABS} active={active} onChange={setActive} />
-          </div>
+          <CommunityTabs tabs={TABS} active={active} onChange={setActive} theme={theme} />
 
-          {/* Tab panels */}
+          {/* Tab panels — each swaps the whole platform environment */}
           <div className="mt-12">
             <AnimatePresence mode="wait">
               <motion.div
                 key={active}
                 role="tabpanel"
-                initial={{ opacity: 0, y: 12 }}
+                initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
+                exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.3 }}
               >
                 {active === "youtube" && (
-                  <YouTubeGrid
-                    videos={videos}
-                    status={status}
-                    error={error}
-                    isLoadingMore={isLoadingMore}
-                    hasMore={hasMore}
-                    loadMore={loadMore}
-                    retry={retry}
-                    onPlay={setActiveVideo}
-                  />
+                  <>
+                    <ChannelHeader
+                      channel={channel}
+                      loading={channelLoading}
+                      href={socialUrl("youtube")}
+                    />
+                    <YouTubeGrid
+                      videos={videos}
+                      status={status}
+                      error={error}
+                      isLoadingMore={isLoadingMore}
+                      total={total}
+                      hasMore={hasMore}
+                      loadMore={loadMore}
+                      retry={retry}
+                      onPlay={setActiveVideo}
+                    />
+                  </>
                 )}
 
                 {active === "instagram" && (
-                  <SocialPanel
-                    icon={FiInstagram}
-                    accent="instagram"
-                    network="Instagram"
-                    href={socialUrl("instagram")}
-                    description="Daily moments, reels and miniature close-ups. Our Instagram feed will live here soon - in the meantime, come say hello."
-                  />
+                  <ComingSoon theme={theme} href={socialUrl("instagram")} />
                 )}
 
                 {active === "facebook" && (
-                  <SocialPanel
-                    icon={FiFacebook}
-                    accent="facebook"
-                    network="Facebook"
-                    href={socialUrl("facebook")}
-                    description="Join the conversation, events and community stories. Our Facebook feed will appear here soon - follow our page to stay connected."
-                  />
+                  <ComingSoon theme={theme} href={socialUrl("facebook")} />
                 )}
               </motion.div>
             </AnimatePresence>
           </div>
         </div>
-      </section>
 
-      <VideoModal video={activeVideo} onClose={() => setActiveVideo(null)} />
+        <VideoModal video={activeVideo} onClose={() => setActiveVideo(null)} />
+      </section>
     </>
   );
 }

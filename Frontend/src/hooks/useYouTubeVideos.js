@@ -19,6 +19,9 @@ export function useYouTubeVideos({ pageSize = 9 } = {}) {
   const [error, setError] = useState(null);
   const [nextPageToken, setNextPageToken] = useState(null);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  // Total uploads on the channel (from the API's pageInfo) — lets the UI show
+  // an accurate, stable page count rather than one that grows as pages load.
+  const [total, setTotal] = useState(0);
 
   const didInit = useRef(false);
 
@@ -36,6 +39,7 @@ export function useYouTubeVideos({ pageSize = 9 } = {}) {
           isFirst ? data.videos : dedupe([...prev, ...data.videos])
         );
         setNextPageToken(data.nextPageToken);
+        if (typeof data.total === "number") setTotal(data.total);
         setStatus("success");
       } catch (err) {
         // Prefer the backend's friendly message; fall back to a generic one.
@@ -68,6 +72,7 @@ export function useYouTubeVideos({ pageSize = 9 } = {}) {
     status,
     error,
     isLoadingMore,
+    total,
     hasMore: Boolean(nextPageToken),
     loadMore,
     retry,

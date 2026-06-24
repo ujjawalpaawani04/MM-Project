@@ -12,24 +12,19 @@ const app = express();
 // Origin header (curl, server-to-server, health checks) pass through.
 //
 // In development we also reflect ANY localhost / 127.0.0.1 origin regardless of
-// port, because Vite silently bumps to 5174, 5175, … when its default port is
-// taken - and a hard-coded allowlist would then reject the browser and surface
-// as a 500. Disallowed origins are rejected *cleanly* (no ACAO header) rather
-// than by throwing, so the browser blocks them without a confusing 500.
-const isLocalhost = (origin) =>
-  /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
-
+// port (Vite silently bumps to 5174, 5175, … when its default is taken), plus
+// private LAN IPs (192.168.x, 10.x, 172.16–31.x) so the app can be opened from
+// a phone or another device on the same network. A hard-coded allowlist would
+// otherwise reject the browser and surface as a 500. Disallowed origins are
+// rejected *cleanly* (no ACAO header) rather than by throwing. This relaxation
+// is dev-only — in production only env.clientOrigins is honoured.
+const isDevOrigin = (origin) =>
+  /^https?:\/\/(localhost|127\.0\.0\.1|10\.\d{1,3}\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3}|172\.(?:1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3})(:\d+)?$/.test(
+    origin
+  );
+                                      
 app.use(
-  cors({
-    origin(origin, callback) {
-      const allowed =
-        !origin ||
-        env.clientOrigins.includes(origin) ||
-        (env.nodeEnv !== "production" && isLocalhost(origin));
-      // Never throw: pass `false` so cors simply omits the ACAO header.
-      return callback(null, allowed);
-    },
-  })
+  cors()
 );
 
 app.use(express.json());

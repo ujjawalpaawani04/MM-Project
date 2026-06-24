@@ -1,31 +1,12 @@
 import { motion } from "framer-motion";
 import { FiPlay, FiClock } from "react-icons/fi";
-import Button from "../../../components/common/Button";
-import { FiExternalLink } from "react-icons/fi";
-
-/** Human-friendly "x days ago" with a sensible absolute fallback. */
-function formatPublished(iso) {
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return "";
-  const diff = Date.now() - date.getTime();
-  const day = 86_400_000;
-  const days = Math.floor(diff / day);
-
-  if (days < 1) return "Today";
-  if (days === 1) return "Yesterday";
-  if (days < 7) return `${days} days ago`;
-  if (days < 30) return `${Math.floor(days / 7)} week${days >= 14 ? "s" : ""} ago`;
-  return date.toLocaleDateString(undefined, {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-}
+import { formatPublished, isRecent } from "./videoTime";
 
 /**
- * Premium YouTube video card: 16:9 thumbnail with a glassmorphic play overlay,
- * soft shadow, hover lift, and a brand-gradient Watch button. Clicking the
- * thumbnail or the button opens the in-page modal player.
+ * Premium YouTube video card (dark studio theme): 16:9 thumbnail with a
+ * red play button, pulsing glow on hover, a "New" badge for recent uploads,
+ * and an in-page Watch action. Clicking the thumbnail or Watch opens the
+ * privacy-friendly modal player.
  */
 export default function VideoCard({ video, onPlay, index = 0 }) {
   const { title, thumbnail, publishedAt } = video;
@@ -36,7 +17,7 @@ export default function VideoCard({ video, onPlay, index = 0 }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
       transition={{ duration: 0.45, delay: Math.min(index, 8) * 0.05 }}
-      className="group relative flex flex-col overflow-hidden rounded-2xl bg-white dark:bg-slate-800 shadow-sm ring-1 ring-black/5 dark:ring-white/5 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-brand-500/10 hover:ring-brand-200/70 dark:hover:ring-brand-500/30"
+      className="group relative flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-sm transition-all duration-300 hover:-translate-y-1.5 hover:border-red-500/40 hover:shadow-[0_24px_60px_-20px_rgba(255,0,51,0.55)]"
     >
       {/* Thumbnail + play overlay */}
       <button
@@ -50,14 +31,20 @@ export default function VideoCard({ video, onPlay, index = 0 }) {
           alt={title}
           loading="lazy"
           decoding="async"
-          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
         />
-        {/* Darkening gradient for legibility on hover */}
-        <span className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-60 transition-opacity duration-300 group-hover:opacity-80" />
-        {/* Glassmorphic play button */}
+        <span className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
+
+        {isRecent(publishedAt) && (
+          <span className="absolute left-3 top-3 rounded-md bg-red-600 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white shadow-lg">
+            New
+          </span>
+        )}
+
         <span className="absolute inset-0 grid place-items-center">
-          <span className="grid h-16 w-16 place-items-center rounded-full border border-white/40 bg-white/15 text-white shadow-lg backdrop-blur-md transition-all duration-300 group-hover:scale-110 group-hover:bg-brand-500/90 group-hover:border-transparent">
-            <FiPlay className="ml-1" size={26} />
+          <span className="relative grid h-14 w-14 place-items-center rounded-full bg-red-600/90 text-white shadow-xl transition-transform duration-300 group-hover:scale-110">
+            <span className="absolute inset-0 -z-10 rounded-full bg-red-600/60 opacity-0 blur-md transition-opacity duration-300 group-hover:opacity-100" />
+            <FiPlay className="ml-0.5" size={22} />
           </span>
         </span>
       </button>
@@ -65,28 +52,25 @@ export default function VideoCard({ video, onPlay, index = 0 }) {
       {/* Body */}
       <div className="flex flex-1 flex-col p-4">
         <h3
-          className="line-clamp-2 text-[15px] font-semibold leading-snug text-gray-900 dark:text-white"
+          className="line-clamp-2 text-[15px] font-semibold leading-snug text-white"
           title={title}
         >
           {title}
         </h3>
 
         <div className="mt-auto flex items-center justify-between pt-4">
-          <span className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-500 dark:text-gray-400">
+          <span className="inline-flex items-center gap-1.5 text-xs font-medium text-white/50">
             <FiClock size={13} />
             {formatPublished(publishedAt)}
           </span>
-            <Button
-              href={`https://www.youtube.com/watch?v=${video.videoId}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              variant="outline"
-              size="sm"
-              icon={FiExternalLink}
-              iconRight
-            >
-              Watch on YouTube
-            </Button>
+          <button
+            type="button"
+            onClick={() => onPlay(video)}
+            className="inline-flex items-center gap-1.5 rounded-lg bg-white/5 px-3 py-1.5 text-xs font-semibold text-white ring-1 ring-inset ring-white/15 transition-all duration-200 hover:bg-red-600 hover:ring-red-600"
+          >
+            <FiPlay size={12} />
+            Watch
+          </button>
         </div>
       </div>
     </motion.article>
