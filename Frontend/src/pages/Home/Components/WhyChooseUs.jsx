@@ -4,27 +4,27 @@ import { motion } from "framer-motion";
 
 import img from "/website/images/whyChooseUs.jpeg";
 
-// Single source of truth — drives both columns (kills the 4× duplicated markup).
+// Single source of truth - drives both columns (kills the 4× duplicated markup).
 const features = [
   {
     Icon: FaPaintBrush,
-    title: "Exceptional Craftsmanship",
-    text: "Every miniature is handcrafted with remarkable attention to detail, creating a masterpiece that reflects true artistic excellence.",
+    title: "Hand-Painted, Never Mass-Made",
+    text: "Each figure is sculpted and painted by hand. Small variations aren't flaws - they're the artisan's signature, and no two are identical.",
   },
   {
     Icon: FaGem,
-    title: "Exclusive Designs",
-    text: "Unique and limited-edition creations inspired by culture, mythology, and imagination for collectors worldwide.",
+    title: "Limited & Collectible",
+    text: "Drawn from the Mohan-Maya story and released in small batches. Once a limited edition sells out, it's gone for good.",
   },
   {
     Icon: FaGift,
-    title: "Perfect for Gifting",
-    text: "Thoughtfully designed keepsakes that make unforgettable gifts for birthdays, festivals, weddings, and special occasions.",
+    title: "Made to Be Gifted",
+    text: "Weighty, finished, and ready to give - a keepsake for Diwali, weddings, housewarmings, or anyone who treasures meaningful art.",
   },
   {
     Icon: FaHandsHelping,
-    title: "Crafted with Passion",
-    text: "Our skilled artisans combine creativity and dedication to bring imagination to life through timeless miniature art.",
+    title: "Built to Last Generations",
+    text: "Museum-grade resin and sealed finishes that hold their colour and detail for decades, not seasons.",
   },
 ];
 
@@ -60,13 +60,13 @@ const WhyChooseUs = () => {
             Why Choose Us
           </span>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mt-5 dark:text-white">
-            Discover the Art Behind
-            <span className="text-brand-500"> Every Miniature</span>
+            The Difference Is in
+            <span className="text-brand-500"> the Detail</span>
           </h2>
           <p className="max-w-2xl mx-auto mt-4 text-gray-600 dark:text-gray-300">
-            We create handcrafted miniature masterpieces with exceptional
-            precision, premium quality, and timeless artistry that collectors
-            cherish forever.
+            Every Mohan Maya piece is shaped, painted, and inspected by hand -
+            so what reaches your shelf is genuinely one of a kind, not one of
+            ten thousand.
           </p>
         </div>
 

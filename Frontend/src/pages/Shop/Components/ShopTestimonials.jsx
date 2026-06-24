@@ -3,7 +3,7 @@ import { FaStar, FaQuoteLeft } from "react-icons/fa";
 import SectionHeading from "../../../components/common/SectionHeading";
 
 /**
- * "Customer Testimonials" — three premium testimonial cards with a gradient
+ * "Customer Testimonials" - three premium testimonial cards with a gradient
  * avatar initial, 5-star rating and a subtle brand quote mark.
  */
 const TESTIMONIALS = [
@@ -12,7 +12,7 @@ const TESTIMONIALS = [
     location: "Bengaluru, India",
     rating: 5,
     quote:
-      "The detailing on my Krishna figure is breathtaking — you can see every brushstroke. It has become the centerpiece of our puja shelf.",
+      "The detailing on my Krishna figure is breathtaking - you can see every brushstroke. It has become the centerpiece of our puja shelf.",
   },
   {
     name: "Daniel Whitfield",

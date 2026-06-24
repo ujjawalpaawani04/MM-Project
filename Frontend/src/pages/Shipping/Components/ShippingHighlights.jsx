@@ -34,7 +34,7 @@ export default function ShippingHighlights() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-14 lg:py-20">
         <SectionIntro
           title="Delivered with care, across India"
-          description="From our studio to your doorstep — here's everything you need to know about getting your Mohan Maya pieces."
+          description="From our studio to your doorstep - here's everything you need to know about getting your Mohan Maya pieces."
         />
 
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">

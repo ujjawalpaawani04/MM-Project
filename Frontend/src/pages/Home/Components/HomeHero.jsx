@@ -3,7 +3,7 @@ import { Link } from "react-router";
 import { motion } from "framer-motion";
 import { FaArrowRight } from "react-icons/fa";
 
-// 3D viewer pulls in three/fiber/drei — load it lazily so the hero text and
+// 3D viewer pulls in three/fiber/drei - load it lazily so the hero text and
 // CTAs paint instantly while the model chunk streams in behind a placeholder.
 const HeroModel = lazy(() => import("./HeroModel"));
 
@@ -23,7 +23,7 @@ const HomeHero = () => {
     // `svh` (small viewport height) instead of `vh`: on mobile, `100vh` grows
     // when the address bar collapses on scroll, which shifts the layout and
     // re-measures the Canvas. `svh` is the stable bar-visible height, so the
-    // hero — and the model inside it — never resizes on scroll.
+    // hero - and the model inside it - never resizes on scroll.
     <section className="relative  pt-32 lg:pt-40  h-svh max-h-[1000px] overflow-hidden">
       {/* Background image */}
       <img
@@ -49,19 +49,19 @@ const HomeHero = () => {
             className="flex flex-col items-start gap-7"
           >
             <span className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white/95 backdrop-blur-md text-[#e34786] text-xs font-semibold tracking-wide uppercase">
-            Handcraft Miniatures
+            Hand-Painted Collectibles
             </span>
 
             <div className="space-y-4">
               <h1 className="text-white text-4xl md:text-6xl xl:text-7xl leading-[1.12] font-bold">
-                Where Tiny Art
+              Where Tiny Arts
                 <br />
-                Comes to <span className="text-[#e34786]">Life</span>
+                Comes To <span className="text-[#e34786]">Life</span>
               </h1>
               <p className="text-gray-300 text-sm md:text-lg max-w-xl">
-                Discover beautifully handcrafted miniature creations designed
-                with precision, passion, and timeless artistry. Every piece
-                tells a unique story.
+                Hand-sculpted, hand-painted miniatures from the Mohan-Maya
+                story - crafted in fine detail by artisans and made to be
+                treasured for generations.
               </p>
             </div>
 
@@ -74,17 +74,17 @@ const HomeHero = () => {
                 <FaArrowRight className="group-hover:translate-x-1 duration-300" />
               </Link>
               <Link
-                to="/contact"
+                to="/about"
                 className="group px-6 py-3 rounded-full border border-white/70 text-white font-semibold flex items-center gap-3 hover:bg-white hover:text-[#1a1a1a] duration-200"
               >
-                Contact Us
+                Our Story
                 <FaArrowRight className="group-hover:translate-x-1 duration-300" />
               </Link>
             </div>
           </motion.div>
 
           {/* Right - interactive 3D model (primary focal point).
-              NOTE: the entrance animation must NOT use `scale` — that puts a
+              NOTE: the entrance animation must NOT use `scale` - that puts a
               CSS transform on the <Canvas>'s ancestor, so R3F measures the
               WebGL viewport while the box is shrunk and the model renders too
               small until the first scroll re-measure snaps it bigger. A `y`

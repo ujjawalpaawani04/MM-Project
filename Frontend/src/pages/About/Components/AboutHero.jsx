@@ -4,10 +4,10 @@ export default function AboutHero() {
   return (
     <PageHero
       breadcrumbs={[{ label: "Home", to: "/" }, { label: "About" }]}
-      eyebrow="About us"
-      title="Where Tiny Creations Tell "
-      highlight="Big Stories"
-      description="From concept to craftsmanship, every miniature is designed with passion, precision, and attention to the finest details"
+      eyebrow="Our Story"
+      title="The Hands Behind "
+      highlight="the Story"
+      description="Mohan Maya began with one wish - to let you hold a story in your hands. Meet the artisans, the craft, and the devotion behind every piece."
       image="/website/images/heroBg.webp"
     />
   );

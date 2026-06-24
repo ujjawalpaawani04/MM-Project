@@ -44,7 +44,7 @@ export default function Wishlist() {
 
   const addAllToCart = () => {
     fullProducts.forEach((p) => addItem(p, 1));
-    toast.success("All wishlist items added to cart");
+    toast.success("Moved to your cart - ready whenever you are");
   };
 
   return (

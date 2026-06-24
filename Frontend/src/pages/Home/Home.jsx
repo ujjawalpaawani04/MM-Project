@@ -18,7 +18,7 @@ const Home = () => {
     <>
       <Seo
         url="https://mohanmaya.com/"
-        description="Discover MohanMaya's handcrafted miniature art — Krishna, Radha & devotional figurines made with love and timeless tradition. Free shipping over ₹1999."
+        description="Discover MohanMaya's handcrafted miniature art - Krishna, Radha & devotional figurines made with love and timeless tradition. Free shipping over ₹1999."
       />
       <HomeHero />
       <MostLoved />

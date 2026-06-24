@@ -17,7 +17,7 @@ export default function NotFound({ query }) {
             <span className="font-semibold text-gray-900 dark:text-white break-words">
               {query}
             </span>
-            . Double-check the tracking number from your confirmation email — it
+            . Double-check the tracking number from your confirmation email - it
             looks like <span className="font-medium">MM-2026-000123</span>.
           </>
         ) : (

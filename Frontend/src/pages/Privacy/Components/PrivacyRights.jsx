@@ -28,7 +28,7 @@ export default function PrivacyRights() {
                   <FiUserCheck className="text-3xl" />
                   <h3 className="mt-4 text-xl font-bold">Your Rights</h3>
                   <p className="mt-2 text-sm text-white/90 leading-relaxed">
-                    You stay in control of your personal data — always.
+                    You stay in control of your personal data - always.
                   </p>
                 </div>
                 <div className="md:col-span-3 p-8 sm:p-10">

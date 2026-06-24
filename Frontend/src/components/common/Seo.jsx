@@ -2,7 +2,7 @@
  * Per-page SEO.
  *
  * React 19 automatically hoists <title>, <meta> and <link> rendered anywhere in
- * the tree up into <head> — so a route only has to render <Seo .../> near the
+ * the tree up into <head> - so a route only has to render <Seo .../> near the
  * top of its page. No react-helmet, no effects, no extra dependency.
  *
  *   <Seo title="Shop" description="Browse all handcrafted miniatures." />
@@ -21,7 +21,7 @@ export default function Seo({
   url,
   noindex = false,
 }) {
-  const fullTitle = title ? `${title} · ${SITE_NAME}` : `${SITE_NAME} — Handcrafted Devotional Miniature Art`;
+  const fullTitle = title ? `${title} · ${SITE_NAME}` : `${SITE_NAME} - Handcrafted Devotional Miniature Art`;
 
   return (
     <>

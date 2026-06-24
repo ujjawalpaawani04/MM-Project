@@ -16,7 +16,7 @@ import modelUrl from "../../../assets/models/mm-modal.glb";
 
 // Self-hosted Draco decoder (public/draco/). The GLB is Draco-compressed, so a
 // decoder is required; using a LOCAL path instead of drei's default gstatic CDN
-// means the model always decodes — even offline or when the CDN is blocked. If
+// means the model always decodes - even offline or when the CDN is blocked. If
 // decoding fails, ModelErrorBoundary shows the STATIC fallback image (and logs
 // the error to the console).
 const DRACO_PATH = "/draco/";
@@ -28,7 +28,7 @@ useGLTF.preload(modelUrl, DRACO_PATH);
 // focal point regardless of the GLB's intrinsic scale. This MUST be tuned
 // together with the camera (fov + distance) below: the camera at z=7 / fov=30
 // shows ~3.75 world units of height, so 3.4 makes the figure fill ~91% of the
-// frame — large and premium with a small margin so it never clips while it
+// frame - large and premium with a small margin so it never clips while it
 // auto-rotates. Bigger number = bigger model (but raise it too far and the
 // model overflows the frame).
 const TARGET_SIZE = 3.4;
@@ -56,7 +56,7 @@ function Model({ onOver, onOut }) {
   // mount. Applying scale/position to it via <primitive> mutates that shared
   // cached object, so the next time the Home route mounts, `setFromObject`
   // measures the ALREADY-scaled scene and derives a different normalisation
-  // factor — the model visibly shrinks/drifts on navigation. Cloning gives this
+  // factor - the model visibly shrinks/drifts on navigation. Cloning gives this
   // instance its own pristine copy: measurement always runs on the raw geometry
   // and the cache is never touched, so the size is identical every mount.
   const { object, scale, offset, dims } = useMemo(() => {
@@ -75,7 +75,7 @@ function Model({ onOver, onOut }) {
       }
     });
 
-    // Normalised bounding-box dimensions — used to size the invisible hover
+    // Normalised bounding-box dimensions - used to size the invisible hover
     // proxy so hover is detected over the model's volume, not the whole canvas.
     return {
       object: cloned,
@@ -96,7 +96,7 @@ function Model({ onOver, onOut }) {
       />
 
       {/* Invisible hover proxy: a SINGLE mesh wrapping the model gives clean
-          pointer enter/leave over the model only — unlike attaching handlers to
+          pointer enter/leave over the model only - unlike attaching handlers to
           the multi-mesh model, which would flicker out/over as the pointer
           crosses internal sub-meshes. `opacity 0` + `depthWrite false` keep it
           fully invisible and free of z-fighting; it never casts shadows. */}
@@ -112,7 +112,7 @@ function Model({ onOver, onOut }) {
 function Scene({ hovering, autoRotateOn, onOver, onOut }) {
   return (
     <>
-      {/* Lighting — soft key / fill / rim for a realistic, premium look */}
+      {/* Lighting - soft key / fill / rim for a realistic, premium look */}
       <ambientLight intensity={0.6} />
       <directionalLight
         castShadow
@@ -134,7 +134,7 @@ function Scene({ hovering, autoRotateOn, onOver, onOut }) {
         <Model onOver={onOver} onOut={onOut} />
       </Suspense>
 
-      {/* HDRI reflections are a progressive enhancement — isolated so a CDN
+      {/* HDRI reflections are a progressive enhancement - isolated so a CDN
           failure can't take down the model. */}
       <ModelErrorBoundary resetKey="hero-env" fallback={null}>
         <Suspense fallback={null}>
@@ -251,7 +251,7 @@ export default function HeroModel() {
           // R3F re-measures the canvas on scroll by default (`scroll: true`),
           // which is what let a mid-animation/mobile-bar size change "snap" the
           // model bigger on the first scroll. The container has a fixed height,
-          // so only react to genuine element/viewport resizes — never scroll.
+          // so only react to genuine element/viewport resizes - never scroll.
           resize={{ scroll: false }}
           className="!absolute inset-0"
         >

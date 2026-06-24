@@ -3,14 +3,14 @@ import { Hand, Gem, Globe2, ShieldCheck } from "lucide-react";
 import SectionHeading from "../../../components/common/SectionHeading";
 
 /**
- * "Why Choose MohanMaya" — four trust/feature cards with gradient icon chips.
+ * "Why Choose MohanMaya" - four trust/feature cards with gradient icon chips.
  */
 const FEATURES = [
   {
     icon: Hand,
     title: "Handcrafted by Artisans",
     description:
-      "Every miniature is sculpted and hand-painted by master artisans — no two pieces are ever quite the same.",
+      "Every miniature is sculpted and hand-painted by master artisans - no two pieces are ever quite the same.",
   },
   {
     icon: Gem,

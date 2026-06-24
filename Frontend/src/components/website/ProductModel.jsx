@@ -5,7 +5,7 @@ import { OrbitControls, useGLTF } from "@react-three/drei";
 import { FiZoomIn, FiZoomOut } from "react-icons/fi";
 
 function Model({ url, onLoaded }) {
-  // Local Draco decoder (public/draco/) — see HeroModel for the rationale.
+  // Local Draco decoder (public/draco/) - see HeroModel for the rationale.
   const { scene } = useGLTF(url, "/draco/");
   // Notify the parent once the GLTF has resolved so it can hide the loader.
   useEffect(() => {

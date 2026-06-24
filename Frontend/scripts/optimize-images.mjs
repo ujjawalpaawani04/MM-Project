@@ -3,7 +3,7 @@
  *
  * Walks the asset folders, downscales anything larger than a sensible display
  * cap, and re-encodes with modern compression. Optimizing IN PLACE (same path,
- * same format) means every existing import/`src` keeps working untouched — the
+ * same format) means every existing import/`src` keeps working untouched - the
  * originals stay recoverable via git.
  *
  *   • Logos/badges (small display slot) ........ max 320px,  PNG palette quantized
@@ -18,7 +18,7 @@ import { join, extname, basename } from "node:path";
 const ROOTS = ["src/assets/website", "public/website"];
 const RASTER = new Set([".png", ".jpg", ".jpeg"]);
 
-// Small display slots — keep these tiny.
+// Small display slots - keep these tiny.
 const SMALL = /logo/i;
 const MAX_DEFAULT = 1920;
 const MAX_SMALL = 320;

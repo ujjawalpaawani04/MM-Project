@@ -5,7 +5,7 @@ import SectionHeading from "../../../components/common/SectionHeading";
 import { products, CATEGORIES } from "../../../data/products";
 
 /**
- * "Shop by Category" — premium image cards (one per CATEGORIES entry).
+ * "Shop by Category" - premium image cards (one per CATEGORIES entry).
  * Each card derives a representative image + live item count from the catalog
  * and links into the Shop with a pre-applied category filter.
  */

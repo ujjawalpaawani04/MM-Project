@@ -406,7 +406,7 @@ export const getStockInfo = (product) => {
   if (count <= LOW_STOCK_THRESHOLD) {
     return {
       status: "limited",
-      label: `Limited Stock — only ${count} left`,
+      label: `Limited Stock - only ${count} left`,
       shortLabel: `Only ${count} Left`,
       count,
       tone: "warning",

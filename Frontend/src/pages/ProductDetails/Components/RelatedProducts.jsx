@@ -1,7 +1,7 @@
 import { getRelatedProducts } from "../../../data/products";
 import ProductCard from "../../../components/website/ProductCard";
 
-/** "You May Also Like" — related products grid. */
+/** "You May Also Like" - related products grid. */
 export default function RelatedProducts({ product }) {
   const related = getRelatedProducts(product);
   if (!related.length) return null;

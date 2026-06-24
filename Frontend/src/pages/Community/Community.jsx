@@ -41,7 +41,7 @@ export default function Community() {
       <Seo
         title="Community"
         url="https://mohanmaya.com/community"
-        description="Join the MohanMaya community — watch our latest YouTube stories, shorts and behind-the-scenes from the world of handcrafted devotional miniatures."
+        description="Join the MohanMaya community - watch our latest YouTube stories, shorts and behind-the-scenes from the world of handcrafted devotional miniatures."
       />
 
       <PageHero
@@ -49,7 +49,7 @@ export default function Community() {
         eyebrow="Our Community"
         title="Stories from"
         highlight="MohanMaya"
-        description="Heartfelt shorts, devotional stories and behind-the-scenes moments — straight from our channel to you. Follow along and become part of the family."
+        description="Heartfelt shorts, devotional stories and behind-the-scenes moments - straight from our channel to you. Follow along and become part of the family."
       />
 
       <section className="relative bg-ink-50 py-16 dark:bg-ink-900 lg:py-20">
@@ -94,7 +94,7 @@ export default function Community() {
                     accent="instagram"
                     network="Instagram"
                     href={socialUrl("instagram")}
-                    description="Daily moments, reels and miniature close-ups. Our Instagram feed will live here soon — in the meantime, come say hello."
+                    description="Daily moments, reels and miniature close-ups. Our Instagram feed will live here soon - in the meantime, come say hello."
                   />
                 )}
 
@@ -104,7 +104,7 @@ export default function Community() {
                     accent="facebook"
                     network="Facebook"
                     href={socialUrl("facebook")}
-                    description="Join the conversation, events and community stories. Our Facebook feed will appear here soon — follow our page to stay connected."
+                    description="Join the conversation, events and community stories. Our Facebook feed will appear here soon - follow our page to stay connected."
                   />
                 )}
               </motion.div>

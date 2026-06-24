@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
  * Lightweight typewriter effect (no dependencies).
  *
  * Cycles through `phrases`, typing one out, pausing, deleting it, then moving
- * to the next — looping forever. Pass `enabled: false` to freeze and reset the
+ * to the next - looping forever. Pass `enabled: false` to freeze and reset the
  * animation (e.g. while the user is typing in the field), which also avoids the
  * per-character re-renders when the effect isn't needed.
  *
@@ -32,7 +32,7 @@ export default function useTypewriter(
     if (!enabled || !phrases?.length) {
       // Reset so the animation restarts cleanly the next time it's enabled.
       // The functional updater bails out when text is already empty, so this
-      // never triggers a cascading re-render — it only syncs the one case where
+      // never triggers a cascading re-render - it only syncs the one case where
       // visible text must be cleared because the effect was switched off.
       // eslint-disable-next-line react-hooks/set-state-in-effect -- external-sync reset, bails out when already empty
       setText((t) => (t === "" ? t : ""));

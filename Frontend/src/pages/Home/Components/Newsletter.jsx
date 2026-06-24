@@ -13,7 +13,7 @@ const Newsletter = () => {
 
   const subscribe = (data) => {
     console.info("Newsletter subscribe:", data.email);
-    toast.success("You're subscribed! Welcome to the family ✨");
+    toast.success("You're on the list - watch your inbox for first looks ✨");
     reset();
   };
 
@@ -28,11 +28,12 @@ const Newsletter = () => {
           <div className="relative flex flex-col lg:flex-row items-center justify-between gap-8">
             <div className="text-center lg:text-left">
               <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
-                Stay updated with{" "}
-                <span className="text-brand-500">our latest creations</span>
+                First look at{" "}
+                <span className="text-brand-500">every new release</span>
               </h2>
               <p className="mt-2 text-gray-500 dark:text-gray-400">
-                Subscribe to get special offers, new arrivals, and more.
+                Join the collectors' list for early access to limited drops,
+                restock alerts, and subscriber-only offers. No spam, ever.
               </p>
             </div>
 
@@ -44,7 +45,7 @@ const Newsletter = () => {
               <div className="flex flex-col sm:flex-row items-stretch gap-3">
                 <input
                   type="email"
-                  placeholder="Enter your email address"
+                  placeholder="you@email.com"
                   aria-label="Email address"
                   aria-invalid={!!errors.email}
                   className={`flex-1 h-12 rounded-full border bg-gray-50 dark:bg-slate-900 px-5 text-sm text-gray-700 dark:text-white outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-400/30 transition ${
@@ -58,7 +59,7 @@ const Newsletter = () => {
                   type="submit"
                   className="h-12 shrink-0 rounded-full bg-gradient-to-r from-pink-500 to-rose-400 px-8 font-semibold text-white hover:opacity-95 transition"
                 >
-                  Subscribe
+                  Join the List
                 </button>
               </div>
               {errors.email && (

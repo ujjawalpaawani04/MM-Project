@@ -13,7 +13,7 @@ import { api } from "../services/api";
  */
 export function useYouTubeVideos({ pageSize = 9 } = {}) {
   const [videos, setVideos] = useState([]);
-  // Starts in "loading" because the first page is always fetched on mount —
+  // Starts in "loading" because the first page is always fetched on mount -
   // this shows skeletons on the very first paint instead of an empty flash.
   const [status, setStatus] = useState("loading"); // loading | success | error
   const [error, setError] = useState(null);

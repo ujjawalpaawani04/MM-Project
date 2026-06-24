@@ -9,7 +9,12 @@ export default function NewArrivals() {
   return (
     <section className="bg-cream dark:bg-ink-900 py-16">
       <div className="container mx-auto px-5">
-        <SectionHeading title="New" highlight="Arrivals" viewAllTo="/shop" />
+        <SectionHeading
+          title="Fresh Off the"
+          highlight="Workbench"
+          subtitle="Newly sculpted additions to the collection. Be among the first to bring them home."
+          viewAllTo="/shop"
+        />
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
           {products.map((p) => (

@@ -4,10 +4,10 @@ export default function ShopHero() {
   return (
     <PageHero
       breadcrumbs={[{ label: "Home", to: "/" }, { label: "Shop" }]}
-      eyebrow="Shop"
-      title="Where Tiny Creations Tell "
-      highlight="Big Stories"
-      description="From concept to craftsmanship, every miniature is designed with passion, precision, and attention to the finest details"
+      eyebrow="The Collection"
+      title="Find Your Next "
+      highlight="Treasure"
+      description="Browse the full Mohan-Maya collection - hand-painted figures, limited editions, and gift-ready keepsakes. Filter by character, occasion, or price."
       image="/website/images/heroBg.webp"
     />
   );

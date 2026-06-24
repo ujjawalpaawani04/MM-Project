@@ -238,7 +238,7 @@ export default function ProductReviews({ product }) {
           </>
         ) : (
           <div className="rounded-2xl border border-dashed border-gray-200 dark:border-slate-700 p-10 text-center text-gray-500 dark:text-gray-400">
-            No reviews yet — be the first to share your thoughts.
+            No reviews yet - be the first to share your thoughts.
           </div>
         )}
       </div>

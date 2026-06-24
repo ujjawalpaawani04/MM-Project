@@ -8,7 +8,7 @@ const sections = [
   {
     icon: <FiDatabase />,
     heading: "Information We Collect",
-    body: "We collect the details you provide at checkout — your name, contact details and shipping address — solely to fulfil your order. This demo store keeps cart and wishlist data only in your own browser's local storage, never on a remote server.",
+    body: "We collect the details you provide at checkout - your name, contact details and shipping address - solely to fulfil your order. This demo store keeps cart and wishlist data only in your own browser's local storage, never on a remote server.",
   },
   {
     icon: <FiSettings />,

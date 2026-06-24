@@ -14,39 +14,48 @@ import bgImage from "../../../assets/website/image.png";
 const testimonials = [
   {
     id: 1,
-    name: "Fatima Khoury",
-    handle: "@dilatory_curtains_98",
+    name: "Ananya Reddy",
+    handle: "Bengaluru · Verified Collector",
     review:
-      "The progress tracker is fantastic. It’s motivating to see how much I’ve improved over time. The app has a great mix of common and challenging words.",
+      "The detailing on the brushwork is unreal - you can see every fold and expression. It sits on my puja shelf and everyone who visits asks where it's from.",
     image:
       "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=200&q=80",
   },
   {
     id: 2,
-    name: "Annette Black",
-    handle: "@annette_creative",
+    name: "Vikram Singh",
+    handle: "Pune · Verified Buyer",
     review:
-      "This service makes studying feel smooth and professional. The UI is crisp, and the experience is incredibly polished.",
+      "Bought the Krishna figure as an anniversary gift for my parents. The weight, the finish, the packaging - it genuinely feels like a heirloom, not a trinket.",
     image:
       "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80",
   },
   {
     id: 3,
-    name: "Ralph Edwards",
-    handle: "@ralph_designs",
+    name: "Priya Menon",
+    handle: "Kochi · Verified Collector",
     review:
-      "The card design is clean and the slider interaction is so easy to use. It retains a premium visual style throughout.",
+      "I've collected figurines for years and the hand-painting here is a step above. Colours are rich, nothing is mass-produced. Three pieces in and counting.",
     image:
       "https://images.unsplash.com/photo-1552058544-f2b08422138a?auto=format&fit=crop&w=200&q=80",
   },
   {
     id: 4,
-    name: "Jerome Bell",
-    handle: "@jerome_studio",
+    name: "Rohan Gupta",
+    handle: "New Delhi · Verified Buyer",
     review:
-      "The testimonial cards look modern and trustworthy. The spacing and typography are on point for a professional website.",
+      "Being able to spin the model in 3D before buying sold me instantly. What arrived matched it exactly. Arrived in two days, packed like it was precious.",
     image:
       "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=200&q=80",
+  },
+  {
+    id: 5,
+    name: "Sneha Iyer",
+    handle: "Chennai · Verified Collector",
+    review:
+      "Gifted the Radha Ji piece to my mother on her birthday. She teared up. It's rare to find devotional art made with this much care and soul.",
+    image:
+      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80",
   },
 ];
 
@@ -69,13 +78,13 @@ const Testimonial = () => {
       <div className="relative z-10 mx-auto container   px-4">
         <div className="mb-12 grid gap-6 lg:grid-cols-[1fr_auto] lg:items-end">
           <div>
-          <span className="inline-flex items-center gap-2 px-5 py-2 rounded-full   bg-white backdrop-blur-md text-[#e34786] text-sm font-semibold">This Month</span>
+          <span className="inline-flex items-center gap-2 px-5 py-2 rounded-full   bg-white backdrop-blur-md text-[#e34786] text-sm font-semibold">Collector Stories</span>
             <h2 className="mt-5  text-4xl font-bold text-white md:text-6xl">
-              What <span className="text-[#e34786]">Our Clients</span> Say
+              Loved by <span className="text-[#e34786]">Collectors</span> Everywhere
             </h2>
             <p className="mt-4 text-base text-white text-[18px]">
-              Hear what our happy customers have to say about their experience
-              with us.
+              Real words from the people who've welcomed our miniatures into
+              their homes, shrines, and collections.
             </p>
           </div>
 

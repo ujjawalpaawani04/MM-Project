@@ -9,7 +9,7 @@ const toneMap = {
 
 /**
  * Elegant placeholder panel for the Instagram / Facebook tabs. Matches the
- * YouTube tab's premium feel so the page never looks half-finished — swap the
+ * YouTube tab's premium feel so the page never looks half-finished - swap the
  * inner block for a real embed once the platform's Graph API token is wired up.
  */
 export default function SocialPanel({

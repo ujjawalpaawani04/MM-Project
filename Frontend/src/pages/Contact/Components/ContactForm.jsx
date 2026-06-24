@@ -103,7 +103,7 @@ export default function ContactForm() {
             </h2>
             <p className="text-gray-600 dark:text-gray-300 leading-relaxed max-w-md">
               Every miniature tells a story, and every conversation begins a new
-              one. Reach out for inquiries, custom orders, or support — we'd love
+              one. Reach out for inquiries, custom orders, or support - we'd love
               to hear from you.
             </p>
           </div>

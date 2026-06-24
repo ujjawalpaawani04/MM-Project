@@ -5,7 +5,7 @@ import axios from "axios";
  *
  * The base URL comes from VITE_API_URL so it can point at the deployed API in
  * production, and falls back to the local Express server in development. No
- * third-party API keys ever live in the frontend — the backend proxies those.
+ * third-party API keys ever live in the frontend - the backend proxies those.
  */
 const baseURL =
   import.meta.env.VITE_API_URL?.replace(/\/$/, "") || "http://localhost:7000";

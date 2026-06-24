@@ -39,11 +39,11 @@ export default function EmptyWishlist() {
       </motion.div>
 
       <h3 className="relative mt-8 text-2xl font-bold text-gray-900 dark:text-white">
-        Your wishlist is empty
+        Nothing saved yet
       </h3>
       <p className="relative mt-2 max-w-md mx-auto text-gray-600 dark:text-gray-300">
-        Tap the heart on any product to save it here. Build your dream collection
-        and come back to it anytime.
+        Tap the heart on any piece to keep it here. It's the easiest way to
+        plan your next addition - or drop a hint for the perfect gift.
       </p>
       <div className="relative mt-7 flex justify-center">
         <Button to="/shop" size="lg" icon={FiShoppingBag}>

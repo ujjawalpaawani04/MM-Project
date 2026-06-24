@@ -18,7 +18,7 @@ import Pagination from "../../components/common/Pagination";
 import Button from "../../components/common/Button";
 import Seo from "../../components/common/Seo";
 
-// Animated placeholder suggestions — Shop search only. Module-level constant so
+// Animated placeholder suggestions - Shop search only. Module-level constant so
 // its identity is stable across renders (won't re-trigger the typewriter effect).
 const SEARCH_SUGGESTIONS = [
   "Naruto Miniatures",
@@ -54,7 +54,7 @@ export default function Shop() {
       <Seo
         title="Shop"
         url="https://mohanmaya.com/shop"
-        description="Browse all handcrafted devotional miniatures — festival, wedding, birthday & limited-edition collections. Free shipping over ₹1999."
+        description="Browse all handcrafted devotional miniatures - festival, wedding, birthday & limited-edition collections. Free shipping over ₹1999."
       />
       <ShopHero />
 

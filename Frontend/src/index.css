@@ -35,7 +35,7 @@
   }
   /* ---- Global responsive safety net --------------------------------------
    * Prevent horizontal scrolling site-wide. `overflow-x: clip` (not `hidden`)
-   * is used so it does NOT create a scroll container — sticky sidebars
+   * is used so it does NOT create a scroll container - sticky sidebars
    * (cart/checkout/order summaries, ToC) keep working. Paired with the
    * default `overflow-y: visible` it only constrains the x-axis.
    * ------------------------------------------------------------------------ */

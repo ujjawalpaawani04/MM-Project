@@ -13,7 +13,7 @@ const privacyFaqs = [
   },
   {
     q: "Where is my cart and wishlist stored?",
-    a: "Your cart, wishlist and theme preference are stored only in your own browser's local storage — they never leave your device unless you place an order.",
+    a: "Your cart, wishlist and theme preference are stored only in your own browser's local storage - they never leave your device unless you place an order.",
   },
   {
     q: "How can I delete my data?",
@@ -55,7 +55,7 @@ export default function PrivacyFaq() {
                 Questions about your privacy?
               </h3>
               <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
-                Reach out any time — we're happy to help.
+                Reach out any time - we're happy to help.
               </p>
               <a
                 href="mailto:support@mohanmaya.com"

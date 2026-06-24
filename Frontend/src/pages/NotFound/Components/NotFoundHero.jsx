@@ -14,11 +14,11 @@ export default function NotFoundHero() {
         404
       </motion.h1>
       <h2 className="mt-4 text-2xl font-bold text-gray-900 dark:text-white">
-        Page Not Found
+        This page wandered off
       </h2>
       <p className="mt-3 text-gray-600 dark:text-gray-300 max-w-md">
-        The page you're looking for has wandered off on its own spiritual
-        journey. Let's get you back on the path.
+        The page you're looking for has gone on its own journey. Let's get you
+        back to the collection - there's plenty here worth discovering.
       </p>
       <div className="flex flex-wrap gap-4 justify-center mt-8">
         <Button to="/" icon={FiHome}>

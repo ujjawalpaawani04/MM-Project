@@ -65,7 +65,7 @@ export default function ReturnsRefunds() {
           />
 
           <div className="grid gap-8 lg:grid-cols-2 items-start">
-            {/* How to return — numbered steps */}
+            {/* How to return - numbered steps */}
             <motion.div {...fadeUp}>
               <Card className="p-7 sm:p-8">
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white">

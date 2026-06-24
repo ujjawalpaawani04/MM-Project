@@ -18,8 +18,9 @@ export default function MeetCharacters() {
             Meet the <span className="text-[#e34786]">Characters</span>
           </h2>
           <p className="mt-3  dark:text-gray-300 lg:w-[70%] mx-auto">
-            Every miniature carries a soul from the Mohan-Maya story. Discover
-            the heroes behind the collection.
+            Behind every figure is a character with a story to tell - from
+            Maya's quiet courage to Shiva's cosmic stillness. Meet the cast,
+            then collect your favourites.
           </p>
         </div>
 

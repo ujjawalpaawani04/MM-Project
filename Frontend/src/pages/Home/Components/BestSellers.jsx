@@ -15,7 +15,12 @@ export default function BestSellers({ onQuickView }) {
   return (
     <section className="bg-cream-100 dark:bg-ink-900 py-16">
       <div className="container mx-auto px-4">
-        <SectionHeading title="Our Best" highlight="Sellers" viewAllTo="/shop"  />
+        <SectionHeading
+          title="Most Collected"
+          highlight="This Season"
+          subtitle="The pieces collectors keep coming back for - proven favourites, ready to ship."
+          viewAllTo="/shop"
+        />
 
         <Swiper
           className="best-sellers-slider pb-0"

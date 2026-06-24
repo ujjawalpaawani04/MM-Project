@@ -26,7 +26,7 @@ export default function Signup() {
   const onSubmit = async (data) => {
     await new Promise((r) => setTimeout(r, 600));
     signup({ name: data.name, email: data.email });
-    toast.success("Account created — welcome to the family ✨");
+    toast.success("Account created - welcome to the family ✨");
     navigate("/", { replace: true });
   };
 

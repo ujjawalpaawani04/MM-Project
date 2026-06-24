@@ -38,7 +38,7 @@ function ErrorPanel({ error, onRetry }) {
 /**
  * The YouTube tab's content: a responsive grid of latest uploads with loading
  * skeletons, error + empty states, and a Load More control. Purely
- * presentational — the page owns the data so switching tabs never re-fetches.
+ * presentational - the page owns the data so switching tabs never re-fetches.
  */
 export default function YouTubeGrid({
   videos,

@@ -66,7 +66,7 @@ export default function TermsContent() {
         />
 
         <div className="grid lg:grid-cols-[260px_1fr] gap-10">
-          {/* Sticky table of contents — desktop */}
+          {/* Sticky table of contents - desktop */}
           <TermsTableOfContents sections={sections} />
 
           {/* Sections */}

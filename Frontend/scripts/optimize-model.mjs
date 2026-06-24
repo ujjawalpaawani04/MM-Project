@@ -4,7 +4,7 @@
  * Drop a raw/uncompressed model anywhere, point this at it, and it produces a
  * web-ready GLB: Draco-compressed geometry + WebP textures capped at 1024px,
  * deduped and pruned. Lossy mesh simplification is intentionally OFF to keep
- * fidelity (geometry — not textures — dominates these figures).
+ * fidelity (geometry - not textures - dominates these figures).
  *
  * The original `mmModel2.glb` (89 MB) was reduced to ~5.7 MB this way and is NOT
  * committed; re-add it and re-run this to regenerate `mmModel2.opt.glb`.

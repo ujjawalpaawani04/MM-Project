@@ -15,7 +15,7 @@ import { useToast } from "../../context/ToastContext";
 import logo from "../../assets/website/mmLogo.png";
 
 /**
- * Header wishlist heart. No counter — instead the icon itself reflects state:
+ * Header wishlist heart. No counter - instead the icon itself reflects state:
  * empty wishlist shows a muted outline, a non-empty wishlist shows a solid red
  * heart. Each transition springs (scale pop) and carries a soft glow that fades
  * in/out, so adding the first item feels celebratory and clearing it settles
@@ -227,7 +227,7 @@ const Header = () => {
               </Link>
             )}
 
-            {/* Wishlist — heart fills red when the wishlist has items (no count) */}
+            {/* Wishlist - heart fills red when the wishlist has items (no count) */}
             <WishlistHeart count={wishlistCount} />
 
             {/* Cart */}

@@ -37,7 +37,7 @@ export default function ProductQuickView({ product, isOpen, onClose }) {
   const maxQty = Math.min(10, stock.count || 10);
   const wished = isInWishlist(product.id);
 
-  // Add to cart WITHOUT closing the modal — the user stays on the product so
+  // Add to cart WITHOUT closing the modal - the user stays on the product so
   // they can keep adjusting qty, wishlist it, or open the full details. The
   // toast is the success feedback; the modal only closes on explicit dismiss.
   const handleAdd = (e) => {
@@ -58,7 +58,7 @@ export default function ProductQuickView({ product, isOpen, onClose }) {
       </button>
 
       <div className="grid md:grid-cols-2 gap-6 p-6">
-        {/* Gallery — same Photo/3D viewer as the full details page */}
+        {/* Gallery - same Photo/3D viewer as the full details page */}
         <Product3DViewer
           key={product.id}
           images={gallery}

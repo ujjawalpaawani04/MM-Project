@@ -13,7 +13,7 @@ export default function About() {
       <Seo
         title="Our Story"
         url="https://mohanmaya.com/about"
-        description="The story behind MohanMaya — artisans, mission and craft behind every handcrafted devotional miniature."
+        description="The story behind MohanMaya - artisans, mission and craft behind every handcrafted devotional miniature."
       />
       <AboutHero />
       <Story />

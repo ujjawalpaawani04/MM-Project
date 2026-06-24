@@ -12,9 +12,9 @@ export default function MostLoved() {
     <section className="bg-cream dark:bg-ink-900 pt-10 lg:p-20">
       <div className="container mx-auto px-4">
         <SectionHeading
-          title="Meet Our Miniatures"
-          highlight="Collection"
-         
+          title="Shop by"
+          highlight="Character"
+          subtitle="Six souls from the Mohan-Maya story, each cast and hand-painted in fine detail. Find the one that speaks to you."
           viewAllTo="/shop"
         />
 

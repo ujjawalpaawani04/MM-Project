@@ -51,8 +51,8 @@ export default function Footer() {
              </span>
            </Link>
             <p className="text-gray-400  leading-6 mb-10 max-w-xs">
-              Handcrafted miniature art made with love, inspired by devotion and
-              tradition.
+              Hand-sculpted, hand-painted collectibles from the Mohan-Maya
+              story - crafted with devotion and made to be treasured.
             </p>
             <div className="flex gap-3">
               {socials.map(({ Icon, url, label }) => (

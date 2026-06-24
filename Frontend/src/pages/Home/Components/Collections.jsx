@@ -14,9 +14,10 @@ export default function Collections() {
         <h2 className="text-2xl sm:text-4xl font-bold text-gray-900 dark:text-white">
           Shop by <span className="text-brand-500">Collection</span>
         </h2>
-        {/* <p className="mt-3  dark:text-gray-300">
-          Curated sets for every occasion and devotion.
-        </p> */}
+        <p className="mt-3 text-gray-600 dark:text-gray-300">
+          Curated for the moments that matter - festivals, weddings, birthdays,
+          and rare limited drops.
+        </p>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">

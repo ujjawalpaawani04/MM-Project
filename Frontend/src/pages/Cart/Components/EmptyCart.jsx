@@ -20,11 +20,11 @@ export default function EmptyCart() {
           <FiShoppingBag className="text-brand-400" size={42} />
         </motion.div>
         <h3 className="relative mt-7 text-2xl font-bold text-gray-900 dark:text-white">
-          Your cart is empty
+          Your cart is waiting to be filled
         </h3>
         <p className="relative mt-2 max-w-md mx-auto text-gray-600 dark:text-gray-300">
-          Browse our collection and add your favourite handcrafted
-          miniatures.
+          Every collection starts with a single piece. Explore the
+          hand-painted miniatures and find the one that's calling your name.
         </p>
         <div className="relative mt-7 flex justify-center">
           <Button to="/shop" size="lg" icon={FiShoppingBag}>
@@ -35,9 +35,9 @@ export default function EmptyCart() {
 
       <section className="mt-20">
         <SectionHeading
-          title="Recommended"
-          highlight="For You"
-          subtitle="Start your collection with these best-sellers."
+          title="Start With a"
+          highlight="Favourite"
+          subtitle="Collector-approved pieces that make a perfect first addition."
         />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {getRecommended([], 4).map((p) => (
