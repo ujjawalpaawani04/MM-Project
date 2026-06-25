@@ -30,9 +30,10 @@ export const env = {
     channelId: process.env.YOUTUBE_CHANNEL_ID,
   },
   // Comma-separated list of allowed browser origins for CORS.
-  // Defaults cover the common Vite dev ports.
+  // Defaults cover the common Vite dev ports (5173 + the 5174/5175 it bumps to
+  // when 5173 is already taken) and the preview server (4173).
   clientOrigins: (process.env.CLIENT_ORIGINS ||
-    "http://localhost:5173,http://localhost:4173,http://127.0.0.1:5173")
+    "http://localhost:5173,http://localhost:5174,http://localhost:5175,http://localhost:4173,http://127.0.0.1:5173,http://127.0.0.1:5174")
     .split(",")
     .map((o) => o.trim())
     .filter(Boolean),

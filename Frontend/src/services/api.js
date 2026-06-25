@@ -13,7 +13,11 @@ const baseURL =
 
 export const api = axios.create({
   baseURL,
-  timeout: 12_000,
+  // Generous timeout: the API is hosted on Render's free tier, which cold-starts
+  // (the instance spins down when idle) and can take 30–50s to answer the first
+  // request. A short timeout would surface that cold start as a "failed to load"
+  // error, so we wait it out and let the loading skeletons cover the gap.
+  timeout: 45_000,
 });
 
 export default api;

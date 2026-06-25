@@ -17,7 +17,7 @@ export default function VideoCard({ video, onPlay, index = 0 }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
       transition={{ duration: 0.45, delay: Math.min(index, 8) * 0.05 }}
-      className="group relative flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-sm transition-all duration-300 hover:-translate-y-1.5 hover:border-red-500/40 hover:shadow-[0_24px_60px_-20px_rgba(255,0,51,0.55)]"
+      className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-sm transition-all duration-300 hover:-translate-y-1.5 hover:border-red-500/40 hover:shadow-[0_24px_60px_-20px_rgba(255,0,51,0.55)]"
     >
       {/* Thumbnail + play overlay */}
       <button
@@ -52,7 +52,7 @@ export default function VideoCard({ video, onPlay, index = 0 }) {
       {/* Body */}
       <div className="flex flex-1 flex-col p-4">
         <h3
-          className="line-clamp-2 text-[15px] font-semibold leading-snug text-white"
+          className="line-clamp-2 min-h-[2.625rem] text-[15px] font-semibold leading-snug text-white"
           title={title}
         >
           {title}
