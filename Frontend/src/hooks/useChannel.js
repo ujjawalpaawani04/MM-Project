@@ -6,6 +6,13 @@ import { api } from "../services/api";
  * our backend, once. Non-critical: on failure it resolves to null and callers
  * simply omit anything that depends on it. A ref guards React 19 StrictMode's
  * double-invoke in dev so we never fire the request twice.
+ *
+ * NOTE: we deliberately do NOT use an `alive`/cleanup flag here. Because the
+ * `didInit` ref already prevents a second request, StrictMode's mount→unmount→
+ * remount cycle would run the cleanup (flipping `alive` to false) BEFORE the
+ * single in-flight request resolves, permanently swallowing setChannel/
+ * setLoading — leaving the header stuck on its skeleton in dev. Matching the
+ * sibling useYouTubeVideos hook, we let the resolved request commit its state.
  */
 export function useChannel() {
   const [channel, setChannel] = useState(null);
@@ -16,16 +23,11 @@ export function useChannel() {
     if (didInit.current) return;
     didInit.current = true;
 
-    let alive = true;
     api
       .get("/api/youtube/channel")
-      .then(({ data }) => alive && setChannel(data))
-      .catch(() => alive && setChannel(null))
-      .finally(() => alive && setLoading(false));
-
-    return () => {
-      alive = false;
-    };
+      .then(({ data }) => setChannel(data))
+      .catch(() => setChannel(null))
+      .finally(() => setLoading(false));
   }, []);
 
   return { channel, loading };
