@@ -16,20 +16,35 @@ export function errorHandler(err, req, res, next) {
   const isAxios = axios.isAxiosError(err);
   const upstreamStatus = isAxios ? err.response?.status : undefined;
 
-  // Map common YouTube failures to meaningful client-facing messages.
+  // Map common upstream failures to meaningful client-facing messages.
   let status = 500;
   let message = "Something went wrong while loading community content.";
 
-  if (upstreamStatus === 403) {
+  if (err.code === "IG_NOT_CONFIGURED" || err.statusCode === 503) {
+    status = 503;
+    message = "Instagram content is temporarily unavailable.";
+  } else if (
+    err.statusCode === 429 ||
+    upstreamStatus === 429 ||
+    /quota/i.test(err.message || "")
+  ) {
+    // RapidAPI / YouTube daily-or-monthly quota exhausted.
+    status = 429;
+    message =
+      "We've hit our hourly limit for fetching social content. Please check back a little later.";
+  } else if (err.code === "IG_UPSTREAM" || err.statusCode === 502) {
+    status = 502;
+    message = "We couldn't reach Instagram right now. Please try again later.";
+  } else if (upstreamStatus === 403) {
     status = 502;
     message =
-      "YouTube API quota exceeded or the API key is invalid. Please try again later.";
+      "The social API quota was exceeded or the API key is invalid. Please try again later.";
   } else if (upstreamStatus === 404) {
     status = 502;
-    message = "The requested YouTube resource could not be found.";
+    message = "The requested resource could not be found.";
   } else if (err.code === "ECONNABORTED") {
     status = 504;
-    message = "YouTube took too long to respond. Please try again.";
+    message = "The upstream service took too long to respond. Please try again.";
   }
 
   // Log full detail server-side only.

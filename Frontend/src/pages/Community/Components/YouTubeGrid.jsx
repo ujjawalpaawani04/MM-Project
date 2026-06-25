@@ -25,12 +25,12 @@ const GRID_CLASS =
 
 function ErrorPanel({ error, onRetry }) {
   return (
-    <div className="rounded-3xl border border-red-500/20 bg-red-500/[0.06] px-4 py-16 text-center">
-      <div className="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-full bg-red-500/15 text-red-400">
+    <div className="rounded-3xl border border-red-200 bg-red-50/60 px-4 py-16 text-center">
+      <div className="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-full bg-red-100 text-red-500">
         <FiAlertTriangle size={30} />
       </div>
-      <h3 className="text-xl font-semibold text-white">Couldn&apos;t load videos</h3>
-      <p className="mx-auto mt-2 max-w-md text-white/60">{error}</p>
+      <h3 className="text-xl font-semibold text-gray-900">Couldn&apos;t load videos</h3>
+      <p className="mx-auto mt-2 max-w-md text-gray-500">{error}</p>
       <button
         type="button"
         onClick={onRetry}
@@ -45,12 +45,12 @@ function ErrorPanel({ error, onRetry }) {
 
 function EmptyPanel() {
   return (
-    <div className="rounded-3xl border border-white/10 bg-white/[0.03] px-4 py-16 text-center">
-      <div className="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-full bg-white/5 text-red-500">
+    <div className="rounded-3xl border border-gray-200 bg-white px-4 py-16 text-center shadow-sm">
+      <div className="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-full bg-red-50 text-red-500">
         <FiYoutube size={30} />
       </div>
-      <h3 className="text-xl font-semibold text-white">No videos yet</h3>
-      <p className="mx-auto mt-2 max-w-md text-white/60">
+      <h3 className="text-xl font-semibold text-gray-900">No videos yet</h3>
+      <p className="mx-auto mt-2 max-w-md text-gray-500">
         New uploads will appear here. Subscribe so you never miss a story.
       </p>
     </div>
@@ -82,7 +82,7 @@ function VideoPagination({ page, totalPages, partial, isLoadingMore, onPrev, onN
   }
 
   const arrow =
-    "grid h-10 w-10 place-items-center rounded-xl border border-white/15 bg-white/5 text-white/80 transition-all hover:border-red-500/50 hover:text-white disabled:cursor-not-allowed disabled:opacity-40";
+    "grid h-10 w-10 place-items-center rounded-xl border border-gray-200 bg-white text-gray-600 shadow-sm transition-all hover:border-red-300 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-40";
 
   return (
     <nav aria-label="Video pagination" className="mt-12 flex items-center justify-center gap-2">
@@ -93,7 +93,7 @@ function VideoPagination({ page, totalPages, partial, isLoadingMore, onPrev, onN
       <div className="hidden items-center gap-2 sm:flex">
         {pages.map((p, i) =>
           p === "…" ? (
-            <span key={`gap-${i}`} className="grid h-10 w-10 select-none place-items-center text-white/40">
+            <span key={`gap-${i}`} className="grid h-10 w-10 select-none place-items-center text-gray-400">
               …
             </span>
           ) : (
@@ -106,7 +106,7 @@ function VideoPagination({ page, totalPages, partial, isLoadingMore, onPrev, onN
                 "grid h-10 w-10 place-items-center rounded-xl text-sm font-semibold transition-all",
                 p === page
                   ? "scale-105 bg-gradient-to-r from-red-600 to-red-500 text-white shadow-md shadow-red-600/30"
-                  : "border border-white/15 bg-white/5 text-white/70 hover:border-red-500/50 hover:text-white"
+                  : "border border-gray-200 bg-white text-gray-600 shadow-sm hover:border-red-300 hover:text-red-600"
               )}
             >
               {p}
@@ -115,8 +115,8 @@ function VideoPagination({ page, totalPages, partial, isLoadingMore, onPrev, onN
         )}
       </div>
 
-      <span className="inline-flex h-10 items-center rounded-xl border border-white/15 bg-white/5 px-4 text-sm font-medium text-white/70 sm:hidden">
-        Page <span className="mx-1 font-bold text-red-400">{page}</span> of{" "}
+      <span className="inline-flex h-10 items-center rounded-xl border border-gray-200 bg-white px-4 text-sm font-medium text-gray-600 shadow-sm sm:hidden">
+        Page <span className="mx-1 font-bold text-red-600">{page}</span> of{" "}
         {partial ? `${totalPages}+` : totalPages}
       </span>
 

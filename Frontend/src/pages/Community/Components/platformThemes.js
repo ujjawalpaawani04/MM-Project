@@ -18,28 +18,29 @@ export const PLATFORM_THEMES = {
     handle: "@mohanmaya",
     Icon: FaYoutube,
     accent: "#FF0033",
-    isDark: true,
+    isDark: false,
     tagline: "Watch the story come to life",
     cta: "Subscribe",
     highlights: ["Devotional shorts", "Workshop diaries", "New-drop reveals"],
-    // Full-section background (crossfaded between tabs) — crimson-tinted black:
-    // a deep-red base that falls off to near-black, with a stronger red glow.
-    pageBg: "bg-[linear-gradient(160deg,#1a0609_0%,#0c0a0d_55%,#08080a_100%)]",
+    // Clean YouTube-inspired light surface: soft white falling to a faint grey,
+    // lifted by the gentlest red wash at the top so the tab still reads "YouTube"
+    // without the heavy dark studio look.
+    pageBg: "bg-gradient-to-b from-white via-gray-50 to-white",
     overlay:
-      "bg-[radial-gradient(60%_50%_at_50%_-5%,rgba(255,0,51,0.24),transparent_70%)]",
-    // Text + surface tokens that read correctly on this background
-    text: "text-white",
-    textMuted: "text-white/55",
-    heading: "text-white",
-    surface: "border border-white/10 bg-white/[0.04] backdrop-blur-xl",
-    chip: "bg-red-500/15 text-red-300 ring-1 ring-inset ring-red-500/30",
+      "bg-[radial-gradient(60%_45%_at_50%_-5%,rgba(255,0,51,0.06),transparent_70%)]",
+    // Text + surface tokens that read correctly on this light background
+    text: "text-gray-900",
+    textMuted: "text-gray-500",
+    heading: "text-gray-900",
+    surface: "border border-gray-200 bg-white",
+    chip: "bg-red-50 text-red-600 ring-1 ring-inset ring-red-100",
     gradient: "from-red-600 to-red-500",
     gradientHover: "hover:from-red-500 hover:to-red-400",
-    glow: "shadow-[0_28px_70px_-30px_rgba(255,0,51,0.55)]",
+    glow: "shadow-[0_28px_70px_-30px_rgba(255,0,51,0.28)]",
     tabActive: "from-red-600 to-red-500",
     blobs: [
-      "h-72 w-72 left-[-6%] top-[-8%] bg-red-600/25",
-      "h-80 w-80 right-[-8%] bottom-[-10%] bg-rose-700/20",
+      "h-72 w-72 left-[-6%] top-[-8%] bg-red-200/40",
+      "h-80 w-80 right-[-8%] bottom-[-10%] bg-rose-200/40",
     ],
   },
 

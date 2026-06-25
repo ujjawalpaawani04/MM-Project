@@ -22,12 +22,32 @@ if (missing.length) {
   process.exit(1);
 }
 
+// Instagram is an optional enhancement, not a hard requirement: if the RapidAPI
+// credentials are absent the server still boots and the /api/instagram routes
+// simply respond with a clean 503 ("not configured") that the frontend renders
+// as a graceful error state — exactly as it would for any upstream failure.
+const instagramConfigured = Boolean(
+  process.env.RAPIDAPI_KEY && process.env.RAPIDAPI_HOST
+);
+if (!instagramConfigured) {
+  console.warn(
+    "[config] RAPIDAPI_KEY / RAPIDAPI_HOST not set — Instagram features disabled."
+  );
+}
+
 export const env = {
   port: Number(process.env.PORT) || 7000,
   nodeEnv: process.env.NODE_ENV || "development",
   youtube: {
     apiKey: process.env.YOUTUBE_API_KEY,
     channelId: process.env.YOUTUBE_CHANNEL_ID,
+  },
+  instagram: {
+    configured: instagramConfigured,
+    rapidApiKey: process.env.RAPIDAPI_KEY,
+    rapidApiHost: process.env.RAPIDAPI_HOST,
+    // The public handle whose profile + posts power the Community Instagram tab.
+    username: process.env.INSTAGRAM_USERNAME || "mohanmaya",
   },
   // Comma-separated list of allowed browser origins for CORS.
   // Defaults cover the common Vite dev ports (5173 + the 5174/5175 it bumps to

@@ -5,11 +5,13 @@ import Seo from "../../components/common/Seo";
 import PageHero from "../../components/common/PageHero";
 import useYouTubeVideos from "../../hooks/useYouTubeVideos";
 import useChannel from "../../hooks/useChannel";
+import useInstagram from "../../hooks/useInstagram";
 import { cn } from "../../utils/cn";
 
 import CommunityTabs from "./Components/CommunityTabs";
 import ChannelHeader from "./Components/ChannelHeader";
 import YouTubeGrid from "./Components/YouTubeGrid";
+import InstagramPanel from "./Components/InstagramPanel";
 import ComingSoon from "./Components/ComingSoon";
 import VideoModal from "./Components/VideoModal";
 import { PLATFORM_THEMES, PLATFORM_ORDER, getTheme } from "./Components/platformThemes";
@@ -47,6 +49,13 @@ export default function Community() {
   const { videos, status, error, isLoadingMore, total, hasMore, loadMore, retry } =
     useYouTubeVideos({ pageSize: 12 });
   const { channel, loading: channelLoading } = useChannel();
+  const {
+    profile: igProfile,
+    posts: igPosts,
+    status: igStatus,
+    error: igError,
+    retry: igRetry,
+  } = useInstagram();
 
   const theme = getTheme(active);
 
@@ -123,7 +132,14 @@ export default function Community() {
                 )}
 
                 {active === "instagram" && (
-                  <ComingSoon theme={theme} href={socialUrl("instagram")} />
+                  <InstagramPanel
+                    profile={igProfile}
+                    posts={igPosts}
+                    status={igStatus}
+                    error={igError}
+                    retry={igRetry}
+                    href={socialUrl("instagram")}
+                  />
                 )}
 
                 {active === "facebook" && (
