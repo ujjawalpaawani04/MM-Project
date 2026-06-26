@@ -1,14 +1,9 @@
 import { useEffect, useState } from "react";
-import {
-  FiYoutube,
-  FiAlertTriangle,
-  FiRefreshCw,
-  FiChevronLeft,
-  FiChevronRight,
-} from "react-icons/fi";
-import { cn } from "../../../utils/cn";
+import { FiYoutube, FiAlertTriangle, FiRefreshCw, FiGrid } from "react-icons/fi";
 import VideoCard from "./VideoCard";
 import VideoCardSkeleton from "./VideoCardSkeleton";
+import FeaturedVideo from "./FeaturedVideo";
+import Pagination from "./Pagination";
 
 // Videos per page. Matches the hook's pageSize so each fetched page maps to
 // exactly one display page, and divides evenly into the 1/2/3/4-column
@@ -69,83 +64,31 @@ function SkeletonGrid() {
   );
 }
 
-/** Dark / red numbered pagination matching the YouTube tab theme. */
-function VideoPagination({ page, totalPages, partial, isLoadingMore, onPrev, onNext, onGo }) {
-  if (totalPages <= 1 && !partial) return null;
-
-  // Windowed page list with ellipses: 1 … 4 5 6 … 12
-  const pages = [];
-  const w = 1;
-  for (let i = 1; i <= totalPages; i++) {
-    if (i === 1 || i === totalPages || (i >= page - w && i <= page + w)) pages.push(i);
-    else if (pages[pages.length - 1] !== "…") pages.push("…");
-  }
-
-  const arrow =
-    "grid h-10 w-10 place-items-center rounded-xl border border-gray-200 bg-white text-gray-600 shadow-sm transition-all hover:border-red-300 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-40";
-
+/** A small heading that sits above the paginated grid. */
+function GridHeading() {
   return (
-    <nav aria-label="Video pagination" className="mt-12 flex items-center justify-center gap-2">
-      <button type="button" onClick={onPrev} disabled={page === 1} aria-label="Previous page" className={arrow}>
-        <FiChevronLeft size={18} />
-      </button>
-
-      <div className="hidden items-center gap-2 sm:flex">
-        {pages.map((p, i) =>
-          p === "…" ? (
-            <span key={`gap-${i}`} className="grid h-10 w-10 select-none place-items-center text-gray-400">
-              …
-            </span>
-          ) : (
-            <button
-              key={p}
-              type="button"
-              onClick={() => onGo(p)}
-              aria-current={p === page ? "page" : undefined}
-              className={cn(
-                "grid h-10 w-10 place-items-center rounded-xl text-sm font-semibold transition-all",
-                p === page
-                  ? "scale-105 bg-gradient-to-r from-red-600 to-red-500 text-white shadow-md shadow-red-600/30"
-                  : "border border-gray-200 bg-white text-gray-600 shadow-sm hover:border-red-300 hover:text-red-600"
-              )}
-            >
-              {p}
-            </button>
-          )
-        )}
-      </div>
-
-      <span className="inline-flex h-10 items-center rounded-xl border border-gray-200 bg-white px-4 text-sm font-medium text-gray-600 shadow-sm sm:hidden">
-        Page <span className="mx-1 font-bold text-red-600">{page}</span> of{" "}
-        {partial ? `${totalPages}+` : totalPages}
+    <div className="mb-6 flex items-center gap-3">
+      <span className="grid h-9 w-9 place-items-center rounded-lg bg-gray-900 text-white">
+        <FiGrid size={16} />
       </span>
-
-      <button
-        type="button"
-        onClick={onNext}
-        disabled={page >= totalPages && !partial}
-        aria-label="Next page"
-        className={arrow}
-      >
-        {isLoadingMore && page >= totalPages ? (
-          <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-        ) : (
-          <FiChevronRight size={18} />
-        )}
-      </button>
-    </nav>
+      <div>
+        <h2 className="text-lg font-bold text-gray-900 sm:text-xl">More videos</h2>
+        <p className="text-sm text-gray-500">Browse every upload from the channel.</p>
+      </div>
+    </div>
   );
 }
 
 /* ------------------------------- Grid ---------------------------------- */
 
 /**
- * The YouTube tab: a single uniform, paginated grid of recent uploads. Every
- * page renders the SAME structure — same columns, same gaps, same number of
+ * The YouTube tab: the latest upload is lifted into a <FeaturedVideo> spotlight,
+ * and the remaining uploads fill a single uniform, paginated grid. Every page
+ * renders the SAME structure — same columns, same gaps, same number of
  * equal-height cards — so paging only swaps the data, never the layout (no
- * shifting, no auto-scroll, nothing slides under the header). Navigating past
- * the last loaded page transparently fetches the next page via the token
- * cursor. Includes dark skeletons, error + empty states.
+ * shifting, no auto-scroll). Navigating past the last loaded page transparently
+ * fetches the next page via the token cursor. Includes skeletons, error + empty
+ * states. The VideoCard design and API integration are unchanged.
  */
 export default function YouTubeGrid({
   videos,
@@ -160,57 +103,85 @@ export default function YouTubeGrid({
 }) {
   const [page, setPage] = useState(1);
 
-  const loadedPages = Math.max(1, Math.ceil(videos.length / PER_PAGE));
+  // The newest upload becomes the featured spotlight; everything else paginates.
+  const featured = videos[0] || null;
+  const rest = videos.slice(1);
 
-  // Auto-fetch forward when the user navigates to a page that isn't loaded yet.
-  // Runs one fetch per render until the requested page is available (or the
-  // feed runs out). Only triggers a fetch — it never sets state directly.
+  const loadedPages = Math.max(1, Math.ceil(rest.length / PER_PAGE));
+
+  // Auto-fetch forward until the CURRENT page is completely filled (or the feed
+  // runs out). Triggering on "page not full" rather than "page not started" is
+  // what keeps every page — including the first — at a consistent card count:
+  // the featured video is lifted from the same feed, so page 1 needs one extra
+  // upload fetched before its grid can show a full PER_PAGE. Only triggers a
+  // fetch — it never sets state directly.
   useEffect(() => {
-    if (page > loadedPages && hasMore && !isLoadingMore) loadMore();
-  }, [page, loadedPages, hasMore, isLoadingMore, loadMore]);
+    if (rest.length < page * PER_PAGE && hasMore && !isLoadingMore) loadMore();
+  }, [page, rest.length, hasMore, isLoadingMore, loadMore]);
 
   if (status === "loading") return <SkeletonGrid />;
   if (status === "error") return <ErrorPanel error={error} onRetry={retry} />;
   if (status === "success" && videos.length === 0) return <EmptyPanel />;
 
   // Accurate, stable page count when the API reports a total; otherwise fall
-  // back to what's loaded and flag (via `partial`) that more may exist.
+  // back to what's loaded and flag (via `partial`) that more may exist. The
+  // featured video is excluded from the grid, hence `total - 1`.
   const knownTotal = total > 0;
+  const restTotal = knownTotal ? Math.max(0, total - 1) : rest.length;
   const totalPages = knownTotal
-    ? Math.max(1, Math.ceil(total / PER_PAGE))
+    ? Math.max(1, Math.ceil(restTotal / PER_PAGE))
     : loadedPages;
   const partial = !knownTotal && hasMore;
   // Highest page the user may navigate to right now.
   const maxPage = knownTotal ? totalPages : hasMore ? loadedPages + 1 : loadedPages;
 
-  const pageVideos = videos.slice((page - 1) * PER_PAGE, page * PER_PAGE);
-  const showSkeletons =
-    pageVideos.length === 0 && (isLoadingMore || page > loadedPages);
+  const pageStart = (page - 1) * PER_PAGE;
+  const pageVideos = rest.slice(pageStart, pageStart + PER_PAGE);
+
+  // How many cards this page holds once fully loaded. With a known total the
+  // final page may legitimately be short; otherwise assume a full page while
+  // more can still load. Any not-yet-loaded slots for the current page render
+  // as skeletons, so the grid always shows its full complement of tiles rather
+  // than briefly showing fewer (e.g. 11) and popping the last card in after.
+  const expectedCount = knownTotal
+    ? Math.max(0, Math.min(PER_PAGE, restTotal - pageStart))
+    : hasMore
+    ? PER_PAGE
+    : pageVideos.length;
+  const fillSkeletons = Math.max(0, expectedCount - pageVideos.length);
+  const hasGrid = pageVideos.length > 0 || fillSkeletons > 0;
 
   // Data-only navigation: update the page, never the scroll position or layout.
   const goTo = (p) => setPage(Math.min(maxPage, Math.max(1, p)));
 
   return (
     <>
-      <div className={GRID_CLASS}>
-        {showSkeletons
-          ? Array.from({ length: PER_PAGE }).map((_, i) => (
-              <VideoCardSkeleton key={i} />
-            ))
-          : pageVideos.map((video, i) => (
+      <FeaturedVideo video={featured} onPlay={onPlay} />
+
+      {hasGrid && (
+        <>
+          <GridHeading />
+
+          <div className={GRID_CLASS}>
+            {pageVideos.map((video, i) => (
               <VideoCard key={video.videoId} video={video} index={i} onPlay={onPlay} />
             ))}
-      </div>
+            {Array.from({ length: fillSkeletons }).map((_, i) => (
+              <VideoCardSkeleton key={`fill-${i}`} />
+            ))}
+          </div>
 
-      <VideoPagination
-        page={page}
-        totalPages={totalPages}
-        partial={partial}
-        isLoadingMore={isLoadingMore}
-        onPrev={() => goTo(page - 1)}
-        onNext={() => goTo(page + 1)}
-        onGo={goTo}
-      />
+          <Pagination
+            page={page}
+            totalPages={totalPages}
+            partial={partial}
+            isLoadingMore={isLoadingMore}
+            onPrev={() => goTo(page - 1)}
+            onNext={() => goTo(page + 1)}
+            onGo={goTo}
+          />
+        </>
+      )}
     </>
   );
 }

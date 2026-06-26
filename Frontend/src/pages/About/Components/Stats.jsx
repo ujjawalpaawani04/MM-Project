@@ -14,7 +14,7 @@ const stats = [
 /** Stat band highlighting the brand at a glance. */
 export default function Stats() {
   return (
-    <section  className="bg-cream-100 dark:bg-ink-900 py-16 lg:py-24 bg-cover bg-left"
+    <section className="bg-cream-100 dark:bg-ink-900 py-16 lg:py-24 bg-cover bg-left relative z-1 before:absolute before:w-full before:h-full  before:bg-black/40 before:inset-0"
   style={{
     backgroundImage: `url(${statsBg})`,
   }}>

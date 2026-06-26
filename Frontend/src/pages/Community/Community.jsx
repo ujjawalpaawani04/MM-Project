@@ -11,6 +11,8 @@ import { cn } from "../../utils/cn";
 import CommunityTabs from "./Components/CommunityTabs";
 import ChannelHeader from "./Components/ChannelHeader";
 import YouTubeGrid from "./Components/YouTubeGrid";
+import ContentPillars from "./Components/ContentPillars";
+import SubscribeBanner from "./Components/SubscribeBanner";
 import InstagramPanel from "./Components/InstagramPanel";
 import ComingSoon from "./Components/ComingSoon";
 import VideoModal from "./Components/VideoModal";
@@ -128,6 +130,10 @@ export default function Community() {
                       retry={retry}
                       onPlay={setActiveVideo}
                     />
+
+                    {/* Enrichment sections — only on the YouTube tab */}
+                    <ContentPillars />
+                    <SubscribeBanner href={socialUrl("youtube")} />
                   </>
                 )}
 
