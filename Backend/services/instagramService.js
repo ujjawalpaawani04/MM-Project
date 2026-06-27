@@ -33,8 +33,8 @@ const ENDPOINTS = {
 const USERNAME_KEYS = ["username", "username_or_id_or_url", "user", "id"];
 
 const TTL = {
-  profile: 30 * 60 * 1000, // 30m — follower/post counts move slowly
-  posts: 15 * 60 * 1000, // 15m — new posts appear within minutes
+  profile: 30 * 60 * 1000, // 30m - follower/post counts move slowly
+  posts: 15 * 60 * 1000, // 15m - new posts appear within minutes
 };
 
 const ig = axios.create({
@@ -240,7 +240,7 @@ async function callEndpoint(path) {
   const { data } = await ig.post(`${path}?${query.toString()}`, body.toString());
 
   // The upstream returns HTTP 200 with an `{ error }` body for bad input /
-  // quota issues — surface that as a thrown error so the cache never stores it.
+  // quota issues - surface that as a thrown error so the cache never stores it.
   if (data && typeof data === "object" && data.error && !findPostsArray(data).length) {
     const err = new Error(String(data.error));
     err.code = "IG_UPSTREAM";

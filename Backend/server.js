@@ -18,7 +18,7 @@ const app = express();
 // a phone or another device on the same network. A hard-coded allowlist would
 // otherwise reject the browser and surface as a 500. Disallowed origins are
 // rejected *cleanly* (no ACAO header) rather than by throwing. This relaxation
-// is dev-only — in production only env.clientOrigins is honoured.
+// is dev-only - in production only env.clientOrigins is honoured.
 const isDevOrigin = (origin) =>
   /^https?:\/\/(localhost|127\.0\.0\.1|10\.\d{1,3}\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3}|172\.(?:1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3})(:\d+)?$/.test(
     origin

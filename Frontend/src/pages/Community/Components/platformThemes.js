@@ -3,8 +3,8 @@ import { FaYoutube, FaInstagram, FaFacebookF } from "react-icons/fa";
 /**
  * Per-platform design tokens that drive the Community page's dynamic theming.
  *
- * Switching tabs swaps the entire visual environment — page background, accent
- * colour, gradients, surfaces, chips, buttons and floating glow blobs — so each
+ * Switching tabs swaps the entire visual environment - page background, accent
+ * colour, gradients, surfaces, chips, buttons and floating glow blobs - so each
  * tab feels like stepping into a different social platform while staying one
  * coherent design system.
  *

@@ -5,7 +5,6 @@ import { ShoppingCart, Heart } from "lucide-react";
 import { getStockInfo } from "../../../data/products";
 import { useCart } from "../../../context/CartContext";
 import { useWishlist } from "../../../context/WishlistContext";
-import { useToast } from "../../../context/ToastContext";
 import { useFlyToCart } from "../../../context/FlyToCartContext";
 import { formatCurrency, discountPercent } from "../../../utils/formatCurrency";
 
@@ -15,11 +14,12 @@ import Rating from "../../../components/common/Rating";
 import QuantitySelector from "../../../components/common/QuantitySelector";
 import ProductFeatures from "./ProductFeatures";
 
-/** Right-hand product column: title, price, specs, actions and assurances. */
-export default function ProductInfo({ product }) {
+/** Right-hand product column: title, price, specs, actions and assurances.
+ *  `mediaRef` points at the gallery column so the fly-to-cart animation can
+ *  originate from the image the user is actually looking at. */
+export default function ProductInfo({ product, mediaRef }) {
   const { addItem } = useCart();
   const { toggle, isInWishlist } = useWishlist();
-  const toast = useToast();
   const { fly } = useFlyToCart();
   const [qty, setQty] = useState(1);
 
@@ -31,16 +31,16 @@ export default function ProductInfo({ product }) {
 
   const handleAdd = (e) => {
     addItem(product, qty);
-    // Fly the product image (from the button origin) to the cart — the flight
-    // is the success feedback (no toast).
-    fly(e.currentTarget, product.image);
+    // Fly the *currently displayed* gallery image to the cart so the animation
+    // starts from what the user is looking at. Fall back to the button origin /
+    // default image if the gallery isn't mounted (e.g. reduced-motion paths).
+    const anchor = mediaRef?.current?.querySelector("[data-fly-anchor]");
+    fly(anchor || e.currentTarget, anchor?.src || product.image);
   };
 
   const handleWishlist = () => {
-    const added = toggle(product);
-    toast[added ? "success" : "info"](
-      added ? "Added to wishlist" : "Removed from wishlist"
-    );
+    // The heart button's Saved/Wishlist state is the only success feedback - no toast.
+    toggle(product);
   };
 
   return (

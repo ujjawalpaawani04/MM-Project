@@ -86,6 +86,9 @@ export default function Product3DViewer({ images = [], modelUrl, name }) {
             alt={name}
             loading="lazy"
             decoding="async"
+            // Marks the live, on-screen product image so callers (fly-to-cart)
+            // can originate the animation from exactly what's displayed.
+            data-fly-anchor
             className="w-full h-full object-cover"
           />
         )}

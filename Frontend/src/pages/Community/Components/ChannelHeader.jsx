@@ -70,7 +70,7 @@ export default function ChannelHeader({ channel, loading, href }) {
   const name = channel?.title || "MohanMaya";
   const description =
     channel?.description ||
-    "Handcrafted devotional miniatures — devotional shorts, stories and behind-the-scenes moments from our workshop.";
+    "Handcrafted devotional miniatures - devotional shorts, stories and behind-the-scenes moments from our workshop.";
   const thumb = channel?.thumbnail;
   const subscribeUrl = href || channel?.url || "#";
 

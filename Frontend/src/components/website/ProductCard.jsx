@@ -4,7 +4,6 @@ import { motion } from "framer-motion";
 import { Heart, ShoppingCart, Eye } from "lucide-react";
 import { useCart } from "../../context/CartContext";
 import { useWishlist } from "../../context/WishlistContext";
-import { useToast } from "../../context/ToastContext";
 import { useFlyToCart } from "../../context/FlyToCartContext";
 import { formatCurrency, discountPercent } from "../../utils/formatCurrency";
 import { getStockInfo } from "../../data/products";
@@ -14,7 +13,6 @@ import Badge from "../common/Badge";
 function ProductCard({ product, onQuickView, variant = "default", tag }) {
   const { addItem } = useCart();
   const { toggle, isInWishlist } = useWishlist();
-  const toast = useToast();
   const { fly } = useFlyToCart();
   const imgRef = useRef(null);
   const compact = variant === "compact";
@@ -34,10 +32,8 @@ function ProductCard({ product, onQuickView, variant = "default", tag }) {
 
   const handleWishlist = (e) => {
     e.preventDefault();
-    const added = toggle(product);
-    toast[added ? "success" : "info"](
-      added ? "Added to wishlist" : "Removed from wishlist"
-    );
+    // The heart icon's filled/outline state is the only success feedback - no toast.
+    toggle(product);
   };
 
   const handleQuickView = (e) => {

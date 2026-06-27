@@ -34,7 +34,7 @@ export default function SubscribeBanner({ href = "#" }) {
           Never miss a story
         </h2>
         <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-gray-300 sm:text-base">
-          Subscribe and hit the bell — new devotional shorts, workshop diaries
+          Subscribe and hit the bell - new devotional shorts, workshop diaries
           and drops land on the channel every week.
         </p>
         <a

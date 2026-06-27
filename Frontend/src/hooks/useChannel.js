@@ -11,7 +11,7 @@ import { api } from "../services/api";
  * `didInit` ref already prevents a second request, StrictMode's mount→unmount→
  * remount cycle would run the cleanup (flipping `alive` to false) BEFORE the
  * single in-flight request resolves, permanently swallowing setChannel/
- * setLoading — leaving the header stuck on its skeleton in dev. Matching the
+ * setLoading - leaving the header stuck on its skeleton in dev. Matching the
  * sibling useYouTubeVideos hook, we let the resolved request commit its state.
  */
 export function useChannel() {

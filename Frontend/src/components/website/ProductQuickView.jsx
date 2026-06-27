@@ -7,7 +7,6 @@ import QuantitySelector from "../common/QuantitySelector";
 import Product3DViewer from "./Product3DViewer";
 import { useCart } from "../../context/CartContext";
 import { useWishlist } from "../../context/WishlistContext";
-import { useToast } from "../../context/ToastContext";
 import { useFlyToCart } from "../../context/FlyToCartContext";
 import { formatCurrency, discountPercent } from "../../utils/formatCurrency";
 import { getStockInfo } from "../../data/products";
@@ -16,7 +15,6 @@ import { IoMdArrowForward } from "react-icons/io";
 export default function ProductQuickView({ product, isOpen, onClose }) {
   const { addItem } = useCart();
   const { toggle, isInWishlist } = useWishlist();
-  const toast = useToast();
   const { fly } = useFlyToCart();
   const galleryRef = useRef(null);
 
@@ -42,12 +40,14 @@ export default function ProductQuickView({ product, isOpen, onClose }) {
 
   // Add to cart WITHOUT closing the modal - the user stays on the product so
   // they can keep adjusting qty, wishlist it, or open the full details. The
-  // toast is the success feedback; the modal only closes on explicit dismiss.
+  // flight is the success feedback; the modal only closes on explicit dismiss.
   const handleAdd = (e) => {
     e?.stopPropagation();
     addItem(product, qty);
-    // Fly the gallery image to the cart — the flight is the success feedback.
-    fly(galleryRef.current, product.image);
+    // Fly the *currently selected* gallery image (not the default product.image)
+    // so the animation matches whichever thumbnail the user is viewing.
+    const anchor = galleryRef.current?.querySelector("[data-fly-anchor]");
+    fly(anchor || galleryRef.current, anchor?.src || product.image);
   };
 
   return (
@@ -154,12 +154,7 @@ export default function ProductQuickView({ product, isOpen, onClose }) {
             </Button>
             <Button
               variant="outline"
-              onClick={() => {
-                const added = toggle(product);
-                toast[added ? "success" : "info"](
-                  added ? "Added to wishlist" : "Removed from wishlist"
-                );
-              }}
+              onClick={() => toggle(product)}
               icon={Heart}
             >
               {wished ? "Saved" : "Wishlist"}

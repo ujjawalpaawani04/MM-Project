@@ -68,7 +68,7 @@ export function InstagramHeaderSkeleton() {
  * Instagram profile dashboard header: a glassmorphic banner (gradient-ringed
  * avatar + username + bio + Follow button) above a row of analytics stat cards.
  * Profile data is fetched once at the page level and passed in; missing fields
- * fall back to brand defaults (no fabricated numbers — stat cards only render
+ * fall back to brand defaults (no fabricated numbers - stat cards only render
  * when real profile data is present).
  */
 export default function InstagramHeader({ profile, href }) {
@@ -150,7 +150,7 @@ export default function InstagramHeader({ profile, href }) {
         </div>
       </motion.div>
 
-      {/* Analytics cards — only when real profile data is present */}
+      {/* Analytics cards - only when real profile data is present */}
       {profile && (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <StatCard icon={FiUsers} label="Followers" value={profile.followers} delay={0} />

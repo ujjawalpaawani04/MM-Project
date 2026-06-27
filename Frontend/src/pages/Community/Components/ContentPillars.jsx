@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { FiFilm, FiTool, FiGift, FiStar } from "react-icons/fi";
 
-/* What the channel offers — static content pillars, easy to extend. */
+/* What the channel offers - static content pillars, easy to extend. */
 const PILLARS = [
   {
     Icon: FiFilm,
@@ -26,7 +26,7 @@ const PILLARS = [
 ];
 
 /**
- * "What you'll find" — a clean four-up grid of content pillars that gives the
+ * "What you'll find" - a clean four-up grid of content pillars that gives the
  * Community page editorial context beyond the raw video feed. Light surface,
  * red gradient icon chips and a soft hover lift to match the YouTube theme.
  */

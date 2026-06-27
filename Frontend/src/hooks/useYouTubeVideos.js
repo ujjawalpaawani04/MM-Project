@@ -19,7 +19,7 @@ export function useYouTubeVideos({ pageSize = 9 } = {}) {
   const [error, setError] = useState(null);
   const [nextPageToken, setNextPageToken] = useState(null);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  // Total uploads on the channel (from the API's pageInfo) — lets the UI show
+  // Total uploads on the channel (from the API's pageInfo) - lets the UI show
   // an accurate, stable page count rather than one that grows as pages load.
   const [total, setTotal] = useState(0);
 

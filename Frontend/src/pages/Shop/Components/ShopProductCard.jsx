@@ -5,7 +5,6 @@ import { Heart, ShoppingCart, Eye } from "lucide-react";
 
 import { useCart } from "../../../context/CartContext";
 import { useWishlist } from "../../../context/WishlistContext";
-import { useToast } from "../../../context/ToastContext";
 import { useFlyToCart } from "../../../context/FlyToCartContext";
 import { formatCurrency, discountPercent } from "../../../utils/formatCurrency";
 import { getStockInfo } from "../../../data/products";
@@ -15,14 +14,13 @@ import Rating from "../../../components/common/Rating";
  * Compact Shop product card. A Shop-page-only presentation (the Home grids keep
  * using the shared ProductCard) so visual changes here never affect other
  * pages. Inspired by the Home "Most Collected" card but tightened for dense
- * shop browsing: prominent square image, then only the essentials — name,
+ * shop browsing: prominent square image, then only the essentials - name,
  * rating, price and a single Add-to-Cart action. All cart / wishlist /
  * quick-view / routing behaviour is unchanged.
  */
 function ShopProductCard({ product, onQuickView }) {
   const { addItem } = useCart();
   const { toggle, isInWishlist } = useWishlist();
-  const toast = useToast();
   const { fly } = useFlyToCart();
   const imgRef = useRef(null);
 
@@ -41,10 +39,8 @@ function ShopProductCard({ product, onQuickView }) {
 
   const handleWishlist = (e) => {
     e.preventDefault();
-    const added = toggle(product);
-    toast[added ? "success" : "info"](
-      added ? "Added to wishlist" : "Removed from wishlist"
-    );
+    // The heart icon's filled/outline state is the only success feedback - no toast.
+    toggle(product);
   };
 
   const handleQuickView = (e) => {

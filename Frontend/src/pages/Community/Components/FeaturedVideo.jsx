@@ -4,7 +4,7 @@ import { FaYoutube } from "react-icons/fa";
 import { formatPublished, isRecent } from "./videoTime";
 
 /**
- * "Featured Video" spotlight for the channel's latest upload — a large 16:9
+ * "Featured Video" spotlight for the channel's latest upload - a large 16:9
  * player thumbnail paired with the title, meta and primary actions. It reuses
  * the exact same modal player as the grid (via `onPlay`) and leaves the
  * standard VideoCard used below it completely untouched.
@@ -75,7 +75,7 @@ export default function FeaturedVideo({ video, onPlay }) {
           </h3>
 
           <p className="text-sm leading-relaxed text-gray-500 dark:text-gray-400">
-            Press play to watch our newest story unfold — handcrafted devotion,
+            Press play to watch our newest story unfold - handcrafted devotion,
             straight from the workshop to you.
           </p>
 

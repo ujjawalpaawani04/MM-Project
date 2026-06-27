@@ -24,10 +24,10 @@ function buildPageList(page, totalPages, siblings = 1) {
 }
 
 /**
- * Professional, dynamic pagination — labelled Previous / Next controls plus a
+ * Professional, dynamic pagination - labelled Previous / Next controls plus a
  * windowed list of auto-generated page numbers that adapts to the total count.
  * Fully responsive: numbered buttons on >= sm, a compact "Page X of Y" pill on
- * mobile. Purely presentational and reusable — every navigation action is
+ * mobile. Purely presentational and reusable - every navigation action is
  * delegated through props, so it carries no data-fetching concerns of its own.
  */
 export default function Pagination({

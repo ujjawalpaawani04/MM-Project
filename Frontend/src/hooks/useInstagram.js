@@ -7,7 +7,7 @@ import { api } from "../services/api";
  * is exposed client-side.
  *
  * Mirrors useYouTubeVideos' state machine (loading | success | error) and its
- * StrictMode guard. Note: we deliberately do NOT use an `alive`/cleanup flag —
+ * StrictMode guard. Note: we deliberately do NOT use an `alive`/cleanup flag -
  * the `didInit` ref already prevents a double request, and a cleanup that flips
  * `alive=false` on StrictMode's dev remount would permanently swallow the only
  * in-flight response (the bug that previously froze the channel header).

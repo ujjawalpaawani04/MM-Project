@@ -66,16 +66,17 @@ export default function Community() {
       <Seo
         title="Community"
         url="https://mohanmaya.com/community"
-        description="Join the MohanMaya community — watch our latest YouTube stories and behind-the-scenes from the world of handcrafted devotional miniatures."
+        description="Join the MohanMaya community - watch our latest YouTube stories and behind-the-scenes from the world of handcrafted devotional miniatures."
       />
 
-      {/* ---- Hero (unchanged) ---- */}
+      {/* ---- Hero ---- */}
       <PageHero
+        breadcrumbs={[{ label: "Home", to: "/" }, { label: "Community" }]}
         image="/website/images/heroBg.webp"
         eyebrow="Our Community"
         title="Stories from"
         highlight="MohanMaya"
-        description="Heartfelt shorts, devotional stories and behind-the-scenes moments — straight from our channel to you. Follow along and become part of the family."
+        description="Heartfelt shorts, devotional stories and behind-the-scenes moments - straight from our channel to you. Follow along and become part of the family."
       />
 
       {/* ---- Dynamically themed community environment ---- */}
@@ -101,7 +102,7 @@ export default function Community() {
           {/* Tab switcher */}
           <CommunityTabs tabs={TABS} active={active} onChange={setActive} theme={theme} />
 
-          {/* Tab panels — each swaps the whole platform environment */}
+          {/* Tab panels - each swaps the whole platform environment */}
           <div className="mt-12">
             <AnimatePresence mode="wait">
               <motion.div
@@ -131,7 +132,7 @@ export default function Community() {
                       onPlay={setActiveVideo}
                     />
 
-                    {/* Enrichment sections — only on the YouTube tab */}
+                    {/* Enrichment sections - only on the YouTube tab */}
                     <ContentPillars />
                     <SubscribeBanner href={socialUrl("youtube")} />
                   </>

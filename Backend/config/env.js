@@ -25,13 +25,13 @@ if (missing.length) {
 // Instagram is an optional enhancement, not a hard requirement: if the RapidAPI
 // credentials are absent the server still boots and the /api/instagram routes
 // simply respond with a clean 503 ("not configured") that the frontend renders
-// as a graceful error state — exactly as it would for any upstream failure.
+// as a graceful error state - exactly as it would for any upstream failure.
 const instagramConfigured = Boolean(
   process.env.RAPIDAPI_KEY && process.env.RAPIDAPI_HOST
 );
 if (!instagramConfigured) {
   console.warn(
-    "[config] RAPIDAPI_KEY / RAPIDAPI_HOST not set — Instagram features disabled."
+    "[config] RAPIDAPI_KEY / RAPIDAPI_HOST not set - Instagram features disabled."
   );
 }
 

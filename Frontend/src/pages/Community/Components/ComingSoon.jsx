@@ -4,7 +4,7 @@ import { cn } from "../../../utils/cn";
 
 /**
  * Honest, platform-themed "Coming Soon" state for tabs whose API isn't wired up
- * yet (Instagram, Facebook). No fabricated content — just the platform's visual
+ * yet (Instagram, Facebook). No fabricated content - just the platform's visual
  * identity, a clear status message, and a link out to the real profile.
  */
 export default function ComingSoon({ theme, href }) {
@@ -55,7 +55,7 @@ export default function ComingSoon({ theme, href }) {
         </h3>
         <p className={cn("mx-auto mt-3 max-w-md leading-relaxed", theme.textMuted)}>
           {theme.name} integration is currently under development. Content will be
-          available here soon — in the meantime, follow us to stay in the loop.
+          available here soon - in the meantime, follow us to stay in the loop.
         </p>
 
         <div className="mt-8 flex justify-center">

@@ -16,18 +16,18 @@ import { motion, useReducedMotion } from "framer-motion";
  *
  * A product thumbnail is cloned and flown along a smooth, consistent curved arc
  * into the header cart icon (GPU transforms only), gradually shrinking until it
- * merges into the icon — after which the cart gives a subtle bounce/pop.
+ * merges into the icon - after which the cart gives a subtle bounce/pop.
  *
  * Design goals:
  *  - Zero coupling to cart logic. Callers still call `addItem` themselves; this
  *    only adds the visual flourish via `fly(sourceEl, image)`. The animation is
- *    the success feedback — there is no toast.
+ *    the success feedback - there is no toast.
  *  - Identical, elegant curve for every product regardless of its position: the
  *    path is a quadratic Bézier with the timing baked into the sampled points,
  *    so the motion is deterministic and never random.
  *  - No re-renders of the app/product grids. Flights and the cart "pulse" are
  *    delivered through ref-based subscriptions, so only the tiny <FlyLayer> and
- *    the header cart re-render — never the consumers that call `fly`.
+ *    the header cart re-render - never the consumers that call `fly`.
  *  - Concurrency-safe: each click spawns an independent clone keyed by id, so
  *    rapid clicks simply overlap gracefully (no shared timers to glitch).
  *  - Accessible: honours prefers-reduced-motion (skips the clone, the cart
@@ -40,7 +40,7 @@ let flightSeq = 0;
 
 // Cap the clone size so a large product-details image still feels graceful.
 const MAX_CLONE = 170;
-// Approx. on-screen size of the cart icon — drives how small the clone lands.
+// Approx. on-screen size of the cart icon - drives how small the clone lands.
 const CART_ICON_SIZE = 26;
 // Number of points the Bézier arc is sampled into (more = smoother).
 const ARC_STEPS = 20;
@@ -84,7 +84,7 @@ export function FlyToCartProvider({ children }) {
   }, []);
 
   // Fired the moment a clone "lands" (or immediately on the reduced-motion
-  // path): give the cart its bounce/pop. No toast — the flight is the feedback.
+  // path): give the cart its bounce/pop. No toast - the flight is the feedback.
   const celebrate = useCallback(() => {
     arriveListeners.current.forEach((cb) => cb());
   }, []);
@@ -170,7 +170,7 @@ function FlyingClone({ flight, onDone }) {
     const dy = toY - fromCy;
 
     // Control point: the midpoint lifted upward by an amount that scales gently
-    // with travel distance (clamped) — identical curve geometry for every card.
+    // with travel distance (clamped) - identical curve geometry for every card.
     const distance = Math.hypot(dx, dy);
     const lift = Math.min(180, Math.max(70, distance * 0.22));
     const cx = dx / 2;

@@ -7,11 +7,11 @@ import Pagination from "./Pagination";
 
 // Videos per page. Matches the hook's pageSize so each fetched page maps to
 // exactly one display page, and divides evenly into the 1/2/3/4-column
-// breakpoints so every full page fills complete rows — the grid structure is
+// breakpoints so every full page fills complete rows - the grid structure is
 // identical on every page, so paging only swaps data, never the layout.
 const PER_PAGE = 12;
 
-/* Shared grid classes — used for cards AND skeletons so the column count, gaps
+/* Shared grid classes - used for cards AND skeletons so the column count, gaps
  * and alignment are byte-for-byte identical regardless of contents. */
 const GRID_CLASS =
   "grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4";
@@ -84,8 +84,8 @@ function GridHeading() {
 /**
  * The YouTube tab: the latest upload is lifted into a <FeaturedVideo> spotlight,
  * and the remaining uploads fill a single uniform, paginated grid. Every page
- * renders the SAME structure — same columns, same gaps, same number of
- * equal-height cards — so paging only swaps the data, never the layout (no
+ * renders the SAME structure - same columns, same gaps, same number of
+ * equal-height cards - so paging only swaps the data, never the layout (no
  * shifting, no auto-scroll). Navigating past the last loaded page transparently
  * fetches the next page via the token cursor. Includes skeletons, error + empty
  * states. The VideoCard design and API integration are unchanged.
@@ -111,10 +111,10 @@ export default function YouTubeGrid({
 
   // Auto-fetch forward until the CURRENT page is completely filled (or the feed
   // runs out). Triggering on "page not full" rather than "page not started" is
-  // what keeps every page — including the first — at a consistent card count:
+  // what keeps every page - including the first - at a consistent card count:
   // the featured video is lifted from the same feed, so page 1 needs one extra
   // upload fetched before its grid can show a full PER_PAGE. Only triggers a
-  // fetch — it never sets state directly.
+  // fetch - it never sets state directly.
   useEffect(() => {
     if (rest.length < page * PER_PAGE && hasMore && !isLoadingMore) loadMore();
   }, [page, rest.length, hasMore, isLoadingMore, loadMore]);

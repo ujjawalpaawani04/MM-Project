@@ -124,7 +124,7 @@ const Header = () => {
       subscribeArrive(() => {
         setBurstId((n) => n + 1);
         if (reduceMotion) return;
-        // Subtle, springy bounce/pop — restrained for a premium feel.
+        // Subtle, springy bounce/pop - restrained for a premium feel.
         bagControls.start({
           scale: [1, 1.18, 0.96, 1.05, 1],
           transition: { duration: 0.55, ease: [0.34, 1.56, 0.64, 1] },

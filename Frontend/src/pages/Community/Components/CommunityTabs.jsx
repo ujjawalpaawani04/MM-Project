@@ -4,7 +4,7 @@ import { PLATFORM_THEMES } from "./platformThemes";
 
 /**
  * Platform-aware segmented tab switcher. The active pill morphs between tabs
- * (Framer Motion shared layout) and adopts the *target* platform's gradient —
+ * (Framer Motion shared layout) and adopts the *target* platform's gradient -
  * so the YouTube tab glows red, Instagram runs the warm gradient, and Facebook
  * goes blue. The whole control adapts to the active theme's light/dark surface.
  * Fully keyboard accessible via role="tablist".

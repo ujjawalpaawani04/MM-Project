@@ -81,7 +81,7 @@ function EmptyPanel({ href }) {
 /**
  * The Community Instagram tab. Shows a glassmorphic profile header with live
  * stat cards above a responsive media grid. Handles loading (skeletons), error
- * (retry + follow fallback) and empty states gracefully — the header always
+ * (retry + follow fallback) and empty states gracefully - the header always
  * renders branded fallback content so the tab is never blank.
  */
 export default function InstagramPanel({ profile, posts, status, error, retry, href }) {
