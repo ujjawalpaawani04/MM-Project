@@ -6,7 +6,6 @@ import { FiX, FiSearch, FiUser, FiLogOut, FiShoppingBag } from "react-icons/fi";
 import { FaLocationDot, FaPhone } from "react-icons/fa6";
 import { CgMail } from "react-icons/cg";
 import { FaFacebookF, FaInstagram, FaYoutube } from "react-icons/fa";
-import ThemeToggle from "../common/ThemeToggle";
 import { useAuth } from "../../context/AuthContext";
 import { useCart } from "../../context/CartContext";
 import { useWishlist } from "../../context/WishlistContext";
@@ -236,7 +235,6 @@ const MobileSidebar = ({ isOpen, onClose }) => {
                     </span>
                   )}
                 </Link>
-                <ThemeToggle className="shrink-0 border border-gray-200 dark:border-slate-700" />
               </motion.div>
 
               {/* Account */}

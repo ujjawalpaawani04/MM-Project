@@ -221,7 +221,7 @@ const Header = () => {
 
             {/* Account */}
             {isAuthenticated ? (
-              <div className="relative">
+              <div className="relative hidden lg:block">
                 <button
                   onClick={() => setAccountOpen((o) => !o)}
                   className="flex items-center gap-1.5 p-1.5 text-gray-800 dark:text-gray-100 hover:text-brand-500 transition-colors"
@@ -280,7 +280,7 @@ const Header = () => {
             ) : (
               <Link
                 to="/login"
-                className="p-1.5 text-gray-800 dark:text-gray-100 hover:text-brand-500 transition-colors"
+                className="hidden lg:block p-1.5 text-gray-800 dark:text-gray-100 hover:text-brand-500 transition-colors"
                 aria-label="Sign in"
               >
                 <FiUser className="text-[22px]" />
@@ -288,13 +288,15 @@ const Header = () => {
             )}
 
             {/* Wishlist - heart fills red when the wishlist has items (no count) */}
-            <WishlistHeart count={wishlistCount} />
+            <span className="hidden lg:block">
+              <WishlistHeart count={wishlistCount} />
+            </span>
 
             {/* Cart */}
             <Link
               ref={registerCartTarget}
               to="/cart"
-              className="relative p-1.5 text-gray-800 dark:text-gray-100 hover:text-brand-500 transition-colors"
+              className="relative hidden lg:block p-1.5 text-gray-800 dark:text-gray-100 hover:text-brand-500 transition-colors"
               aria-label={`View cart, ${totalItems} items`}
             >
               <motion.span className="block" animate={bagControls}>
