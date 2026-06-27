@@ -24,7 +24,7 @@ const HomeHero = () => {
     // when the address bar collapses on scroll, which shifts the layout and
     // re-measures the Canvas. `svh` is the stable bar-visible height, so the
     // hero - and the model inside it - never resizes on scroll.
-    <section className="relative  pt-32 lg:pt-40  h-svh max-h-[1000px] overflow-hidden">
+    <section className="relative lg:pt-40  h-svh max-h-[600px] md:max-h-[1000px] overflow-hidden">
       {/* Background image */}
       <img
         src="/website/images/heroBg.webp"
@@ -39,14 +39,14 @@ const HomeHero = () => {
       <div className="absolute inset-0 bg-gradient-to-r from-[#090909]/95 via-[#090909]/50 to-transparent" />
 
       {/* Content */}
-      <div className="relative z-20 max-w-7xl mx-auto px-5">
-        <div className="grid lg:grid-cols-2 gap-10 items-center">
+      <div className="relative z-20 max-w-7xl mx-auto px-5 h-full flex items-center lg:block lg:h-auto">
+        <div className="grid lg:grid-cols-2 gap-10 items-center w-full">
           {/* Left */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
-            className="flex flex-col items-start gap-7"
+            className="flex flex-col items-center text-center lg:items-start lg:text-left gap-7"
           >
             <span className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white/95 backdrop-blur-md text-[#e34786] text-xs font-semibold tracking-wide uppercase">
             Hand-Painted Collectibles
@@ -65,7 +65,7 @@ const HomeHero = () => {
               </p>
             </div>
 
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-wrap justify-center lg:justify-start gap-4">
               <Link
                 to="/shop"
                 className="group px-6 py-3 rounded-full bg-gradient-to-r from-pink-500 to-rose-400 text-white font-semibold flex items-center gap-3 shadow-xl shadow-pink-500/20 hover:opacity-95 duration-200"

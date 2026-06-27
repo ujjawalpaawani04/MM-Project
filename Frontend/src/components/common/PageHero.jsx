@@ -35,7 +35,7 @@ export default function PageHero({
   if (image) {
 
     return (
-      <section className="relative overflow-hidden h-[70vh] max-h-[1000px] pt-30 bg-ink-900 content-center">
+      <section className="relative overflow-hidden h-[70vh] max-h-[1000px] lg:pt-30 pt:10 bg-ink-900 content-center">
         {/* Background image (z-0) */}
         <img
           src={image}

@@ -151,7 +151,7 @@ const Header = () => {
   };
 
   return (
-    <header className="container  mx-auto border  border-brand-300 dark:border-slate-700 bg-ink-50 dark:bg-slate-900 xl:fixed top-5 left-1/2 xl:-translate-x-1/2 xl:rounded-full z-[999]  theme-surface">
+    <header className="container  mx-auto  bg-ink-50 dark:bg-slate-900 xl:fixed top-5 left-1/2 xl:-translate-x-1/2 xl:rounded-full z-[999]  theme-surface">
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-2 focus:z-50 focus:bg-brand-500 focus:text-white focus:px-4 focus:py-2 focus:rounded-lg"
