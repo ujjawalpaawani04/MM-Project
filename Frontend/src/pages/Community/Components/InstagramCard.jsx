@@ -29,7 +29,7 @@ export default function InstagramCard({ post, index = 0 }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
       transition={{ duration: 0.45, delay: Math.min(index, 8) * 0.05 }}
-      className="group relative block aspect-square overflow-hidden rounded-2xl border border-white/60 bg-gradient-to-br from-amber-100 via-pink-100 to-purple-100 shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_24px_60px_-20px_rgba(214,41,118,0.55)]"
+      className="group relative block aspect-square overflow-hidden rounded-2xl border border-white/60 bg-gradient-to-br from-amber-100 via-pink-100 to-purple-100 shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_24px_60px_-20px_rgba(214,41,118,0.55)] dark:border-slate-700 dark:from-amber-950/40 dark:via-pink-950/40 dark:to-purple-950/40"
     >
       {thumbnail && imgOk ? (
         <img
@@ -42,7 +42,7 @@ export default function InstagramCard({ post, index = 0 }) {
           className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
         />
       ) : (
-        <span className="grid h-full w-full place-items-center text-5xl text-pink-500/70">
+        <span className="grid h-full w-full place-items-center text-5xl text-pink-500/70 dark:text-pink-400/70">
           <FiInstagram />
         </span>
       )}

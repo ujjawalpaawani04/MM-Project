@@ -25,7 +25,7 @@ function StatCard({ icon: Icon, label, value, delay = 0 }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
       transition={{ duration: 0.5, delay }}
-      className="group relative overflow-hidden rounded-2xl border border-white/60 bg-white/70 p-5 shadow-sm backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-pink-300/70 hover:shadow-[0_24px_60px_-25px_rgba(214,41,118,0.5)]"
+      className="group relative overflow-hidden rounded-2xl border border-white/60 bg-white/70 p-5 shadow-sm backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-pink-300/70 hover:shadow-[0_24px_60px_-25px_rgba(214,41,118,0.5)] dark:border-slate-700 dark:bg-slate-800/70 dark:hover:border-pink-500/40"
     >
       <div className="flex items-center gap-4">
         <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-amber-400 via-pink-500 to-purple-600 text-white shadow-lg">
@@ -35,7 +35,7 @@ function StatCard({ icon: Icon, label, value, delay = 0 }) {
           <div className="bg-gradient-to-r from-amber-500 via-pink-600 to-purple-700 bg-clip-text text-2xl font-extrabold tabular-nums text-transparent sm:text-3xl">
             <CountUp value={value} format={compact} />
           </div>
-          <div className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+          <div className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
             {label}
           </div>
         </div>
@@ -51,12 +51,12 @@ function StatCard({ icon: Icon, label, value, delay = 0 }) {
 export function InstagramHeaderSkeleton() {
   return (
     <section className="mb-10 animate-pulse space-y-6">
-      <div className="h-52 w-full rounded-3xl border border-white/60 bg-white/60 sm:h-44" />
+      <div className="h-52 w-full rounded-3xl border border-white/60 bg-white/60 sm:h-44 dark:border-slate-700 dark:bg-slate-800/60" />
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         {Array.from({ length: 3 }).map((_, i) => (
           <div
             key={i}
-            className="h-24 rounded-2xl border border-white/60 bg-white/60"
+            className="h-24 rounded-2xl border border-white/60 bg-white/60 dark:border-slate-700 dark:bg-slate-800/60"
           />
         ))}
       </div>
@@ -87,7 +87,7 @@ export default function InstagramHeader({ profile, href }) {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="relative overflow-hidden rounded-3xl border border-white/60 bg-white/70 shadow-[0_24px_70px_-40px_rgba(214,41,118,0.5)] backdrop-blur-xl"
+        className="relative overflow-hidden rounded-3xl border border-white/60 bg-white/70 shadow-[0_24px_70px_-40px_rgba(214,41,118,0.5)] backdrop-blur-xl dark:border-slate-700 dark:bg-slate-800/70"
       >
         {/* Soft gradient wash + ambient glow */}
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-amber-100/50 via-pink-100/40 to-purple-100/50" />
@@ -117,10 +117,10 @@ export default function InstagramHeader({ profile, href }) {
           </span>
 
           <div className="min-w-0 flex-1">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/80 px-3 py-0.5 text-[11px] font-bold uppercase tracking-wide text-pink-600 ring-1 ring-inset ring-pink-200">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/80 px-3 py-0.5 text-[11px] font-bold uppercase tracking-wide text-pink-600 ring-1 ring-inset ring-pink-200 dark:bg-slate-700/80 dark:text-pink-300 dark:ring-pink-900">
               <FaInstagram size={12} /> Instagram
             </span>
-            <h2 className="mt-2 flex items-center justify-center gap-1.5 text-2xl font-extrabold text-gray-900 sm:justify-start sm:text-3xl">
+            <h2 className="mt-2 flex items-center justify-center gap-1.5 text-2xl font-extrabold text-gray-900 sm:justify-start sm:text-3xl dark:text-white">
               {name}
               {profile?.isVerified && (
                 <FiCheckCircle
@@ -130,10 +130,10 @@ export default function InstagramHeader({ profile, href }) {
                 />
               )}
             </h2>
-            <p className="mt-0.5 text-sm font-semibold text-pink-600">
+            <p className="mt-0.5 text-sm font-semibold text-pink-600 dark:text-pink-300">
               @{username}
             </p>
-            <p className="mx-auto mt-2 line-clamp-2 max-w-2xl text-sm leading-relaxed text-gray-600 sm:mx-0">
+            <p className="mx-auto mt-2 line-clamp-2 max-w-2xl text-sm leading-relaxed text-gray-600 sm:mx-0 dark:text-gray-300">
               {bio}
             </p>
           </div>

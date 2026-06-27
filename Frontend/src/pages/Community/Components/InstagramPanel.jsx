@@ -9,7 +9,7 @@ const GRID_CLASS =
 
 function TileSkeleton() {
   return (
-    <div className="aspect-square animate-pulse rounded-2xl border border-white/60 bg-white/60" />
+    <div className="aspect-square animate-pulse rounded-2xl border border-white/60 bg-white/60 dark:border-slate-700 dark:bg-slate-800/60" />
   );
 }
 
@@ -25,14 +25,14 @@ function SkeletonGrid({ count = 8 }) {
 
 function ErrorPanel({ error, onRetry, href }) {
   return (
-    <div className="rounded-3xl border border-pink-200 bg-white/70 px-4 py-16 text-center backdrop-blur-xl">
-      <div className="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-full bg-pink-100 text-pink-500">
+    <div className="rounded-3xl border border-pink-200 bg-white/70 px-4 py-16 text-center backdrop-blur-xl dark:border-slate-700 dark:bg-slate-800/70">
+      <div className="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-full bg-pink-100 text-pink-500 dark:bg-pink-950/40 dark:text-pink-300">
         <FiAlertTriangle size={30} />
       </div>
-      <h3 className="text-xl font-semibold text-gray-900">
+      <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
         Couldn&apos;t load Instagram
       </h3>
-      <p className="mx-auto mt-2 max-w-md text-gray-500">{error}</p>
+      <p className="mx-auto mt-2 max-w-md text-gray-500 dark:text-gray-400">{error}</p>
       <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
         <button
           type="button"
@@ -45,7 +45,7 @@ function ErrorPanel({ error, onRetry, href }) {
           href={href}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 rounded-xl border border-pink-200 bg-white px-5 py-2.5 text-sm font-semibold text-pink-600 transition-all hover:-translate-y-0.5 active:scale-95"
+          className="inline-flex items-center gap-2 rounded-xl border border-pink-200 bg-white px-5 py-2.5 text-sm font-semibold text-pink-600 transition-all hover:-translate-y-0.5 active:scale-95 dark:border-slate-600 dark:bg-slate-700 dark:text-pink-300 dark:hover:bg-slate-600"
         >
           <FaInstagram size={16} /> Open Instagram <FiExternalLink size={13} />
         </a>
@@ -56,12 +56,12 @@ function ErrorPanel({ error, onRetry, href }) {
 
 function EmptyPanel({ href }) {
   return (
-    <div className="rounded-3xl border border-white/60 bg-white/60 px-4 py-16 text-center backdrop-blur-xl">
+    <div className="rounded-3xl border border-white/60 bg-white/60 px-4 py-16 text-center backdrop-blur-xl dark:border-slate-700 dark:bg-slate-800/60">
       <div className="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-full bg-gradient-to-br from-amber-400 via-pink-500 to-purple-600 text-white">
         <FiInstagram size={30} />
       </div>
-      <h3 className="text-xl font-semibold text-gray-900">No posts yet</h3>
-      <p className="mx-auto mt-2 max-w-md text-gray-500">
+      <h3 className="text-xl font-semibold text-gray-900 dark:text-white">No posts yet</h3>
+      <p className="mx-auto mt-2 max-w-md text-gray-500 dark:text-gray-400">
         New reels and posts will appear here. Follow us so you never miss a drop.
       </p>
       <div className="mt-6 flex justify-center">

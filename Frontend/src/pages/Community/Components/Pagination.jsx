@@ -47,7 +47,7 @@ export default function Pagination({
   const isLast = page >= totalPages && !partial;
 
   const edgeBtn =
-    "inline-flex h-10 items-center gap-1.5 rounded-xl border border-gray-200 bg-white px-3.5 text-sm font-semibold text-gray-700 shadow-sm transition-all duration-200 hover:border-red-300 hover:text-red-600 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500/40 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-gray-200 disabled:hover:text-gray-700 disabled:hover:shadow-sm";
+    "inline-flex h-10 items-center gap-1.5 rounded-xl border border-gray-200 bg-white px-3.5 text-sm font-semibold text-gray-700 shadow-sm transition-all duration-200 hover:border-red-300 hover:text-red-600 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500/40 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-gray-200 disabled:hover:text-gray-700 disabled:hover:shadow-sm dark:border-slate-700 dark:bg-slate-800 dark:text-gray-200 dark:hover:border-red-500/50 dark:hover:text-red-400 dark:disabled:hover:border-slate-700 dark:disabled:hover:text-gray-200";
 
   return (
     <nav
@@ -74,7 +74,7 @@ export default function Pagination({
           p === "…" ? (
             <span
               key={`gap-${i}`}
-              className="grid h-10 w-10 select-none place-items-center text-gray-400"
+              className="grid h-10 w-10 select-none place-items-center text-gray-400 dark:text-gray-500"
             >
               …
             </span>
@@ -89,7 +89,7 @@ export default function Pagination({
                 "grid h-10 min-w-[2.5rem] place-items-center rounded-xl px-3 text-sm font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500/40",
                 p === page
                   ? "scale-105 bg-gradient-to-r from-red-600 to-red-500 text-white shadow-md shadow-red-600/30"
-                  : "border border-gray-200 bg-white text-gray-600 shadow-sm hover:border-red-300 hover:text-red-600 hover:shadow-md"
+                  : "border border-gray-200 bg-white text-gray-600 shadow-sm hover:border-red-300 hover:text-red-600 hover:shadow-md dark:border-slate-700 dark:bg-slate-800 dark:text-gray-300 dark:hover:border-red-500/50 dark:hover:text-red-400"
               )}
             >
               {p}
@@ -99,8 +99,8 @@ export default function Pagination({
       </div>
 
       {/* Compact indicator (mobile) */}
-      <span className="inline-flex h-10 items-center rounded-xl border border-gray-200 bg-white px-4 text-sm font-medium text-gray-600 shadow-sm sm:hidden">
-        Page <span className="mx-1 font-bold text-red-600">{page}</span> of{" "}
+      <span className="inline-flex h-10 items-center rounded-xl border border-gray-200 bg-white px-4 text-sm font-medium text-gray-600 shadow-sm sm:hidden dark:border-slate-700 dark:bg-slate-800 dark:text-gray-300">
+        Page <span className="mx-1 font-bold text-red-600 dark:text-red-400">{page}</span> of{" "}
         {partial ? `${totalPages}+` : totalPages}
       </span>
 

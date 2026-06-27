@@ -20,12 +20,12 @@ const GRID_CLASS =
 
 function ErrorPanel({ error, onRetry }) {
   return (
-    <div className="rounded-3xl border border-red-200 bg-red-50/60 px-4 py-16 text-center">
-      <div className="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-full bg-red-100 text-red-500">
+    <div className="rounded-3xl border border-red-200 bg-red-50/60 px-4 py-16 text-center dark:border-red-900 dark:bg-red-950/30">
+      <div className="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-full bg-red-100 text-red-500 dark:bg-red-950/50 dark:text-red-400">
         <FiAlertTriangle size={30} />
       </div>
-      <h3 className="text-xl font-semibold text-gray-900">Couldn&apos;t load videos</h3>
-      <p className="mx-auto mt-2 max-w-md text-gray-500">{error}</p>
+      <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Couldn&apos;t load videos</h3>
+      <p className="mx-auto mt-2 max-w-md text-gray-500 dark:text-gray-400">{error}</p>
       <button
         type="button"
         onClick={onRetry}
@@ -40,12 +40,12 @@ function ErrorPanel({ error, onRetry }) {
 
 function EmptyPanel() {
   return (
-    <div className="rounded-3xl border border-gray-200 bg-white px-4 py-16 text-center shadow-sm">
-      <div className="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-full bg-red-50 text-red-500">
+    <div className="rounded-3xl border border-gray-200 bg-white px-4 py-16 text-center shadow-sm dark:border-slate-700 dark:bg-slate-800">
+      <div className="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-full bg-red-50 text-red-500 dark:bg-red-950/40 dark:text-red-400">
         <FiYoutube size={30} />
       </div>
-      <h3 className="text-xl font-semibold text-gray-900">No videos yet</h3>
-      <p className="mx-auto mt-2 max-w-md text-gray-500">
+      <h3 className="text-xl font-semibold text-gray-900 dark:text-white">No videos yet</h3>
+      <p className="mx-auto mt-2 max-w-md text-gray-500 dark:text-gray-400">
         New uploads will appear here. Subscribe so you never miss a story.
       </p>
     </div>
@@ -68,12 +68,12 @@ function SkeletonGrid() {
 function GridHeading() {
   return (
     <div className="mb-6 flex items-center gap-3">
-      <span className="grid h-9 w-9 place-items-center rounded-lg bg-gray-900 text-white">
+      <span className="grid h-9 w-9 place-items-center rounded-lg bg-gray-900 text-white dark:bg-red-600">
         <FiGrid size={16} />
       </span>
       <div>
-        <h2 className="text-lg font-bold text-gray-900 sm:text-xl">More videos</h2>
-        <p className="text-sm text-gray-500">Browse every upload from the channel.</p>
+        <h2 className="text-lg font-bold text-gray-900 sm:text-xl dark:text-white">More videos</h2>
+        <p className="text-sm text-gray-500 dark:text-gray-400">Browse every upload from the channel.</p>
       </div>
     </div>
   );

@@ -25,15 +25,16 @@ export const PLATFORM_THEMES = {
     // Clean YouTube-inspired light surface: soft white falling to a faint grey,
     // lifted by the gentlest red wash at the top so the tab still reads "YouTube"
     // without the heavy dark studio look.
-    pageBg: "bg-gradient-to-b from-white via-gray-50 to-white",
+    pageBg:
+      "bg-gradient-to-b from-white via-gray-50 to-white dark:from-slate-950 dark:via-slate-900 dark:to-slate-950",
     overlay:
       "bg-[radial-gradient(60%_45%_at_50%_-5%,rgba(255,0,51,0.06),transparent_70%)]",
     // Text + surface tokens that read correctly on this light background
-    text: "text-gray-900",
-    textMuted: "text-gray-500",
-    heading: "text-gray-900",
-    surface: "border border-gray-200 bg-white",
-    chip: "bg-red-50 text-red-600 ring-1 ring-inset ring-red-100",
+    text: "text-gray-900 dark:text-gray-100",
+    textMuted: "text-gray-500 dark:text-gray-400",
+    heading: "text-gray-900 dark:text-white",
+    surface: "border border-gray-200 bg-white dark:border-slate-700 dark:bg-slate-800",
+    chip: "bg-red-50 text-red-600 ring-1 ring-inset ring-red-100 dark:bg-red-950/40 dark:text-red-300 dark:ring-red-900",
     gradient: "from-red-600 to-red-500",
     gradientHover: "hover:from-red-500 hover:to-red-400",
     glow: "shadow-[0_28px_70px_-30px_rgba(255,0,51,0.28)]",
@@ -54,14 +55,16 @@ export const PLATFORM_THEMES = {
     tagline: "Every hand-painted detail, up close",
     cta: "Follow",
     highlights: ["Detail reels", "Daily moments", "Behind the brush"],
-    pageBg: "bg-gradient-to-br from-rose-50 via-fuchsia-50 to-amber-50",
+    pageBg:
+      "bg-gradient-to-br from-rose-50 via-fuchsia-50 to-amber-50 dark:from-slate-950 dark:via-fuchsia-950/20 dark:to-slate-900",
     overlay:
       "bg-[radial-gradient(50%_40%_at_85%_0%,rgba(225,48,108,0.14),transparent_70%)]",
-    text: "text-gray-900",
-    textMuted: "text-gray-500",
-    heading: "text-gray-900",
-    surface: "border border-white/70 bg-white/80 backdrop-blur-xl",
-    chip: "bg-white/90 text-pink-600 ring-1 ring-inset ring-pink-200",
+    text: "text-gray-900 dark:text-gray-100",
+    textMuted: "text-gray-500 dark:text-gray-400",
+    heading: "text-gray-900 dark:text-white",
+    surface:
+      "border border-white/70 bg-white/80 backdrop-blur-xl dark:border-slate-700 dark:bg-slate-800/80",
+    chip: "bg-white/90 text-pink-600 ring-1 ring-inset ring-pink-200 dark:bg-slate-800/90 dark:text-pink-300 dark:ring-pink-900",
     gradient: "from-amber-500 via-pink-500 to-purple-600",
     gradientHover: "hover:opacity-90",
     glow: "shadow-[0_28px_70px_-30px_rgba(225,48,108,0.45)]",
@@ -83,14 +86,15 @@ export const PLATFORM_THEMES = {
     tagline: "Join the collectors' community",
     cta: "Follow",
     highlights: ["Community stories", "Festival drops", "Member Q&As"],
-    pageBg: "bg-gradient-to-br from-[#eef3ff] via-[#f5f8ff] to-white",
+    pageBg:
+      "bg-gradient-to-br from-[#eef3ff] via-[#f5f8ff] to-white dark:from-slate-950 dark:via-slate-900 dark:to-slate-950",
     overlay:
       "bg-[radial-gradient(55%_40%_at_50%_0%,rgba(24,119,242,0.14),transparent_70%)]",
-    text: "text-gray-900",
-    textMuted: "text-gray-500",
-    heading: "text-gray-900",
-    surface: "border border-blue-100 bg-white",
-    chip: "bg-blue-50 text-blue-600 ring-1 ring-inset ring-blue-200",
+    text: "text-gray-900 dark:text-gray-100",
+    textMuted: "text-gray-500 dark:text-gray-400",
+    heading: "text-gray-900 dark:text-white",
+    surface: "border border-blue-100 bg-white dark:border-slate-700 dark:bg-slate-800",
+    chip: "bg-blue-50 text-blue-600 ring-1 ring-inset ring-blue-200 dark:bg-blue-950/40 dark:text-blue-300 dark:ring-blue-900",
     gradient: "from-blue-600 to-blue-500",
     gradientHover: "hover:from-blue-500 hover:to-blue-400",
     glow: "shadow-[0_28px_70px_-30px_rgba(24,119,242,0.4)]",

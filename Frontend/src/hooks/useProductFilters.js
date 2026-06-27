@@ -1,7 +1,7 @@
 import { useMemo, useState, useCallback } from "react";
 import { PRICE_RANGES } from "../data/products";
 
-const PAGE_SIZE = 6;
+const PAGE_SIZE = 8;
 
 const DEFAULTS = {
   search: "",

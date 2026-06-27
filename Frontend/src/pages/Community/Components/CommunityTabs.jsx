@@ -18,7 +18,7 @@ export default function CommunityTabs({ tabs, active, onChange, theme }) {
         "mx-auto flex w-full max-w-xl items-center gap-1.5 rounded-2xl p-1.5 shadow-lg",
         theme.isDark
           ? "border border-white/10 bg-white/5 backdrop-blur-xl"
-          : "border border-black/5 bg-white/70 backdrop-blur-xl"
+          : "border border-black/5 bg-white/70 backdrop-blur-xl dark:border-white/10 dark:bg-white/5"
       )}
     >
       {tabs.map((tab) => {
@@ -39,7 +39,7 @@ export default function CommunityTabs({ tabs, active, onChange, theme }) {
                 ? "text-white"
                 : theme.isDark
                 ? "text-white/55 hover:text-white"
-                : "text-gray-500 hover:text-gray-900"
+                : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
             )}
           >
             {isActive && (

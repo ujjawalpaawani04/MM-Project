@@ -19,17 +19,17 @@ function StatCard({ icon: Icon, label, value, delay = 0 }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
       transition={{ duration: 0.5, delay }}
-      className="group relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-red-200 hover:shadow-[0_24px_60px_-25px_rgba(255,0,51,0.35)]"
+      className="group relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-red-200 hover:shadow-[0_24px_60px_-25px_rgba(255,0,51,0.35)] dark:border-slate-700 dark:bg-slate-800 dark:hover:border-red-500/40"
     >
       <div className="flex items-center gap-4">
         <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-red-600 to-red-500 text-white shadow-md shadow-red-500/30">
           <Icon size={22} />
         </span>
         <div className="min-w-0">
-          <div className="text-2xl font-extrabold tabular-nums text-gray-900 sm:text-3xl">
+          <div className="text-2xl font-extrabold tabular-nums text-gray-900 sm:text-3xl dark:text-white">
             <CountUp value={value} format={compact} />
           </div>
-          <div className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+          <div className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
             {label}
           </div>
         </div>
@@ -45,12 +45,12 @@ function StatCard({ icon: Icon, label, value, delay = 0 }) {
 function HeaderSkeleton() {
   return (
     <section className="mb-10 animate-pulse space-y-6">
-      <div className="h-44 w-full rounded-3xl border border-gray-200 bg-gray-100 sm:h-40" />
+      <div className="h-44 w-full rounded-3xl border border-gray-200 bg-gray-100 sm:h-40 dark:border-slate-700 dark:bg-slate-800" />
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         {Array.from({ length: 3 }).map((_, i) => (
           <div
             key={i}
-            className="h-24 rounded-2xl border border-gray-200 bg-gray-100"
+            className="h-24 rounded-2xl border border-gray-200 bg-gray-100 dark:border-slate-700 dark:bg-slate-800"
           />
         ))}
       </div>
@@ -81,10 +81,10 @@ export default function ChannelHeader({ channel, loading, href }) {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="relative overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-[0_24px_70px_-45px_rgba(255,0,51,0.4)]"
+        className="relative overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-[0_24px_70px_-45px_rgba(255,0,51,0.4)] dark:border-slate-700 dark:bg-slate-800"
       >
         {/* Soft red gradient accent + ambient glow */}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-red-50 via-white to-white" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-red-50 via-white to-white dark:from-red-950/30 dark:via-slate-800 dark:to-slate-800" />
         <span
           aria-hidden="true"
           className="pointer-events-none absolute -left-12 -top-16 h-56 w-56 rounded-full bg-red-500/10 blur-3xl"
@@ -106,13 +106,13 @@ export default function ChannelHeader({ channel, loading, href }) {
           )}
 
           <div className="min-w-0 flex-1">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-red-50 px-3 py-0.5 text-[11px] font-bold uppercase tracking-wide text-red-600 ring-1 ring-inset ring-red-100">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-red-50 px-3 py-0.5 text-[11px] font-bold uppercase tracking-wide text-red-600 ring-1 ring-inset ring-red-100 dark:bg-red-950/40 dark:text-red-300 dark:ring-red-900">
               <FaYoutube size={12} /> YouTube Channel
             </span>
-            <h2 className="mt-2 text-2xl font-extrabold text-gray-900 sm:text-3xl">
+            <h2 className="mt-2 text-2xl font-extrabold text-gray-900 sm:text-3xl dark:text-white">
               {name}
             </h2>
-            <p className="mx-auto mt-1.5 line-clamp-2 max-w-2xl text-sm leading-relaxed text-gray-600 sm:mx-0">
+            <p className="mx-auto mt-1.5 line-clamp-2 max-w-2xl text-sm leading-relaxed text-gray-600 sm:mx-0 dark:text-gray-300">
               {description}
             </p>
           </div>

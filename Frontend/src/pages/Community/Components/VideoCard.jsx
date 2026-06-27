@@ -17,14 +17,14 @@ export default function VideoCard({ video, onPlay, index = 0 }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
       transition={{ duration: 0.45, delay: Math.min(index, 8) * 0.05 }}
-      className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:border-red-200 hover:shadow-[0_24px_60px_-20px_rgba(255,0,51,0.35)]"
+      className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:border-red-200 hover:shadow-[0_24px_60px_-20px_rgba(255,0,51,0.35)] dark:border-slate-700 dark:bg-slate-800 dark:hover:border-red-500/40"
     >
       {/* Thumbnail + play overlay */}
       <button
         type="button"
         onClick={() => onPlay(video)}
         aria-label={`Play "${title}"`}
-        className="relative block aspect-video w-full overflow-hidden bg-gray-100"
+        className="relative block aspect-video w-full overflow-hidden bg-gray-100 dark:bg-slate-900"
       >
         <img
           src={thumbnail}
@@ -52,21 +52,21 @@ export default function VideoCard({ video, onPlay, index = 0 }) {
       {/* Body */}
       <div className="flex flex-1 flex-col p-4">
         <h3
-          className="line-clamp-2 min-h-[2.625rem] text-[15px] font-semibold leading-snug text-gray-900"
+          className="line-clamp-2 min-h-[2.625rem] text-[15px] font-semibold leading-snug text-gray-900 dark:text-white"
           title={title}
         >
           {title}
         </h3>
 
         <div className="mt-auto flex items-center justify-between pt-4">
-          <span className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-500">
+          <span className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-500 dark:text-gray-400">
             <FiClock size={13} />
             {formatPublished(publishedAt)}
           </span>
           <button
             type="button"
             onClick={() => onPlay(video)}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-gray-100 px-3 py-1.5 text-xs font-semibold text-gray-700 ring-1 ring-inset ring-gray-200 transition-all duration-200 hover:bg-red-600 hover:text-white hover:ring-red-600"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-gray-100 px-3 py-1.5 text-xs font-semibold text-gray-700 ring-1 ring-inset ring-gray-200 transition-all duration-200 hover:bg-red-600 hover:text-white hover:ring-red-600 dark:bg-slate-700 dark:text-gray-200 dark:ring-slate-600 dark:hover:bg-red-600 dark:hover:text-white dark:hover:ring-red-600"
           >
             <FiPlay size={12} />
             Watch
