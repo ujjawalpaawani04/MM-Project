@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router";
-import { FiX, FiSearch, FiUser, FiLogOut } from "react-icons/fi";
-import { useAuth } from "../../context/AuthContext";
+import { AnimatePresence, motion } from "framer-motion";
+import { Heart } from "lucide-react";
+import { FiX, FiSearch, FiUser, FiLogOut, FiShoppingBag } from "react-icons/fi";
 import { FaLocationDot, FaPhone } from "react-icons/fa6";
 import { CgMail } from "react-icons/cg";
 import {
@@ -10,21 +11,74 @@ import {
   FaYoutube,
   FaLinkedinIn,
 } from "react-icons/fa";
+import ThemeToggle from "../common/ThemeToggle";
+import { useAuth } from "../../context/AuthContext";
+import { useCart } from "../../context/CartContext";
+import { useWishlist } from "../../context/WishlistContext";
+
+import logo from "../../assets/website/mmLogo.png";
+
+// Primary navigation mirrors the desktop header exactly so the drawer reads as a
+// responsive extension of it rather than a separate menu.
+const navLinks = [
+  { name: "Home", path: "/" },
+  { name: "Shop", path: "/shop" },
+  { name: "About", path: "/about" },
+  { name: "Contact", path: "/contact" },
+  { name: "Community", path: "/community" },
+];
+
+const socialLinks = [
+  { icon: FaFacebookF, url: "#", label: "Facebook" },
+  { icon: FaTwitter, url: "#", label: "Twitter" },
+  { icon: FaYoutube, url: "#", label: "YouTube" },
+  { icon: FaLinkedinIn, url: "#", label: "LinkedIn" },
+];
+
+// Slide/stagger variants. The app is wrapped in <MotionConfig reducedMotion="user">,
+// so Framer collapses these to instant transitions when the OS prefers reduced motion.
+const panelVariants = {
+  hidden: { x: "100%" },
+  visible: {
+    x: 0,
+    transition: { type: "spring", stiffness: 360, damping: 38, mass: 0.9 },
+  },
+  exit: { x: "100%", transition: { duration: 0.25, ease: "easeInOut" } },
+};
+
+const listVariants = {
+  visible: { transition: { staggerChildren: 0.045, delayChildren: 0.08 } },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, x: 16 },
+  visible: { opacity: 1, x: 0, transition: { duration: 0.28, ease: "easeOut" } },
+};
 
 const MobileSidebar = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const { user, isAuthenticated, logout } = useAuth();
+  const { totalItems } = useCart();
+  const { count: wishlistCount } = useWishlist();
 
-  const navLinks = [
-    { name: "Home", path: "/" },
-    { name: "Shop", path: "/shop" },
-    { name: "Wishlist", path: "/wishlist" },
-    { name: "Cart", path: "/cart" },
-    { name: "About", path: "/about" },
-    { name: "FAQ", path: "/faq" },
-    { name: "Contact", path: "/contact" },
-  ];
+  // Lock background scroll while the drawer is open (premium, touch-friendly).
+  useEffect(() => {
+    if (!isOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [isOpen]);
+
+  // Close on Escape for accessibility/keyboard parity with the desktop dropdowns.
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKey = (e) => e.key === "Escape" && onClose();
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [isOpen, onClose]);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -33,192 +87,277 @@ const MobileSidebar = ({ isOpen, onClose }) => {
     onClose();
   };
 
-  const socialLinks = [
-    { icon: FaFacebookF, url: "#" },
-    { icon: FaTwitter, url: "#" },
-    { icon: FaYoutube, url: "#" },
-    { icon: FaLinkedinIn, url: "#" },
-  ];
+  const wishlistActive = wishlistCount > 0;
 
   return (
-    <>
-      {/* Backdrop */}
-      <div
-        className={`fixed inset-0 bg-black transition-opacity duration-300 z-40 lg:hidden ${
-          isOpen ? "opacity-50" : "opacity-0 pointer-events-none"
-        }`}
-        onClick={onClose}
-      />
-
-      {/* Sidebar */}
-      <div
-        className={`fixed right-0 top-0 h-full w-80 bg-linear-to-b from-slate-900 to-slate-800 shadow-2xl transition-transform duration-300 lg:hidden z-50 transform flex flex-col ${
-          isOpen ? "translate-x-0" : "translate-x-full"
-        }`}
-      >
-        {/* Header - Fixed */}
-        <div className="flex items-center justify-between p-6 border-b border-slate-700 shrink-0">
-          <h2 className="text-white text-xl font-bold">
-            Mohan<span className="text-brand-400">Maya</span>
-          </h2>
-          <button
+    <AnimatePresence>
+      {isOpen && (
+        <div className="lg:hidden" role="dialog" aria-modal="true" aria-label="Menu">
+          {/* Semi-transparent, blurred backdrop */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
             onClick={onClose}
-            className="p-2 hover:bg-amber-500 transition-colors duration-300 rounded-full"
+            className="fixed inset-0 z-[1000] bg-gray-900/40 dark:bg-black/60 backdrop-blur-sm"
+            aria-hidden="true"
+          />
+
+          {/* Drawer panel — same surfaces, border and brand as the desktop header */}
+          <motion.aside
+            variants={panelVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            className="fixed right-0 top-0 z-[1001] flex h-full w-[88%] max-w-sm flex-col rounded-l-3xl border-l border-brand-300 bg-ink-50 shadow-2xl theme-surface dark:border-slate-700 dark:bg-slate-900"
           >
-            <FiX className="text-2xl text-white" />
-          </button>
-        </div>
-
-        {/* Search Box - Fixed */}
-        <form
-          onSubmit={handleSearch}
-          role="search"
-          className="p-6 border-b border-slate-700 shrink-0"
-        >
-          <div className="flex items-center overflow-hidden border border-slate-600 rounded-lg h-12 bg-slate-800">
-            <input
-              type="search"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="What are you searching for?"
-              aria-label="Search products"
-              className="flex-1 px-4 outline-none text-sm bg-slate-800 text-white placeholder-slate-400"
-            />
-            <button
-              type="submit"
-              aria-label="Search"
-              className="px-3 py-2 text-slate-400 hover:text-brand-400 transition-colors"
-            >
-              <FiSearch className="text-lg" />
-            </button>
-          </div>
-        </form>
-
-        {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-slate-800">
-          {/* Navigation Links */}
-          <nav className="p-6 border-b border-slate-700 xl:hidden">
-            <div className="space-y-3">
-              {navLinks.map((item) => (
-                <NavLink
-                  key={item.path}
-                  to={item.path}
-                  onClick={onClose}
-                  className={({ isActive }) =>
-                    `block px-4 py-3 rounded-lg transition-all duration-200 ${
-                      isActive
-                        ? "bg-amber-500 text-white font-semibold"
-                        : "text-slate-300 hover:bg-slate-700 hover:text-white"
-                    }`
-                  }
-                >
-                  {item.name}
-                </NavLink>
-              ))}
+            {/* Header: logo + brand lockup, matching the desktop header */}
+            <div className="flex shrink-0 items-center justify-between gap-3 border-b border-brand-200/70 px-5 py-4 dark:border-slate-700">
+              <Link
+                to="/"
+                onClick={onClose}
+                className="flex items-center gap-2"
+                aria-label="Mohan Maya home"
+              >
+                <img
+                  src={logo}
+                  alt="Mohan Maya logo"
+                  className="h-11 w-11 rounded-full object-contain"
+                />
+                <span className="text-xl font-bold text-gray-900 dark:text-white">
+                  Mohan<span className="text-brand-500">Maya</span>
+                </span>
+              </Link>
+              <button
+                onClick={onClose}
+                aria-label="Close menu"
+                className="rounded-full p-2 text-gray-700 transition-colors hover:bg-brand-50 hover:text-brand-500 dark:text-gray-200 dark:hover:bg-slate-800"
+              >
+                <FiX className="text-2xl" />
+              </button>
             </div>
-          </nav>
 
-          {/* Account */}
-          <div className="p-6 border-b border-slate-700">
-            {isAuthenticated ? (
-              <div className="space-y-3">
-                <div className="flex items-center gap-3 text-white">
-                  <span className="grid place-items-center w-10 h-10 rounded-full bg-linear-to-r from-pink-500 to-rose-400 text-white font-semibold uppercase">
-                    {user.name?.charAt(0) || "U"}
-                  </span>
-                  <div className="min-w-0">
-                    <p className="text-xs text-slate-400">Signed in as</p>
-                    <p className="font-semibold truncate">{user.name}</p>
-                  </div>
-                </div>
+            {/* Search — rounded-full pill with the gradient submit, like the desktop */}
+            <form
+              onSubmit={handleSearch}
+              role="search"
+              className="shrink-0 px-5 pb-4 pt-4"
+            >
+              <div className="flex h-11 items-center overflow-hidden rounded-full border border-gray-300 bg-white dark:border-slate-600 dark:bg-slate-800">
+                <input
+                  type="search"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Search miniatures..."
+                  aria-label="Search products"
+                  className="min-w-0 flex-1 bg-transparent px-4 text-sm text-gray-900 outline-none placeholder:text-gray-400 dark:text-white dark:placeholder:text-slate-400"
+                />
                 <button
-                  onClick={() => {
-                    logout();
-                    onClose();
-                  }}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg border border-slate-600 text-slate-200 hover:bg-slate-700 transition-colors"
+                  type="submit"
+                  aria-label="Search"
+                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-pink-500 to-rose-400 text-white"
                 >
-                  <FiLogOut /> Sign Out
+                  <FiSearch />
                 </button>
               </div>
-            ) : (
-              <div className="grid grid-cols-2 gap-3">
+            </form>
+
+            {/* Scrollable content */}
+            <div className="scrollbar-thin flex-1 overflow-y-auto px-5 pb-6">
+              {/* Primary navigation */}
+              <motion.nav
+                variants={listVariants}
+                initial="hidden"
+                animate="visible"
+                aria-label="Primary"
+                className="space-y-1.5"
+              >
+                {navLinks.map((item) => (
+                  <motion.div key={item.path} variants={itemVariants}>
+                    <NavLink
+                      to={item.path}
+                      end={item.path === "/"}
+                      onClick={onClose}
+                      className={({ isActive }) =>
+                        `block rounded-xl px-4 py-3 text-[17px] font-medium transition-colors duration-200 ${
+                          isActive
+                            ? "bg-brand-50 text-brand-500 dark:bg-brand-500/15"
+                            : "text-gray-800 hover:bg-brand-50/60 hover:text-brand-500 dark:text-gray-200 dark:hover:bg-slate-800 dark:hover:text-brand-400"
+                        }`
+                      }
+                    >
+                      {item.name}
+                    </NavLink>
+                  </motion.div>
+                ))}
+              </motion.nav>
+
+              {/* Quick actions: theme + wishlist + cart, mirroring the desktop right cluster */}
+              <motion.div
+                variants={itemVariants}
+                initial="hidden"
+                animate="visible"
+                className="mt-5 flex items-center gap-2.5"
+              >
                 <Link
-                  to="/login"
+                  to="/wishlist"
                   onClick={onClose}
-                  className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-linear-to-r from-pink-500 to-rose-400 text-white font-medium"
+                  aria-label={wishlistActive ? "Wishlist, has items" : "Wishlist, empty"}
+                  className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm font-medium text-gray-800 transition-colors hover:border-brand-300 hover:text-brand-500 dark:border-slate-700 dark:bg-slate-800 dark:text-gray-200 dark:hover:border-brand-400/60"
                 >
-                  <FiUser /> Login
+                  <Heart
+                    size={18}
+                    className={
+                      wishlistActive
+                        ? "fill-red-500 text-red-500"
+                        : "fill-transparent text-current"
+                    }
+                  />
+                  Wishlist
                 </Link>
                 <Link
-                  to="/signup"
+                  to="/cart"
                   onClick={onClose}
-                  className="flex items-center justify-center px-4 py-3 rounded-lg border border-slate-600 text-slate-200 hover:bg-slate-700 transition-colors"
+                  aria-label={`View cart, ${totalItems} items`}
+                  className="relative flex flex-1 items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm font-medium text-gray-800 transition-colors hover:border-brand-300 hover:text-brand-500 dark:border-slate-700 dark:bg-slate-800 dark:text-gray-200 dark:hover:border-brand-400/60"
                 >
-                  Sign Up
+                  <FiShoppingBag size={18} />
+                  Cart
+                  {totalItems > 0 && (
+                    <span className="flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-brand-500 px-1 text-[10px] font-bold text-white">
+                      {totalItems}
+                    </span>
+                  )}
                 </Link>
-              </div>
-            )}
-          </div>
+                <ThemeToggle className="shrink-0 border border-gray-200 dark:border-slate-700" />
+              </motion.div>
 
-          {/* Contact Info */}
-          <div className="p-6 border-b border-slate-700">
-            <h3 className="text-white font-semibold mb-4 text-[22px]">
-              Contact Info
-            </h3>
-            <div className="space-y-3 text-white flex flex-col gap-2">
-              <div className="flex items-center gap-3">
-                <span className="inline-block mt-1 p-2.5 rounded-full shadow-[0px_1px_4px_rgba(255,255,255,0.22)]">
-                  <FaLocationDot />
-                </span>
-                <p>12/A, Miranda City Tower, NYC</p>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="inline-block p-2.5 rounded-full shadow-[0px_1px_4px_rgba(255,255,255,0.22)]">
-                  <FaPhone />
-                </span>
-                <a
-                  href="tel:+08888979769"
-                  className="hover:text-amber-500 transition-colors"
-                >
-                  +08888979697
-                </a>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="inline-block p-2.5 rounded-full shadow-[0px_1px_4px_rgba(255,255,255,0.22)]">
-                  <CgMail />
-                </span>
-                <a
-                  href="mailto:support@mail.com"
-                  className="hover:text-amber-500 transition-colors"
-                >
-                  support@mail.com
-                </a>
-              </div>
-            </div>
-          </div>
+              {/* Account */}
+              <motion.div
+                variants={itemVariants}
+                initial="hidden"
+                animate="visible"
+                className="mt-6 border-t border-brand-200/70 pt-6 dark:border-slate-700"
+              >
+                {isAuthenticated ? (
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <span className="grid h-10 w-10 place-items-center rounded-full bg-gradient-to-r from-pink-500 to-rose-400 text-sm font-semibold uppercase text-white">
+                        {user.name?.charAt(0) || "U"}
+                      </span>
+                      <div className="min-w-0">
+                        <p className="text-xs text-gray-400 dark:text-slate-400">
+                          Signed in as
+                        </p>
+                        <p className="truncate font-semibold text-gray-900 dark:text-white">
+                          {user.name}
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => {
+                        logout();
+                        onClose();
+                      }}
+                      className="flex w-full items-center justify-center gap-2 rounded-xl border border-gray-300 px-4 py-3 text-gray-700 transition-colors hover:border-red-300 hover:text-red-500 dark:border-slate-600 dark:text-gray-200 dark:hover:border-red-500/50"
+                    >
+                      <FiLogOut /> Sign Out
+                    </button>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 gap-3">
+                    <Link
+                      to="/login"
+                      onClick={onClose}
+                      className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-pink-500 to-rose-400 px-4 py-3 font-medium text-white shadow-sm transition-shadow hover:shadow-md"
+                    >
+                      <FiUser /> Login
+                    </Link>
+                    <Link
+                      to="/signup"
+                      onClick={onClose}
+                      className="flex items-center justify-center rounded-xl border border-gray-300 px-4 py-3 font-medium text-gray-700 transition-colors hover:border-brand-300 hover:text-brand-500 dark:border-slate-600 dark:text-gray-200 dark:hover:border-brand-400/60"
+                    >
+                      Sign Up
+                    </Link>
+                  </div>
+                )}
+              </motion.div>
 
-          {/* Social Links */}
-          <div className="p-6">
-            <h3 className="text-white font-semibold mb-4">Follow Us</h3>
-            <div className="flex gap-4">
-              {socialLinks.map((social, index) => {
-                const Icon = social.icon;
-                return (
-                  <a
-                    key={index}
-                    href={social.url}
-                    className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-700 text-slate-300 hover:bg-amber-500 hover:text-white transition-all duration-300 transform hover:scale-110"
-                  >
-                    <Icon className="text-lg" />
-                  </a>
-                );
-              })}
+              {/* Contact info */}
+              <motion.div
+                variants={itemVariants}
+                initial="hidden"
+                animate="visible"
+                className="mt-6 border-t border-brand-200/70 pt-6 dark:border-slate-700"
+              >
+                <h3 className="mb-4 text-base font-semibold text-gray-900 dark:text-white">
+                  Contact Info
+                </h3>
+                <div className="space-y-3 text-sm text-gray-700 dark:text-gray-300">
+                  <div className="flex items-center gap-3">
+                    <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-brand-50 text-brand-500 dark:bg-slate-800">
+                      <FaLocationDot />
+                    </span>
+                    <p>12/A, Miranda City Tower, NYC</p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-brand-50 text-brand-500 dark:bg-slate-800">
+                      <FaPhone />
+                    </span>
+                    <a
+                      href="tel:+08888979769"
+                      className="transition-colors hover:text-brand-500"
+                    >
+                      +08888979697
+                    </a>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-brand-50 text-brand-500 dark:bg-slate-800">
+                      <CgMail />
+                    </span>
+                    <a
+                      href="mailto:support@mail.com"
+                      className="transition-colors hover:text-brand-500"
+                    >
+                      support@mail.com
+                    </a>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Social links */}
+              <motion.div
+                variants={itemVariants}
+                initial="hidden"
+                animate="visible"
+                className="mt-6 border-t border-brand-200/70 pt-6 dark:border-slate-700"
+              >
+                <h3 className="mb-4 text-base font-semibold text-gray-900 dark:text-white">
+                  Follow Us
+                </h3>
+                <div className="flex gap-3">
+                  {socialLinks.map((social) => {
+                    const Icon = social.icon;
+                    return (
+                      <a
+                        key={social.label}
+                        href={social.url}
+                        aria-label={social.label}
+                        className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-50 text-brand-500 transition-all duration-300 hover:scale-110 hover:bg-gradient-to-r hover:from-pink-500 hover:to-rose-400 hover:text-white dark:bg-slate-800 dark:text-gray-200 dark:hover:text-white"
+                      >
+                        <Icon className="text-lg" />
+                      </a>
+                    );
+                  })}
+                </div>
+              </motion.div>
             </div>
-          </div>
+          </motion.aside>
         </div>
-      </div>
-    </>
+      )}
+    </AnimatePresence>
   );
 };
 
