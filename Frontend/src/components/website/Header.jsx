@@ -152,14 +152,15 @@ const Header = () => {
 
   return (
     <>
-    <header className="sticky top-0 z-[999] w-full theme-surface bg-ink-50/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-brand-200/70 dark:border-slate-700 xl:fixed xl:top-5 xl:left-1/2 xl:-translate-x-1/2 xl:w-[calc(100%-2rem)] xl:max-w-7xl xl:rounded-full xl:border xl:border-brand-300 xl:shadow-xl transition-colors">
+    <header className="sticky top-0 z-[999] w-full theme-surface  backdrop-blur-md border-b border-brand-200/70 dark:border-slate-700   ">
+    <div className="xl:fixed xl:top-5 xl:left-1/2 xl:-translate-x-1/2 xl:w-[calc(100%-2rem)] xl:container xl:rounded-full bg-ink-50/100 dark:bg-slate-900/95 xl:shadow-xl transition-colors">
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-2 focus:z-50 focus:bg-brand-500 focus:text-white focus:px-4 focus:py-2 focus:rounded-lg"
       >
         Skip to content
       </a>
-      <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto w-full  px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between gap-2 sm:gap-4 h-16 lg:h-20">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 shrink-0 min-w-0" aria-label="Mohan Maya home">
@@ -325,6 +326,7 @@ const Header = () => {
             </button>
           </div>
         </div>
+      </div>
       </div>
     </header>
 
