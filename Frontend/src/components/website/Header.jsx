@@ -151,36 +151,37 @@ const Header = () => {
   };
 
   return (
-    <header className="container  mx-auto  bg-ink-50 dark:bg-slate-900 xl:fixed top-5 left-1/2 xl:-translate-x-1/2 xl:rounded-full z-[999]  theme-surface">
+    <>
+    <header className="sticky top-0 z-[999] w-full theme-surface bg-ink-50/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-brand-200/70 dark:border-slate-700 xl:fixed xl:top-5 xl:left-1/2 xl:-translate-x-1/2 xl:w-[calc(100%-2rem)] xl:max-w-7xl xl:rounded-full xl:border xl:border-brand-300 xl:shadow-xl transition-colors">
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-2 focus:z-50 focus:bg-brand-500 focus:text-white focus:px-4 focus:py-2 focus:rounded-lg"
       >
         Skip to content
       </a>
-      <div className=" mx-auto px-4 sm:px-6 lg:px-8 py-3">
-        <div className="flex items-center justify-between gap-4">
+      <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between gap-2 sm:gap-4 h-16 lg:h-20">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 shrink-0" aria-label="Mohan Maya home">
+          <Link to="/" className="flex items-center gap-2 shrink-0 min-w-0" aria-label="Mohan Maya home">
             <img
               src={logo}
               alt="Mohan Maya logo"
-              className="w-15 h-15 object-contain rounded-full"
+              className="h-10 w-10 sm:h-11 sm:w-11 lg:h-12 lg:w-12 object-contain rounded-full shrink-0"
             />
-            <span className="hidden sm:block font-bold text-2xl text-gray-900 dark:text-white">
+            <span className=" sm:block font-bold text-lg sm:text-xl lg:text-2xl text-gray-900 dark:text-white whitespace-nowrap">
               Mohan<span className="text-brand-500">Maya</span>
             </span>
           </Link>
 
           {/* Navigation */}
-          <nav className="hidden lg:flex items-center gap-7" aria-label="Primary">
+          <nav className="hidden lg:flex items-center gap-5 xl:gap-7" aria-label="Primary">
             {navLinks.map((item) => (
               <NavLink
                 key={item.path}
                 to={item.path}
                 end={item.path === "/"}
                 className={({ isActive }) =>
-                  `text-[18px] font-medium transition-colors duration-300 ${
+                  `text-[15px] xl:text-[18px] font-medium whitespace-nowrap transition-colors duration-300 ${
                     isActive
                       ? "text-brand-500"
                       : "text-gray-800 dark:text-gray-200 hover:text-brand-500"
@@ -193,7 +194,7 @@ const Header = () => {
           </nav>
 
           {/* Right Section */}
-          <div className="flex items-center gap-3 sm:gap-4">
+          <div className="flex items-center gap-2 sm:gap-3 lg:gap-4 shrink-0">
             {/* Search */}
             <form
               onSubmit={handleSearch}
@@ -206,7 +207,7 @@ const Header = () => {
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search miniatures..."
                 aria-label="Search products"
-                className="w-40 lg:w-48 px-4 outline-none text-sm bg-transparent text-gray-900 dark:text-white"
+                className="w-36 lg:w-40 xl:w-48 px-4 outline-none text-sm bg-transparent text-gray-900 dark:text-white"
               />
               <button
                 type="submit"
@@ -325,9 +326,10 @@ const Header = () => {
           </div>
         </div>
       </div>
-
-      <MobileSidebar isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
     </header>
+
+    <MobileSidebar isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
+    </>
   );
 };
 
