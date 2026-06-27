@@ -48,7 +48,7 @@ const Newsletter = () => {
                   placeholder="you@email.com"
                   aria-label="Email address"
                   aria-invalid={!!errors.email}
-                  className={`flex-1 h-12 rounded-full border bg-gray-50 dark:bg-slate-900 px-5 text-sm text-gray-700 dark:text-white outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-400/30 transition ${
+                  className={`flex lg:flex-1 h-12 shrink-0 rounded-full border bg-gray-50 dark:bg-slate-900 px-5 text-sm text-gray-700 dark:text-white outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-400/30 transition ${
                     errors.email
                       ? "border-red-400"
                       : "border-gray-200 dark:border-slate-600"
