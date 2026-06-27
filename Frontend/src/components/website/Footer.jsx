@@ -45,9 +45,9 @@ export default function Footer() {
           <div className="flex flex-col gap-3">
            <Link to="/" className="flex items-center gap-2 shrink-0" aria-label="Mohan Maya home">
              <img alt="Mohan Maya logo" className="w-15 h-15 object-contain rounded-full" src={logo} />
-             <span className="hidden sm:block font-bold text-2xl text-white">
-               Mohan<span className="text-brand-500">Maya</span>
-             </span>
+            <span className=" sm:block font-bold text-lg sm:text-xl lg:text-2xl text-white dark:text-white whitespace-nowrap">
+              Mohan<span className="text-brand-500">Maya</span>
+            </span>
            </Link>
             <p className="text-gray-400  leading-6 mb-10 max-w-xs">
               Hand-sculpted, hand-painted collectibles from the Mohan-Maya
