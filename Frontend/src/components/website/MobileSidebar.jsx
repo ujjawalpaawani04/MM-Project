@@ -5,12 +5,7 @@ import { Heart } from "lucide-react";
 import { FiX, FiSearch, FiUser, FiLogOut, FiShoppingBag } from "react-icons/fi";
 import { FaLocationDot, FaPhone } from "react-icons/fa6";
 import { CgMail } from "react-icons/cg";
-import {
-  FaFacebookF,
-  FaTwitter,
-  FaYoutube,
-  FaLinkedinIn,
-} from "react-icons/fa";
+import { FaFacebookF, FaInstagram, FaYoutube } from "react-icons/fa";
 import ThemeToggle from "../common/ThemeToggle";
 import { useAuth } from "../../context/AuthContext";
 import { useCart } from "../../context/CartContext";
@@ -29,10 +24,21 @@ const navLinks = [
 ];
 
 const socialLinks = [
-  { icon: FaFacebookF, url: "#", label: "Facebook" },
-  { icon: FaTwitter, url: "#", label: "Twitter" },
-  { icon: FaYoutube, url: "#", label: "YouTube" },
-  { icon: FaLinkedinIn, url: "#", label: "LinkedIn" },
+  {
+    icon: FaFacebookF,
+    url: "https://www.facebook.com/share/18dgmfQ39U/",
+    label: "Facebook",
+  },
+  {
+    icon: FaInstagram,
+    url: "https://instagram.com/mohanmaya_",
+    label: "Instagram",
+  },
+  {
+    icon: FaYoutube,
+    url: "https://www.youtube.com/results?search_query=mohanmaya",
+    label: "YouTube",
+  },
 ];
 
 // Slide/stagger variants. The app is wrapped in <MotionConfig reducedMotion="user">,
@@ -110,7 +116,7 @@ const MobileSidebar = ({ isOpen, onClose }) => {
             initial="hidden"
             animate="visible"
             exit="exit"
-            className="fixed right-0 top-0 z-[1001] flex h-full w-[88%] max-w-sm flex-col rounded-l-3xl border-l border-brand-300 bg-ink-50 shadow-2xl theme-surface dark:border-slate-700 dark:bg-slate-900"
+            className="fixed right-0 top-0 z-[1001] flex h-full w-[88%] max-w-sm flex-col rounded-none border-l border-brand-300 bg-ink-50 shadow-2xl theme-surface dark:border-slate-700 dark:bg-slate-900"
           >
             {/* Header: logo + brand lockup, matching the desktop header */}
             <div className="flex shrink-0 items-center justify-between gap-3 border-b border-brand-200/70 px-5 py-4 dark:border-slate-700">
@@ -344,6 +350,8 @@ const MobileSidebar = ({ isOpen, onClose }) => {
                       <a
                         key={social.label}
                         href={social.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
                         aria-label={social.label}
                         className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-50 text-brand-500 transition-all duration-300 hover:scale-110 hover:bg-gradient-to-r hover:from-pink-500 hover:to-rose-400 hover:text-white dark:bg-slate-800 dark:text-gray-200 dark:hover:text-white"
                       >
