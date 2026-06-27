@@ -1,7 +1,9 @@
 // ProductModel.jsx
-import { Suspense, useEffect, useRef, useState } from "react";
+/* eslint-disable react-refresh/only-export-components -- the preloadModel() prefetch helper is intentionally co-located with the viewer it warms */
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, useGLTF } from "@react-three/drei";
+import { clone as cloneSkeleton } from "three/examples/jsm/utils/SkeletonUtils.js";
 import { FiZoomIn, FiZoomOut } from "react-icons/fi";
 
 function Model({ url, onLoaded }) {
@@ -11,7 +13,16 @@ function Model({ url, onLoaded }) {
   useEffect(() => {
     onLoaded?.();
   }, [onLoaded]);
-  return <primitive object={scene} scale={6} />;
+
+  // CRITICAL: `useGLTF` caches and returns the SAME `scene` object on every
+  // mount. Mounting it in a second canvas (the fullscreen overlay) via
+  // <primitive> MOVES that node out of the inline canvas's scene graph, so after
+  // exiting fullscreen the inline viewer went blank. Cloning gives each canvas
+  // its own copy (SkeletonUtils.clone preserves any skinned meshes and shares
+  // geometry/materials, so it's cheap) — both views render independently and the
+  // shared cache is never mutated. Same rationale as HeroModel.
+  const object = useMemo(() => cloneSkeleton(scene), [scene]);
+  return <primitive object={object} scale={6} />;
 }
 
 export default function ProductModel({ modelUrl, onLoaded }) {
@@ -46,7 +57,13 @@ export default function ProductModel({ modelUrl, onLoaded }) {
 
   return (
     <div className="relative w-full h-full">
-      <Canvas camera={{ position: [1, 3, zoomLevel] }}>
+      <Canvas
+        camera={{ position: [1, 3, zoomLevel] }}
+        // Cap the device-pixel-ratio so high-DPI phones don't render the scene
+        // at 3x (a large, needless GPU cost); [1,2] keeps it crisp and fast.
+        dpr={[1, 2]}
+        gl={{ antialias: true, powerPreference: "high-performance" }}
+      >
         <ambientLight intensity={2} />
         <directionalLight position={[2, 2, 2]} intensity={1.5} />
 
@@ -121,4 +138,13 @@ export default function ProductModel({ modelUrl, onLoaded }) {
       </div>
     </div>
   );
+}
+
+/**
+ * Warm the GLTF + Draco cache for a model so opening the 3D view feels instant.
+ * Called on intent (hover/focus of the "View in 3D" button). Safe to call
+ * repeatedly — drei dedupes by URL, and subsequent views hit the cache.
+ */
+export function preloadModel(url) {
+  if (url) useGLTF.preload(url, "/draco/");
 }

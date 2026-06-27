@@ -1,8 +1,12 @@
-import { useCallback, useEffect, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { FiBox, FiImage, FiMaximize2, FiX } from "react-icons/fi";
-import ProductModel from "./ProductModel";
 import ModelErrorBoundary from "./ModelErrorBoundary";
+
+// Lazy boundary: three.js + the 3D viewer (~the "three" bundle chunk) only load
+// when the user actually opens the 3D view, never on initial product/quick-view
+// render. Repeat opens are instant (cached chunk + cached GLTF).
+const ProductModel = lazy(() => import("./ProductModel"));
 
 function Loader() {
   return (
@@ -33,6 +37,13 @@ export default function Product3DViewer({ images = [], modelUrl, name }) {
   const mainImage = images[active] || images[0];
 
   const handleLoaded = useCallback(() => setLoaded(true), []);
+
+  // Intent-based prefetch: the moment the user hovers/focuses "View in 3D",
+  // start downloading BOTH the viewer JS chunk and the GLTF asset in parallel,
+  // so by the time they click it's usually ready — no perceptible wait.
+  const prefetchModel = useCallback(() => {
+    if (modelUrl) import("./ProductModel").then((m) => m.preloadModel(modelUrl));
+  }, [modelUrl]);
 
   // Exit fullscreen with Escape without bubbling up to a parent modal.
   useEffect(() => {
@@ -68,7 +79,11 @@ export default function Product3DViewer({ images = [], modelUrl, name }) {
   const canvas = (
     <ModelErrorBoundary resetKey={modelUrl} fallback={fallback}>
       <div className="absolute inset-0">
-        <ProductModel modelUrl={modelUrl} onLoaded={handleLoaded} />
+        {/* Suspense covers the lazy chunk download; the <Loader/> sibling stays
+            visible until the model has actually resolved (handleLoaded). */}
+        <Suspense fallback={null}>
+          <ProductModel modelUrl={modelUrl} onLoaded={handleLoaded} />
+        </Suspense>
         {!loaded && <Loader />}
       </div>
     </ModelErrorBoundary>
@@ -109,6 +124,8 @@ export default function Product3DViewer({ images = [], modelUrl, name }) {
             <button
               type="button"
               onClick={show3D}
+              onPointerEnter={prefetchModel}
+              onFocus={prefetchModel}
               aria-pressed={is3D}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition ${
                 is3D ? "bg-brand-500 text-white" : "text-gray-600 dark:text-gray-300"
@@ -187,7 +204,9 @@ export default function Product3DViewer({ images = [], modelUrl, name }) {
             <div className="relative flex-1">
               <ModelErrorBoundary resetKey={modelUrl} fallback={fallback}>
                 <div className="absolute inset-0">
-                  <ProductModel modelUrl={modelUrl} />
+                  <Suspense fallback={<Loader />}>
+                    <ProductModel modelUrl={modelUrl} />
+                  </Suspense>
                 </div>
               </ModelErrorBoundary>
             </div>
