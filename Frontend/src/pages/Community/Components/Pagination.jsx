@@ -53,7 +53,7 @@ export default function Pagination({
     <nav
       aria-label="Video pagination"
       className={cn(
-        "mt-14 flex flex-col items-center gap-4 sm:flex-row sm:justify-between",
+        "mt-14 flex flex-col items-center gap-4 sm:flex-row sm:justify-center",
         className
       )}
     >

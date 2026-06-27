@@ -1,10 +1,11 @@
-import { memo } from "react";
+import { memo, useRef } from "react";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
 import { Heart, ShoppingCart, Eye } from "lucide-react";
 import { useCart } from "../../context/CartContext";
 import { useWishlist } from "../../context/WishlistContext";
 import { useToast } from "../../context/ToastContext";
+import { useFlyToCart } from "../../context/FlyToCartContext";
 import { formatCurrency, discountPercent } from "../../utils/formatCurrency";
 import { getStockInfo } from "../../data/products";
 import Rating from "../common/Rating";
@@ -14,6 +15,8 @@ function ProductCard({ product, onQuickView, variant = "default", tag }) {
   const { addItem } = useCart();
   const { toggle, isInWishlist } = useWishlist();
   const toast = useToast();
+  const { fly } = useFlyToCart();
+  const imgRef = useRef(null);
   const compact = variant === "compact";
 
   const wished = isInWishlist(product.id);
@@ -25,7 +28,8 @@ function ProductCard({ product, onQuickView, variant = "default", tag }) {
     e.preventDefault();
     if (soldOut) return;
     addItem(product, 1);
-    toast.success(`${product.name} added to cart`);
+    // Fly-to-cart flourish is the success feedback (no toast).
+    fly(imgRef.current, product.image);
   };
 
   const handleWishlist = (e) => {
@@ -55,6 +59,7 @@ function ProductCard({ product, onQuickView, variant = "default", tag }) {
         className="relative block overflow-hidden aspect-square bg-gradient-to-b from-brand-50 to-white dark:from-slate-900 dark:to-slate-800"
       >
         <img
+          ref={imgRef}
           src={product.image}
           alt={product.name}
           loading="lazy"

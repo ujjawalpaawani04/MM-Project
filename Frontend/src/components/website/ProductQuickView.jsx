@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { ShoppingCart, Heart, X } from "lucide-react";
 import Modal from "../common/Modal";
 import Button from "../common/Button";
@@ -8,6 +8,7 @@ import Product3DViewer from "./Product3DViewer";
 import { useCart } from "../../context/CartContext";
 import { useWishlist } from "../../context/WishlistContext";
 import { useToast } from "../../context/ToastContext";
+import { useFlyToCart } from "../../context/FlyToCartContext";
 import { formatCurrency, discountPercent } from "../../utils/formatCurrency";
 import { getStockInfo } from "../../data/products";
 import { IoMdArrowForward } from "react-icons/io";
@@ -16,6 +17,8 @@ export default function ProductQuickView({ product, isOpen, onClose }) {
   const { addItem } = useCart();
   const { toggle, isInWishlist } = useWishlist();
   const toast = useToast();
+  const { fly } = useFlyToCart();
+  const galleryRef = useRef(null);
 
   const [qty, setQty] = useState(1);
 
@@ -43,7 +46,8 @@ export default function ProductQuickView({ product, isOpen, onClose }) {
   const handleAdd = (e) => {
     e?.stopPropagation();
     addItem(product, qty);
-    toast.success(`${product.name} added to cart`);
+    // Fly the gallery image to the cart — the flight is the success feedback.
+    fly(galleryRef.current, product.image);
   };
 
   return (
@@ -59,12 +63,14 @@ export default function ProductQuickView({ product, isOpen, onClose }) {
 
       <div className="grid md:grid-cols-2 gap-6 p-6">
         {/* Gallery - same Photo/3D viewer as the full details page */}
-        <Product3DViewer
-          key={product.id}
-          images={gallery}
-          modelUrl={product.model}
-          name={product.name}
-        />
+        <div ref={galleryRef}>
+          <Product3DViewer
+            key={product.id}
+            images={gallery}
+            modelUrl={product.model}
+            name={product.name}
+          />
+        </div>
 
         {/* Info */}
         <div className="flex flex-col">

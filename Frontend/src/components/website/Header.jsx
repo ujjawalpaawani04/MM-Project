@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router";
-import { motion, useAnimationControls } from "framer-motion";
+import { motion, useAnimationControls, useReducedMotion } from "framer-motion";
 import { Heart } from "lucide-react";
 import { FiSearch, FiHeart, FiShoppingBag, FiUser, FiLogOut } from "react-icons/fi";
 import { FaBarsStaggered } from "react-icons/fa6";
@@ -10,6 +10,7 @@ import { useCart } from "../../context/CartContext";
 import { useWishlist } from "../../context/WishlistContext";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../context/ToastContext";
+import { useFlyToCart } from "../../context/FlyToCartContext";
 
 
 import logo from "../../assets/website/mmLogo.png";
@@ -58,6 +59,40 @@ function WishlistHeart({ count }) {
   );
 }
 
+// Sparkle burst played over the cart icon when an item "lands". Re-mounted via
+// a changing `key` so each arrival replays it; purely decorative.
+const SPARKS = Array.from({ length: 6 }, (_, i) => {
+  const angle = (Math.PI * 2 * i) / 6;
+  return { id: i, x: Math.cos(angle) * 18, y: Math.sin(angle) * 18 };
+});
+
+function CartSparkle() {
+  return (
+    <span
+      aria-hidden="true"
+      className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+    >
+      {/* Soft glow ring */}
+      <motion.span
+        initial={{ scale: 0.3, opacity: 0.5 }}
+        animate={{ scale: 2.1, opacity: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="absolute -left-4 -top-4 h-8 w-8 rounded-full bg-gradient-to-r from-pink-400 to-rose-400 blur-[2px]"
+      />
+      {/* Radiating sparkles */}
+      {SPARKS.map((s) => (
+        <motion.span
+          key={s.id}
+          initial={{ x: 0, y: 0, scale: 1, opacity: 1 }}
+          animate={{ x: s.x, y: s.y, scale: 0, opacity: 0 }}
+          transition={{ duration: 0.55, ease: "easeOut" }}
+          className="absolute h-1.5 w-1.5 rounded-full bg-brand-400"
+        />
+      ))}
+    </span>
+  );
+}
+
 const navLinks = [
   { name: "Home", path: "/" },
   { name: "Shop", path: "/shop" },
@@ -76,6 +111,31 @@ const Header = () => {
   const { count: wishlistCount } = useWishlist();
   const { user, isAuthenticated, logout } = useAuth();
   const toast = useToast();
+  const { registerCartTarget, subscribeArrive } = useFlyToCart();
+
+  // Cart-arrival reactions: bag bounce, badge pop, sparkle burst.
+  const reduceMotion = useReducedMotion();
+  const bagControls = useAnimationControls();
+  const badgeControls = useAnimationControls();
+  const [burstId, setBurstId] = useState(0);
+
+  useEffect(
+    () =>
+      subscribeArrive(() => {
+        setBurstId((n) => n + 1);
+        if (reduceMotion) return;
+        // Subtle, springy bounce/pop — restrained for a premium feel.
+        bagControls.start({
+          scale: [1, 1.18, 0.96, 1.05, 1],
+          transition: { duration: 0.55, ease: [0.34, 1.56, 0.64, 1] },
+        });
+        badgeControls.start({
+          scale: [1, 1.4, 1],
+          transition: { duration: 0.4, ease: "easeOut" },
+        });
+      }),
+    [subscribeArrive, bagControls, badgeControls, reduceMotion]
+  );
 
   const handleLogout = () => {
     logout();
@@ -232,16 +292,24 @@ const Header = () => {
 
             {/* Cart */}
             <Link
+              ref={registerCartTarget}
               to="/cart"
               className="relative p-1.5 text-gray-800 dark:text-gray-100 hover:text-brand-500 transition-colors"
               aria-label={`View cart, ${totalItems} items`}
             >
-              <FiShoppingBag className="text-[22px]" />
+              <motion.span className="block" animate={bagControls}>
+                <FiShoppingBag className="text-[22px]" />
+              </motion.span>
               {totalItems > 0 && (
-                <span className="absolute -top-1 -right-1 bg-brand-500 text-white text-[10px] font-bold min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center">
+                <motion.span
+                  animate={badgeControls}
+                  className="absolute -top-1 -right-1 bg-brand-500 text-white text-[10px] font-bold min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center"
+                >
                   {totalItems}
-                </span>
+                </motion.span>
               )}
+              {/* Sparkle burst on arrival (skipped under reduced motion) */}
+              {!reduceMotion && burstId > 0 && <CartSparkle key={burstId} />}
             </Link>
 
             {/* Mobile menu */}

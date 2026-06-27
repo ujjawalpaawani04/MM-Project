@@ -6,6 +6,7 @@ import { getStockInfo } from "../../../data/products";
 import { useCart } from "../../../context/CartContext";
 import { useWishlist } from "../../../context/WishlistContext";
 import { useToast } from "../../../context/ToastContext";
+import { useFlyToCart } from "../../../context/FlyToCartContext";
 import { formatCurrency, discountPercent } from "../../../utils/formatCurrency";
 
 import Button from "../../../components/common/Button";
@@ -19,6 +20,7 @@ export default function ProductInfo({ product }) {
   const { addItem } = useCart();
   const { toggle, isInWishlist } = useWishlist();
   const toast = useToast();
+  const { fly } = useFlyToCart();
   const [qty, setQty] = useState(1);
 
   const discount = discountPercent(product.originalPrice, product.price);
@@ -27,9 +29,11 @@ export default function ProductInfo({ product }) {
   const maxQty = Math.min(10, stock.count || 10);
   const wished = isInWishlist(product.id);
 
-  const handleAdd = () => {
+  const handleAdd = (e) => {
     addItem(product, qty);
-    toast.success(`${product.name} added to cart`);
+    // Fly the product image (from the button origin) to the cart — the flight
+    // is the success feedback (no toast).
+    fly(e.currentTarget, product.image);
   };
 
   const handleWishlist = () => {

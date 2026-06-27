@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useRef } from "react";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
 import { Heart, ShoppingCart, Eye } from "lucide-react";
@@ -6,6 +6,7 @@ import { Heart, ShoppingCart, Eye } from "lucide-react";
 import { useCart } from "../../../context/CartContext";
 import { useWishlist } from "../../../context/WishlistContext";
 import { useToast } from "../../../context/ToastContext";
+import { useFlyToCart } from "../../../context/FlyToCartContext";
 import { formatCurrency, discountPercent } from "../../../utils/formatCurrency";
 import { getStockInfo } from "../../../data/products";
 import Rating from "../../../components/common/Rating";
@@ -22,6 +23,8 @@ function ShopProductCard({ product, onQuickView }) {
   const { addItem } = useCart();
   const { toggle, isInWishlist } = useWishlist();
   const toast = useToast();
+  const { fly } = useFlyToCart();
+  const imgRef = useRef(null);
 
   const wished = isInWishlist(product.id);
   const discount = discountPercent(product.originalPrice, product.price);
@@ -32,7 +35,8 @@ function ShopProductCard({ product, onQuickView }) {
     e.preventDefault();
     if (soldOut) return;
     addItem(product, 1);
-    toast.success(`${product.name} added to cart`);
+    // Fly-to-cart flourish is the success feedback (no toast).
+    fly(imgRef.current, product.image);
   };
 
   const handleWishlist = (e) => {
@@ -63,6 +67,7 @@ function ShopProductCard({ product, onQuickView }) {
         className="relative block aspect-square overflow-hidden bg-gradient-to-br from-brand-50 via-white to-cream-100 dark:from-slate-900 dark:to-slate-800"
       >
         <img
+          ref={imgRef}
           src={product.image}
           alt={product.name}
           loading="lazy"
