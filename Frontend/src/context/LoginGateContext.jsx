@@ -6,6 +6,7 @@ import {
   useRef,
   useCallback,
   useMemo,
+  useEffect,
 } from "react";
 import { useAuth } from "./AuthContext";
 import LoginModal from "../components/website/LoginModal";
@@ -46,13 +47,24 @@ export function LoginGateProvider({ children }) {
     setOpen(false);
   }, []);
 
-  // Login/register succeeded -> close and run whatever was pending.
+  // Login/register succeeded -> just close the modal. The queued action runs in
+  // the effect below.
   const handleAuthenticated = useCallback(() => {
     setOpen(false);
-    const action = pendingAction.current;
-    pendingAction.current = null;
-    action?.();
   }, []);
+
+  // Run the queued action (e.g. add the clicked product) only AFTER auth has
+  // propagated. By the time `isAuthenticated` flips true and this effect fires,
+  // the cart context has already switched to the freshly-logged-in user, so the
+  // item lands in that user's cart instead of being wiped by the user-switch
+  // resync.
+  useEffect(() => {
+    if (isAuthenticated && pendingAction.current) {
+      const action = pendingAction.current;
+      pendingAction.current = null;
+      action();
+    }
+  }, [isAuthenticated]);
 
   const value = useMemo(() => ({ requireAuth }), [requireAuth]);
 

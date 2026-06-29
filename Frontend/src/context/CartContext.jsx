@@ -1,13 +1,110 @@
 /* eslint-disable react-refresh/only-export-components -- provider + its hook are intentionally co-located */
-import { createContext, useContext, useMemo, useCallback } from "react";
-import { useLocalStorage } from "../hooks/useLocalStorage";
+import {
+  createContext,
+  useContext,
+  useMemo,
+  useCallback,
+  useState,
+  useEffect,
+} from "react";
+import { useAuth } from "./AuthContext";
 
 const CartContext = createContext(null);
 
 const MAX_QTY = 10;
+// Each user gets their own namespaced cart so one account's items can never
+// leak into another's session.
+const CART_PREFIX = "mm-cart:";
+// The pre-scoping shared key. It's the source of the cross-user leak, so it is
+// migrated to the current user (if any) and then permanently removed.
+const LEGACY_CART_KEY = "mm-cart";
+
+// Email is this app's stable user identifier (front-end auth, no backend).
+const cartKeyFor = (user) =>
+  user?.email ? `${CART_PREFIX}${user.email.trim().toLowerCase()}` : null;
+
+// Safe read of a stored cart. Returns [] for "no key" (logged out), missing
+// data, or malformed JSON - so the cart is always empty unless a real user has
+// real items.
+const readCart = (key) => {
+  if (!key || typeof window === "undefined") return [];
+  try {
+    const raw = window.localStorage.getItem(key);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+};
 
 export function CartProvider({ children }) {
-  const [items, setItems] = useLocalStorage("mm-cart", []);
+  const { user } = useAuth();
+  const storageKey = cartKeyFor(user);
+
+  // The cart is strictly per-user: seeded from the logged-in user's stored cart,
+  // and empty whenever nobody is signed in.
+  const [items, setItems] = useState(() => readCart(storageKey));
+
+  // Track which key the current `items` belong to. When the signed-in user
+  // changes (login / logout / switch), resync during render so there is never a
+  // frame showing the wrong user's cart (same pattern used elsewhere in the app).
+  const [activeKey, setActiveKey] = useState(storageKey);
+  if (activeKey !== storageKey) {
+    // Logging out: wipe the previous user's cart from storage entirely so it can
+    // never resurface for the next visitor. (Switching directly between users
+    // keeps each account's own cart intact under its own key.)
+    if (activeKey && !storageKey) {
+      try {
+        window.localStorage.removeItem(activeKey);
+      } catch {
+        /* storage unavailable - state is cleared below regardless */
+      }
+    }
+    setActiveKey(storageKey);
+    setItems(readCart(storageKey));
+  }
+
+  // One-time migration: retire the legacy shared cart key. If the current user
+  // has no cart yet, adopt the legacy one so an in-progress cart isn't lost on
+  // upgrade; otherwise simply discard it. Done once during render (guarded by
+  // state) so the leaked key is gone before the first paint.
+  const [migrated, setMigrated] = useState(false);
+  if (!migrated && typeof window !== "undefined") {
+    setMigrated(true);
+    try {
+      const legacy = window.localStorage.getItem(LEGACY_CART_KEY);
+      if (legacy != null) {
+        if (storageKey && window.localStorage.getItem(storageKey) == null) {
+          window.localStorage.setItem(storageKey, legacy);
+          setItems(readCart(storageKey));
+        }
+        window.localStorage.removeItem(LEGACY_CART_KEY);
+      }
+    } catch {
+      /* ignore - cart still works from in-memory state */
+    }
+  }
+
+  // Persist the cart for the signed-in user. Never write when logged out, so a
+  // guest session leaves nothing behind in storage.
+  useEffect(() => {
+    if (!storageKey) return;
+    try {
+      window.localStorage.setItem(storageKey, JSON.stringify(items));
+    } catch {
+      /* storage full/unavailable - keep working from in-memory state */
+    }
+  }, [items, storageKey]);
+
+  // Keep the active user's cart in sync across browser tabs.
+  useEffect(() => {
+    if (!storageKey) return;
+    const onStorage = (e) => {
+      if (e.key === storageKey) setItems(readCart(storageKey));
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, [storageKey]);
 
   const addItem = useCallback(
     (product, quantity = 1) => {
