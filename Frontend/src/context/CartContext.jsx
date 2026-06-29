@@ -48,18 +48,13 @@ export function CartProvider({ children }) {
   // Track which key the current `items` belong to. When the signed-in user
   // changes (login / logout / switch), resync during render so there is never a
   // frame showing the wrong user's cart (same pattern used elsewhere in the app).
+  //
+  // Logging out simply loads the "no user" cart (empty) - the previous user's
+  // cart is left untouched under its own key, so it is restored automatically
+  // the next time that same user signs in (like Amazon/Flipkart). Each account's
+  // cart stays isolated under its own key, so one user never sees another's.
   const [activeKey, setActiveKey] = useState(storageKey);
   if (activeKey !== storageKey) {
-    // Logging out: wipe the previous user's cart from storage entirely so it can
-    // never resurface for the next visitor. (Switching directly between users
-    // keeps each account's own cart intact under its own key.)
-    if (activeKey && !storageKey) {
-      try {
-        window.localStorage.removeItem(activeKey);
-      } catch {
-        /* storage unavailable - state is cleared below regardless */
-      }
-    }
     setActiveKey(storageKey);
     setItems(readCart(storageKey));
   }
