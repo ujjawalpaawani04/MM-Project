@@ -6,6 +6,7 @@ import {
   FaPhoneAlt,
   FaEnvelope,
   FaRegClock,
+  FaMapMarkerAlt,
 } from "react-icons/fa";
 
 import logo from "../../assets/website/mmLogo.png";
@@ -101,13 +102,26 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Customer Service */}
+          {/* Contact & Address */}
           <div>
-            <h3 className="text-[18px] font-semibold mb-5">Customer Service</h3>
-            <ul className="space-y-2 text-[16px]">
+            <h3 className="text-[18px] font-semibold mb-5">Get in Touch</h3>
+            <ul className="space-y-4 text-[16px]">
+              <li className="flex items-start gap-3">
+                <FaMapMarkerAlt className="text-brand-500 shrink-0 mt-1" />
+                <address className="not-italic text-gray-300 leading-relaxed">
+                  Mohan Maya Collectibles,
+                  <br />
+                  123 Artisan Street, Hauz Khas,
+                  <br />
+                  New Delhi - 110016, India
+                </address>
+              </li>
               <li className="flex items-center gap-3">
                 <FaPhoneAlt className="text-brand-500 shrink-0" />
-                <a href="tel:+919876543210" className="text-gray-300 hover:text-white">
+                <a
+                  href="tel:+919876543210"
+                  className="text-gray-300 hover:text-white transition-colors"
+                >
                   +91 98765 43210
                 </a>
               </li>
@@ -115,14 +129,18 @@ export default function Footer() {
                 <FaEnvelope className="text-brand-500 shrink-0" />
                 <a
                   href="mailto:support@mohanmaya.com"
-                  className="text-gray-300 hover:text-white"
+                  className="text-gray-300 hover:text-white transition-colors"
                 >
                   support@mohanmaya.com
                 </a>
               </li>
-              <li className="flex items-center gap-3">
-                <FaRegClock className="text-brand-500 shrink-0" />
-                <span className="text-gray-300">Mon - Sat: 10:00 AM - 7:00 PM</span>
+              <li className="flex items-start gap-3">
+                <FaRegClock className="text-brand-500 shrink-0 mt-1" />
+                <span className="text-gray-300 leading-relaxed">
+                  Mon - Sat: 10:00 AM - 7:00 PM
+                  <br />
+                  Sunday: Closed
+                </span>
               </li>
             </ul>
           </div>

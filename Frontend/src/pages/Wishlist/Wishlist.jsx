@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import { useWishlist } from "../../context/WishlistContext";
 import { useCart } from "../../context/CartContext";
+import { useLoginGate } from "../../context/LoginGateContext";
 import { useToast } from "../../context/ToastContext";
 import { products, getRecommended } from "../../data/products";
 import { getRecentlyViewed } from "../../utils/recentlyViewed";
@@ -19,6 +20,7 @@ const PER_PAGE = 4;
 export default function Wishlist() {
   const { items, clear } = useWishlist();
   const { addItem } = useCart();
+  const { requireAuth } = useLoginGate();
   const toast = useToast();
   const [page, setPage] = useState(1);
 
@@ -43,8 +45,12 @@ export default function Wishlist() {
   const recommended = getRecommended(wishlistIds, 4);
 
   const addAllToCart = () => {
-    fullProducts.forEach((p) => addItem(p, 1));
-    toast.success("Moved to your cart - ready whenever you are");
+    // Gate behind sign-in like the per-product Add to Cart; once authenticated
+    // the items move to the cart and we confirm with a single toast.
+    requireAuth(() => {
+      fullProducts.forEach((p) => addItem(p, 1));
+      toast.success("Moved to your cart - ready whenever you are");
+    });
   };
 
   return (

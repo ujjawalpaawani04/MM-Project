@@ -5,7 +5,7 @@ import { ShoppingCart, Heart } from "lucide-react";
 import { getStockInfo } from "../../../data/products";
 import { useCart } from "../../../context/CartContext";
 import { useWishlist } from "../../../context/WishlistContext";
-import { useFlyToCart } from "../../../context/FlyToCartContext";
+import { useLoginGate } from "../../../context/LoginGateContext";
 import { formatCurrency, discountPercent } from "../../../utils/formatCurrency";
 
 import Button from "../../../components/common/Button";
@@ -14,13 +14,11 @@ import Rating from "../../../components/common/Rating";
 import QuantitySelector from "../../../components/common/QuantitySelector";
 import ProductFeatures from "./ProductFeatures";
 
-/** Right-hand product column: title, price, specs, actions and assurances.
- *  `mediaRef` points at the gallery column so the fly-to-cart animation can
- *  originate from the image the user is actually looking at. */
-export default function ProductInfo({ product, mediaRef }) {
+/** Right-hand product column: title, price, specs, actions and assurances. */
+export default function ProductInfo({ product }) {
   const { addItem } = useCart();
   const { toggle, isInWishlist } = useWishlist();
-  const { fly } = useFlyToCart();
+  const { requireAuth } = useLoginGate();
   const [qty, setQty] = useState(1);
 
   const discount = discountPercent(product.originalPrice, product.price);
@@ -29,16 +27,10 @@ export default function ProductInfo({ product, mediaRef }) {
   const maxQty = Math.min(10, stock.count || 10);
   const wished = isInWishlist(product.id);
 
-  const handleAdd = (e) => {
-    // Fly the *currently displayed* gallery image to the cart so the animation
-    // starts from what the user is looking at. Fall back to the button origin /
-    // default image if the gallery isn't mounted (e.g. reduced-motion paths).
-    // The cart update is deferred until the clone lands so the header count
-    // updates on arrival, not on click.
-    const anchor = mediaRef?.current?.querySelector("[data-fly-anchor]");
-    fly(anchor || e.currentTarget, anchor?.src || product.image, () =>
-      addItem(product, qty)
-    );
+  const handleAdd = () => {
+    // Require sign-in first; once authenticated the item is added silently and
+    // the header count updates. Guests get the login modal and nothing is added.
+    requireAuth(() => addItem(product, qty));
   };
 
   const handleWishlist = () => {

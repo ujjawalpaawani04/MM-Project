@@ -7,7 +7,7 @@ import QuantitySelector from "../common/QuantitySelector";
 import Product3DViewer from "./Product3DViewer";
 import { useCart } from "../../context/CartContext";
 import { useWishlist } from "../../context/WishlistContext";
-import { useFlyToCart } from "../../context/FlyToCartContext";
+import { useLoginGate } from "../../context/LoginGateContext";
 import { formatCurrency, discountPercent } from "../../utils/formatCurrency";
 import { getStockInfo } from "../../data/products";
 import { IoMdArrowForward } from "react-icons/io";
@@ -15,7 +15,7 @@ import { IoMdArrowForward } from "react-icons/io";
 export default function ProductQuickView({ product, isOpen, onClose }) {
   const { addItem } = useCart();
   const { toggle, isInWishlist } = useWishlist();
-  const { fly } = useFlyToCart();
+  const { requireAuth } = useLoginGate();
   const galleryRef = useRef(null);
 
   const [qty, setQty] = useState(1);
@@ -39,17 +39,12 @@ export default function ProductQuickView({ product, isOpen, onClose }) {
   const wished = isInWishlist(product.id);
 
   // Add to cart WITHOUT closing the modal - the user stays on the product so
-  // they can keep adjusting qty, wishlist it, or open the full details. The
-  // flight is the success feedback; the modal only closes on explicit dismiss.
+  // they can keep adjusting qty, wishlist it, or open the full details. Requires
+  // sign-in first; once authenticated the item is added silently (no toast) and
+  // the header count updates. Guests get the login modal and nothing is added.
   const handleAdd = (e) => {
     e?.stopPropagation();
-    // Fly the *currently selected* gallery image (not the default product.image)
-    // so the animation matches whichever thumbnail the user is viewing. The cart
-    // update is deferred until the clone lands so the count tracks the animation.
-    const anchor = galleryRef.current?.querySelector("[data-fly-anchor]");
-    fly(anchor || galleryRef.current, anchor?.src || product.image, () =>
-      addItem(product, qty)
-    );
+    requireAuth(() => addItem(product, qty));
   };
 
   return (

@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Heart, ShoppingCart, Eye } from "lucide-react";
 import { useCart } from "../../context/CartContext";
 import { useWishlist } from "../../context/WishlistContext";
-import { useFlyToCart } from "../../context/FlyToCartContext";
+import { useLoginGate } from "../../context/LoginGateContext";
 import { formatCurrency, discountPercent } from "../../utils/formatCurrency";
 import { getStockInfo } from "../../data/products";
 import Rating from "../common/Rating";
@@ -13,7 +13,7 @@ import Badge from "../common/Badge";
 function ProductCard({ product, onQuickView, variant = "default", tag }) {
   const { addItem } = useCart();
   const { toggle, isInWishlist } = useWishlist();
-  const { fly } = useFlyToCart();
+  const { requireAuth } = useLoginGate();
   const imgRef = useRef(null);
   const compact = variant === "compact";
 
@@ -25,10 +25,9 @@ function ProductCard({ product, onQuickView, variant = "default", tag }) {
   const handleAddToCart = (e) => {
     e.preventDefault();
     if (soldOut) return;
-    // Defer the cart update until the flying clone lands, so the header count
-    // updates exactly on arrival (never ahead of the animation). The flourish
-    // is the success feedback (no toast).
-    fly(imgRef.current, product.image, () => addItem(product, 1));
+    // Require sign-in first; once authenticated the item is added silently and
+    // the header count updates. Guests get the login modal and nothing is added.
+    requireAuth(() => addItem(product, 1));
   };
 
   const handleWishlist = (e) => {

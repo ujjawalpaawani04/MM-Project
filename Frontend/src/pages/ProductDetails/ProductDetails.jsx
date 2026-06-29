@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useParams } from "react-router";
 
 import { getProductBySlug } from "../../data/products";
@@ -15,10 +15,6 @@ import RelatedProducts from "./Components/RelatedProducts";
 export default function ProductDetails() {
   const { slug } = useParams();
   const product = getProductBySlug(slug);
-
-  // Shared between the gallery and the info column so the fly-to-cart animation
-  // can start from the currently displayed gallery image.
-  const mediaRef = useRef(null);
 
   // Record this product as recently viewed (powers Wishlist / cross-sell rails).
   useEffect(() => {
@@ -50,8 +46,8 @@ export default function ProductDetails() {
       <ProductHero product={product.name} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 lg:py-16">
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
-          <ProductGallery product={product} mediaRef={mediaRef} />
-          <ProductInfo product={product} mediaRef={mediaRef} />
+          <ProductGallery product={product} />
+          <ProductInfo product={product} />
         </div>
 
         <section className="mt-16 pt-12 border-t border-gray-100 dark:border-slate-800">
