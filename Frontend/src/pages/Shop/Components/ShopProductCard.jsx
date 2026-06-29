@@ -32,9 +32,10 @@ function ShopProductCard({ product, onQuickView }) {
   const handleAddToCart = (e) => {
     e.preventDefault();
     if (soldOut) return;
-    addItem(product, 1);
-    // Fly-to-cart flourish is the success feedback (no toast).
-    fly(imgRef.current, product.image);
+    // Defer the cart update until the flying clone lands, so the header count
+    // updates exactly on arrival (never ahead of the animation). The flourish
+    // is the success feedback (no toast).
+    fly(imgRef.current, product.image, () => addItem(product, 1));
   };
 
   const handleWishlist = (e) => {

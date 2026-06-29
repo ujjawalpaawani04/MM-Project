@@ -30,12 +30,15 @@ export default function ProductInfo({ product, mediaRef }) {
   const wished = isInWishlist(product.id);
 
   const handleAdd = (e) => {
-    addItem(product, qty);
     // Fly the *currently displayed* gallery image to the cart so the animation
     // starts from what the user is looking at. Fall back to the button origin /
     // default image if the gallery isn't mounted (e.g. reduced-motion paths).
+    // The cart update is deferred until the clone lands so the header count
+    // updates on arrival, not on click.
     const anchor = mediaRef?.current?.querySelector("[data-fly-anchor]");
-    fly(anchor || e.currentTarget, anchor?.src || product.image);
+    fly(anchor || e.currentTarget, anchor?.src || product.image, () =>
+      addItem(product, qty)
+    );
   };
 
   const handleWishlist = () => {

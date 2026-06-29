@@ -111,7 +111,7 @@ const Header = () => {
   const { count: wishlistCount } = useWishlist();
   const { user, isAuthenticated, logout } = useAuth();
   const toast = useToast();
-  const { registerCartTarget, subscribeArrive } = useFlyToCart();
+  const { registerCartTarget, registerCartFallback, subscribeArrive } = useFlyToCart();
 
   // Cart-arrival reactions: bag bounce, badge pop, sparkle burst.
   const reduceMotion = useReducedMotion();
@@ -153,7 +153,7 @@ const Header = () => {
   return (
     <>
     <header className="sticky top-0 z-[999] w-full theme-surface  backdrop-blur-md border-b border-brand-200/70 dark:border-slate-700   ">
-    <div className="xl:fixed xl:top-5 xl:left-1/2 xl:-translate-x-1/2 xl:w-[calc(100%-2rem)] xl:container xl:rounded-full bg-ink-50/100 dark:bg-slate-900/95 xl:shadow-xl transition-colors">
+    <div className="xl:fixed xl:top-5 xl:left-1/2 xl:-translate-x-1/2 xl:w-[calc(100%-2rem)] xl:container xl:rounded-full bg-ink-50/100 dark:bg-slate-900/95 xl:shadow-2xl transition-colors">
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-2 focus:z-50 focus:bg-brand-500 focus:text-white focus:px-4 focus:py-2 focus:rounded-lg"
@@ -316,8 +316,10 @@ const Header = () => {
               {!reduceMotion && burstId > 0 && <CartSparkle key={burstId} />}
             </Link>
 
-            {/* Mobile menu */}
+            {/* Mobile menu — also the fly-to-cart destination on small screens,
+                where the cart icon above is hidden (it opens the cart drawer). */}
             <button
+              ref={registerCartFallback}
               onClick={() => setIsMenuOpen(true)}
               className="p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors lg:hidden text-gray-800 dark:text-gray-100"
               aria-label="Open menu"

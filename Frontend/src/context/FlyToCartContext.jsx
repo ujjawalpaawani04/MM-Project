@@ -19,9 +19,12 @@ import { motion, useReducedMotion } from "framer-motion";
  * merges into the icon - after which the cart gives a subtle bounce/pop.
  *
  * Design goals:
- *  - Zero coupling to cart logic. Callers still call `addItem` themselves; this
- *    only adds the visual flourish via `fly(sourceEl, image)`. The animation is
- *    the success feedback - there is no toast.
+ *  - Cart update is deferred to arrival. Callers pass their cart mutation as the
+ *    third arg: `fly(sourceEl, image, () => addItem(product, qty))`. The callback
+ *    runs only once the clone lands in the cart icon (or immediately on the
+ *    reduced-motion / no-clone fallback so the cart still updates). This keeps
+ *    the header count in sync with the animation - never ahead of it. The
+ *    animation is the success feedback - there is no toast.
  *  - Identical, elegant curve for every product regardless of its position: the
  *    path is a quadratic Bézier with the timing baked into the sampled points,
  *    so the motion is deterministic and never random.
@@ -65,12 +68,32 @@ export function FlyToCartProvider({ children }) {
   const prefersReduced = useReducedMotion();
 
   const cartTargetRef = useRef(null);
+  const cartFallbackRef = useRef(null);
   const flightListeners = useRef(new Set());
   const arriveListeners = useRef(new Set());
 
-  // The header registers its cart icon element here (callback ref).
+  // The header registers its primary (desktop) cart icon element here.
   const registerCartTarget = useCallback((el) => {
     cartTargetRef.current = el;
+  }, []);
+
+  // Fallback target for breakpoints where the primary cart icon is hidden
+  // (e.g. the mobile menu button, which is the cart's entry point on small
+  // screens). Used only when the primary target isn't currently visible.
+  const registerCartFallback = useCallback((el) => {
+    cartFallbackRef.current = el;
+  }, []);
+
+  // An element counts as a valid flight destination only if it's actually laid
+  // out (a `display:none` element - e.g. the lg-only cart icon on mobile -
+  // reports a zero-sized rect, which would otherwise send clones to (0,0)).
+  const resolveTarget = useCallback(() => {
+    for (const el of [cartTargetRef.current, cartFallbackRef.current]) {
+      if (!el) continue;
+      const rect = el.getBoundingClientRect();
+      if (rect.width > 0 && rect.height > 0) return el;
+    }
+    return null;
   }, []);
 
   const subscribeFlights = useCallback((cb) => {
@@ -90,16 +113,27 @@ export function FlyToCartProvider({ children }) {
   }, []);
 
   const fly = useCallback(
-    (sourceEl, image) => {
-      const target = cartTargetRef.current;
-      // No source/target, no image, or reduced motion → skip the clone. The
-      // cart count still updates (handled by the caller's addItem).
+    (sourceEl, image, onComplete) => {
+      // Runs exactly once when the item "arrives": first commit the cart
+      // mutation (so the count reflects the just-landed item), then play the
+      // header bounce/badge-pop/sparkle. Deferring it here is what keeps the
+      // count from updating ahead of the animation.
+      const finish = () => {
+        onComplete?.();
+        celebrate();
+      };
+
+      const target = resolveTarget();
+      // No source/target, no image, or reduced motion → skip the clone but
+      // still complete immediately, so the cart always updates.
       if (prefersReduced || !sourceEl || !target || !image) {
-        if (!prefersReduced) celebrate();
+        finish();
         return;
       }
 
       const from = capBox(sourceEl.getBoundingClientRect());
+      // Rect is read fresh at click time, so the destination is always the
+      // cart icon's current on-screen position (responsive to layout/resize).
       const to = target.getBoundingClientRect();
 
       flightListeners.current.forEach((cb) =>
@@ -109,16 +143,28 @@ export function FlyToCartProvider({ children }) {
           from,
           toX: to.left + to.width / 2,
           toY: to.top + to.height / 2,
-          onArrive: celebrate,
+          onArrive: finish,
         })
       );
     },
-    [prefersReduced, celebrate]
+    [prefersReduced, celebrate, resolveTarget]
   );
 
   const value = useMemo(
-    () => ({ fly, registerCartTarget, subscribeFlights, subscribeArrive }),
-    [fly, registerCartTarget, subscribeFlights, subscribeArrive]
+    () => ({
+      fly,
+      registerCartTarget,
+      registerCartFallback,
+      subscribeFlights,
+      subscribeArrive,
+    }),
+    [
+      fly,
+      registerCartTarget,
+      registerCartFallback,
+      subscribeFlights,
+      subscribeArrive,
+    ]
   );
 
   return (

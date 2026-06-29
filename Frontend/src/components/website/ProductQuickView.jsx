@@ -43,11 +43,13 @@ export default function ProductQuickView({ product, isOpen, onClose }) {
   // flight is the success feedback; the modal only closes on explicit dismiss.
   const handleAdd = (e) => {
     e?.stopPropagation();
-    addItem(product, qty);
     // Fly the *currently selected* gallery image (not the default product.image)
-    // so the animation matches whichever thumbnail the user is viewing.
+    // so the animation matches whichever thumbnail the user is viewing. The cart
+    // update is deferred until the clone lands so the count tracks the animation.
     const anchor = galleryRef.current?.querySelector("[data-fly-anchor]");
-    fly(anchor || galleryRef.current, anchor?.src || product.image);
+    fly(anchor || galleryRef.current, anchor?.src || product.image, () =>
+      addItem(product, qty)
+    );
   };
 
   return (
