@@ -15,9 +15,11 @@ export default class ModelErrorBoundary extends Component {
   }
 
   componentDidCatch(error) {
-    // Surface model load/decode failures (e.g. Draco) so a silent fallback to
-    // the static image is diagnosable instead of looking like "stopped working".
-    console.error("[3D model] failed to load - showing fallback:", error);
+    // Surface model load/decode failures (e.g. Draco) in development so a silent
+    // fallback to the static image is diagnosable; stay quiet in production.
+    if (import.meta.env.DEV) {
+      console.error("[3D model] failed to load - showing fallback:", error);
+    }
   }
 
   componentDidUpdate(prevProps) {

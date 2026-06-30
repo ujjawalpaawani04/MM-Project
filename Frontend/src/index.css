@@ -183,13 +183,14 @@
   background-color: #fff5f5 !important;
 }
 
-/* Home page sliders: pink pagination dots (Best Sellers + Testimonials) */
+/* Home page sliders: pink pagination dots (Best Sellers + Testimonials).
+ * Colours reference the brand tokens so there is one source of truth. */
 .bs-dots .swiper-pagination-bullet,
 .tst-dots .swiper-pagination-bullet {
   width: 8px;
   height: 8px;
   margin: 0 !important;
-  background-color: #e34786;
+  background-color: var(--color-brand-500);
   opacity: 0.3;
   transition: width 0.3s ease, opacity 0.3s ease;
 }
@@ -199,15 +200,16 @@
   border-radius: 9999px;
   opacity: 1;
 }
+/* Testimonials sit on a dark/photo background, so inactive dots are white. */
 .tst-dots .swiper-pagination-bullet {
   background-color: #ffffff;
 }
 .tst-dots .swiper-pagination-bullet-active {
-  background-color: #e34786;
+  background-color: var(--color-brand-500);
 }
 
 .featured-product-slider .swiper-pagination-bullet {
-  background-color: #f80053 !important;
+  background-color: var(--color-brand-400) !important;
 }
 
 @keyframes fade-in {

@@ -8,6 +8,7 @@ import Product3DViewer from "./Product3DViewer";
 import { useCart } from "../../context/CartContext";
 import { useWishlist } from "../../context/WishlistContext";
 import { useLoginGate } from "../../context/LoginGateContext";
+import { useToast } from "../../context/ToastContext";
 import { formatCurrency, discountPercent } from "../../utils/formatCurrency";
 import { getStockInfo } from "../../data/products";
 import { IoMdArrowForward } from "react-icons/io";
@@ -16,6 +17,7 @@ export default function ProductQuickView({ product, isOpen, onClose }) {
   const { addItem } = useCart();
   const { toggle, isInWishlist } = useWishlist();
   const { requireAuth } = useLoginGate();
+  const toast = useToast();
   const galleryRef = useRef(null);
 
   const [qty, setQty] = useState(1);
@@ -40,11 +42,19 @@ export default function ProductQuickView({ product, isOpen, onClose }) {
 
   // Add to cart WITHOUT closing the modal - the user stays on the product so
   // they can keep adjusting qty, wishlist it, or open the full details. Requires
-  // sign-in first; once authenticated the item is added silently (no toast) and
-  // the header count updates. Guests get the login modal and nothing is added.
+  // sign-in first; once authenticated the item is added and confirmed with a
+  // toast. Guests get the login modal and nothing is added.
   const handleAdd = (e) => {
     e?.stopPropagation();
-    requireAuth(() => addItem(product, qty));
+    requireAuth(() => {
+      addItem(product, qty);
+      toast.success(`${product.name} added to cart`);
+    });
+  };
+
+  const handleWishlist = () => {
+    const added = toggle(product);
+    toast.success(added ? "Saved to your wishlist" : "Removed from wishlist");
   };
 
   return (
@@ -151,7 +161,7 @@ export default function ProductQuickView({ product, isOpen, onClose }) {
             </Button>
             <Button
               variant="outline"
-              onClick={() => toggle(product)}
+              onClick={handleWishlist}
               icon={Heart}
             >
               {wished ? "Saved" : "Wishlist"}

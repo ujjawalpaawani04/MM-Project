@@ -2,9 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router";
 import { motion, useAnimationControls } from "framer-motion";
 import { Heart } from "lucide-react";
-import { FiSearch, FiHeart, FiShoppingBag, FiUser, FiLogOut } from "react-icons/fi";
+import { FiSearch, FiShoppingBag, FiUser } from "react-icons/fi";
 import { FaBarsStaggered } from "react-icons/fa6";
 import MobileSidebar from "./MobileSidebar";
+import AccountMenu from "./AccountMenu";
 import ThemeToggle from "../common/ThemeToggle";
 import { useCart } from "../../context/CartContext";
 import { useWishlist } from "../../context/WishlistContext";
@@ -68,7 +69,6 @@ const navLinks = [
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [accountOpen, setAccountOpen] = useState(false);
   const [query, setQuery] = useState("");
   const navigate = useNavigate();
 
@@ -79,7 +79,6 @@ const Header = () => {
 
   const handleLogout = () => {
     logout();
-    setAccountOpen(false);
     toast.success("You've been signed out.");
     navigate("/");
   };
@@ -163,61 +162,8 @@ const Header = () => {
 
             {/* Account */}
             {isAuthenticated ? (
-              <div className="relative hidden lg:block">
-                <button
-                  onClick={() => setAccountOpen((o) => !o)}
-                  className="flex items-center gap-1.5 p-1.5 text-gray-800 dark:text-gray-100 hover:text-brand-500 transition-colors"
-                  aria-haspopup="menu"
-                  aria-expanded={accountOpen}
-                  aria-label="Account menu"
-                >
-                  <span className="grid place-items-center w-8 h-8 rounded-full bg-gradient-to-r from-pink-500 to-rose-400 text-white text-sm font-semibold uppercase">
-                    {user.name?.charAt(0) || "U"}
-                  </span>
-                </button>
-                {accountOpen && (
-                  <>
-                    <div
-                      className="fixed inset-0 z-[998]"
-                      onClick={() => setAccountOpen(false)}
-                      aria-hidden="true"
-                    />
-                    <div
-                      role="menu"
-                      className="absolute right-0 top-full mt-2 w-52 rounded-xl bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700 shadow-xl py-2 z-[999]"
-                    >
-                      <div className="px-4 py-2 border-b border-gray-100 dark:border-slate-700">
-                        <p className="text-xs text-gray-400">Signed in as</p>
-                        <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
-                          {user.name}
-                        </p>
-                      </div>
-                      <Link
-                        to="/wishlist"
-                        onClick={() => setAccountOpen(false)}
-                        className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-slate-700/60"
-                        role="menuitem"
-                      >
-                        <FiHeart size={16} /> My Wishlist
-                      </Link>
-                      <Link
-                        to="/track-order"
-                        onClick={() => setAccountOpen(false)}
-                        className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-slate-700/60"
-                        role="menuitem"
-                      >
-                        <FiShoppingBag size={16} /> Track Order
-                      </Link>
-                      <button
-                        onClick={handleLogout}
-                        className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-500 hover:bg-gray-50 dark:hover:bg-slate-700/60"
-                        role="menuitem"
-                      >
-                        <FiLogOut size={16} /> Sign Out
-                      </button>
-                    </div>
-                  </>
-                )}
+              <div className="hidden lg:block">
+                <AccountMenu user={user} onLogout={handleLogout} />
               </div>
             ) : (
               <Link

@@ -5,6 +5,7 @@ import { Heart, ShoppingCart, Eye } from "lucide-react";
 import { useCart } from "../../context/CartContext";
 import { useWishlist } from "../../context/WishlistContext";
 import { useLoginGate } from "../../context/LoginGateContext";
+import { useToast } from "../../context/ToastContext";
 import { formatCurrency, discountPercent } from "../../utils/formatCurrency";
 import { getStockInfo } from "../../data/products";
 import Rating from "../common/Rating";
@@ -14,6 +15,7 @@ function ProductCard({ product, onQuickView, variant = "default", tag }) {
   const { addItem } = useCart();
   const { toggle, isInWishlist } = useWishlist();
   const { requireAuth } = useLoginGate();
+  const toast = useToast();
   const imgRef = useRef(null);
   const compact = variant === "compact";
 
@@ -25,15 +27,18 @@ function ProductCard({ product, onQuickView, variant = "default", tag }) {
   const handleAddToCart = (e) => {
     e.preventDefault();
     if (soldOut) return;
-    // Require sign-in first; once authenticated the item is added silently and
-    // the header count updates. Guests get the login modal and nothing is added.
-    requireAuth(() => addItem(product, 1));
+    // Require sign-in first; once authenticated the item is added and confirmed.
+    // Guests get the login modal and nothing is added.
+    requireAuth(() => {
+      addItem(product, 1);
+      toast.success(`${product.name} added to cart`);
+    });
   };
 
   const handleWishlist = (e) => {
     e.preventDefault();
-    // The heart icon's filled/outline state is the only success feedback - no toast.
-    toggle(product);
+    const added = toggle(product);
+    toast.success(added ? "Saved to your wishlist" : "Removed from wishlist");
   };
 
   const handleQuickView = (e) => {

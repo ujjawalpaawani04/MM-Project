@@ -6,6 +6,7 @@ import { getStockInfo } from "../../../data/products";
 import { useCart } from "../../../context/CartContext";
 import { useWishlist } from "../../../context/WishlistContext";
 import { useLoginGate } from "../../../context/LoginGateContext";
+import { useToast } from "../../../context/ToastContext";
 import { formatCurrency, discountPercent } from "../../../utils/formatCurrency";
 
 import Button from "../../../components/common/Button";
@@ -19,6 +20,7 @@ export default function ProductInfo({ product }) {
   const { addItem } = useCart();
   const { toggle, isInWishlist } = useWishlist();
   const { requireAuth } = useLoginGate();
+  const toast = useToast();
   const [qty, setQty] = useState(1);
 
   const discount = discountPercent(product.originalPrice, product.price);
@@ -28,14 +30,17 @@ export default function ProductInfo({ product }) {
   const wished = isInWishlist(product.id);
 
   const handleAdd = () => {
-    // Require sign-in first; once authenticated the item is added silently and
-    // the header count updates. Guests get the login modal and nothing is added.
-    requireAuth(() => addItem(product, qty));
+    // Require sign-in first; once authenticated the item is added and confirmed.
+    // Guests get the login modal and nothing is added.
+    requireAuth(() => {
+      addItem(product, qty);
+      toast.success(`${product.name} added to cart`);
+    });
   };
 
   const handleWishlist = () => {
-    // The heart button's Saved/Wishlist state is the only success feedback - no toast.
-    toggle(product);
+    const added = toggle(product);
+    toast.success(added ? "Saved to your wishlist" : "Removed from wishlist");
   };
 
   return (

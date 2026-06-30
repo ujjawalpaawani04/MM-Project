@@ -10,6 +10,11 @@ import Rating from "../../../components/common/Rating";
 import FormField from "../../../components/common/form/FormField";
 import TextAreaField from "../../../components/common/form/TextAreaField";
 import Pagination from "../../../components/common/Pagination";
+import {
+  getStoredReviews,
+  addStoredReview,
+  fileToCompressedDataUrl,
+} from "../../../utils/reviews";
 
 const REVIEWS_PER_PAGE = 4;
 
@@ -150,12 +155,29 @@ function RatingSummary({ reviews }) {
 }
 
 /** Full reviews block: summary, paginated review cards, and the review form. */
+// Stored (user-written) reviews first, then the catalog samples.
+const seedReviews = (product) => [
+  ...getStoredReviews(product.id),
+  ...(product.reviews || []),
+];
+
 export default function ProductReviews({ product }) {
-  const [reviews, setReviews] = useState(product.reviews || []);
+  const [reviews, setReviews] = useState(() => seedReviews(product));
   const [rating, setRating] = useState(5);
-  const [images, setImages] = useState([]); // [{ url, name }] - UI-only previews
+  const [images, setImages] = useState([]); // [{ url, name }] base64 previews (persisted)
   const [page, setPage] = useState(1);
   const toast = useToast();
+
+  // Re-seed when navigating between products (the component is reused across
+  // :slug changes, so re-sync during render instead of in an effect).
+  const [activeId, setActiveId] = useState(product.id);
+  if (activeId !== product.id) {
+    setActiveId(product.id);
+    setReviews(seedReviews(product));
+    setImages([]);
+    setRating(5);
+    setPage(1);
+  }
 
   const {
     register,
@@ -175,28 +197,38 @@ export default function ProductReviews({ product }) {
     [reviews, currentPage]
   );
 
-  const handleFiles = (e) => {
+  const handleFiles = async (e) => {
     const files = Array.from(e.target.files || []).slice(0, 4 - images.length);
-    const next = files.map((f) => ({ url: URL.createObjectURL(f), name: f.name }));
-    setImages((prev) => [...prev, ...next].slice(0, 4));
     e.target.value = "";
+    // Compress to downscaled data URLs so previews double as persistable images
+    // (no leaking object URLs, survives refresh).
+    const encoded = await Promise.all(
+      files.map(async (f) => {
+        const url = await fileToCompressedDataUrl(f);
+        return url ? { url, name: f.name } : null;
+      })
+    );
+    setImages((prev) => [...prev, ...encoded.filter(Boolean)].slice(0, 4));
   };
 
   const removeImage = (idx) =>
     setImages((prev) => prev.filter((_, i) => i !== idx));
 
   const submit = (data) => {
-    setReviews((r) => [
-      {
-        name: data.name,
-        comment: data.comment,
-        rating,
-        date: "Just now",
-        verified: false,
-        images: images.map((i) => i.url),
-      },
-      ...r,
-    ]);
+    const review = {
+      name: data.name,
+      comment: data.comment,
+      rating,
+      date: new Intl.DateTimeFormat("en-IN", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      }).format(new Date()),
+      verified: false,
+      images: images.map((i) => i.url),
+    };
+    addStoredReview(product.id, review);
+    setReviews((r) => [review, ...r]);
     reset();
     setRating(5);
     setImages([]);
@@ -316,7 +348,7 @@ export default function ProductReviews({ product }) {
                 )}
               </div>
               <p className="mt-1.5 text-xs text-gray-400 flex items-center gap-1">
-                <FiImage size={12} /> Up to 4 images. Previews only in this demo.
+                <FiImage size={12} /> Up to 4 images, saved with your review.
               </p>
             </div>
 

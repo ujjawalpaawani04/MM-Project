@@ -50,15 +50,42 @@ const write = (orders) => {
   }
 };
 
-/** Generate the next sequential tracking number, e.g. `MM-2026-000124`. */
-function nextTrackingNumber() {
-  let seq = SEQ_START;
+/** Parse the numeric sequence out of a tracking number (NaN if unparseable). */
+const seqOf = (trackingNumber = "") =>
+  parseInt(String(trackingNumber).replace(`MM-${YEAR}-`, ""), 10);
+
+/**
+ * Generate the next sequential tracking number, e.g. `MM-2026-000124`.
+ *
+ * Uniqueness is derived from BOTH the persisted counter and the highest
+ * sequence already present in stored orders. Taking the max of the two keeps
+ * numbers monotonic even if the counter write previously failed (quota/private
+ * mode), so two orders can never share a tracking number while orders persist.
+ */
+function nextTrackingNumber(existingOrders = []) {
+  let storedSeq = NaN;
   try {
-    const stored = parseInt(localStorage.getItem(SEQ_KEY), 10);
-    seq = Number.isFinite(stored) ? stored + 1 : SEQ_START;
+    storedSeq = parseInt(localStorage.getItem(SEQ_KEY), 10);
+  } catch {
+    /* ignore - counter unavailable, fall back to order-derived sequence */
+  }
+
+  const highestOrderSeq = existingOrders.reduce((max, o) => {
+    const n = seqOf(o.trackingNumber);
+    return Number.isFinite(n) && n > max ? n : max;
+  }, SEQ_START - 1);
+
+  const base = Math.max(
+    SEQ_START - 1,
+    Number.isFinite(storedSeq) ? storedSeq : SEQ_START - 1,
+    highestOrderSeq
+  );
+  const seq = base + 1;
+
+  try {
     localStorage.setItem(SEQ_KEY, String(seq));
   } catch {
-    /* ignore - fall back to base sequence */
+    /* ignore - next call re-derives from stored orders */
   }
   return `MM-${YEAR}-${String(seq).padStart(6, "0")}`;
 }
@@ -71,7 +98,8 @@ const addDays = (ms, days) => ms + days * MS_PER_DAY;
  */
 export function createOrder({ customer, items, subtotal, shipping, total }) {
   const placedAt = Date.now();
-  const trackingNumber = nextTrackingNumber();
+  const orders = read();
+  const trackingNumber = nextTrackingNumber(orders);
   const order = {
     orderNumber: trackingNumber.replace(`MM-${YEAR}-`, "#MM"),
     trackingNumber,
@@ -93,7 +121,6 @@ export function createOrder({ customer, items, subtotal, shipping, total }) {
     total,
   };
 
-  const orders = read();
   orders.unshift(order);
   write(orders);
   return order;
@@ -131,6 +158,18 @@ const DEMO_ORDERS = [
 ];
 
 const normalize = (s = "") => s.trim().toUpperCase().replace(/\s+/g, "");
+
+/**
+ * All orders placed by a given user (most recent first), matched on the email
+ * captured at checkout. Returns [] when signed out or no orders exist.
+ */
+export function getUserOrders(email) {
+  const target = (email || "").trim().toLowerCase();
+  if (!target) return [];
+  return read()
+    .filter((o) => (o.customer?.email || "").trim().toLowerCase() === target)
+    .sort((a, b) => b.placedAt - a.placedAt);
+}
 
 /** Find an order by tracking number or order number. Returns null if absent. */
 export function findOrder(query) {

@@ -9,6 +9,7 @@ import { FaFacebookF, FaInstagram, FaYoutube } from "react-icons/fa";
 import { useAuth } from "../../context/AuthContext";
 import { useCart } from "../../context/CartContext";
 import { useWishlist } from "../../context/WishlistContext";
+import { ACCOUNT_NAV } from "./accountNav";
 
 import logo from "../../assets/website/mmLogo.png";
 
@@ -247,18 +248,34 @@ const MobileSidebar = ({ isOpen, onClose }) => {
                 {isAuthenticated ? (
                   <div className="space-y-3">
                     <div className="flex items-center gap-3">
-                      <span className="grid h-10 w-10 place-items-center rounded-full bg-gradient-to-r from-pink-500 to-rose-400 text-sm font-semibold uppercase text-white">
+                      <span className="grid h-11 w-11 place-items-center rounded-full bg-gradient-to-r from-pink-500 to-rose-400 text-base font-semibold uppercase text-white">
                         {user.name?.charAt(0) || "U"}
                       </span>
                       <div className="min-w-0">
-                        <p className="text-xs text-gray-400 dark:text-slate-400">
-                          Signed in as
-                        </p>
                         <p className="truncate font-semibold text-gray-900 dark:text-white">
                           {user.name}
                         </p>
+                        <p className="truncate text-xs text-gray-500 dark:text-slate-400">
+                          {user.email}
+                        </p>
                       </div>
                     </div>
+
+                    {/* Account links (parity with the desktop dropdown) */}
+                    <div className="grid grid-cols-2 gap-2">
+                      {ACCOUNT_NAV.map(({ label, to, icon: Icon }) => (
+                        <Link
+                          key={to}
+                          to={to}
+                          onClick={onClose}
+                          className="flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:border-brand-300 hover:text-brand-500 dark:border-slate-700 dark:bg-slate-800 dark:text-gray-200 dark:hover:border-brand-400/60"
+                        >
+                          <Icon size={16} className="shrink-0" />
+                          <span className="truncate">{label}</span>
+                        </Link>
+                      ))}
+                    </div>
+
                     <button
                       onClick={() => {
                         logout();

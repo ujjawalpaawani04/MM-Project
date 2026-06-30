@@ -1,6 +1,7 @@
 import { useForm } from "react-hook-form";
 import { useToast } from "../../../context/ToastContext";
 import { VALIDATION } from "../../../utils/validators";
+import { subscribeToNewsletter } from "../../../utils/forms";
 
 const Newsletter = () => {
   const toast = useToast();
@@ -12,8 +13,12 @@ const Newsletter = () => {
   } = useForm({ defaultValues: { email: "" } });
 
   const subscribe = (data) => {
-    console.info("Newsletter subscribe:", data.email);
-    toast.success("You're on the list - watch your inbox for first looks ✨");
+    const result = subscribeToNewsletter(data.email);
+    if (result === "exists") {
+      toast.info("You're already on the list ✨");
+    } else {
+      toast.success("You're on the list - watch your inbox for first looks ✨");
+    }
     reset();
   };
 

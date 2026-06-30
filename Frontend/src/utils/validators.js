@@ -5,6 +5,19 @@
 export const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export const PHONE_PATTERN = /^[+]?[\d\s-]{10,15}$/;
 
+/**
+ * Validate a single field that accepts EITHER an email or a mobile number.
+ * Returns true when valid, or an error string (react-hook-form `validate` shape).
+ */
+export const validateIdentifier = (value) => {
+  const v = (value || "").trim();
+  return (
+    EMAIL_PATTERN.test(v) ||
+    PHONE_PATTERN.test(v) ||
+    "Enter a valid email or mobile number"
+  );
+};
+
 export const VALIDATION = {
   required: (label = "This field") => ({
     required: `${label} is required`,

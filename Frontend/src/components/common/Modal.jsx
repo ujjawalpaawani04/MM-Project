@@ -28,16 +28,57 @@ export default function Modal({
 
   useEffect(() => {
     if (!isOpen) return;
-    const onKey = (e) => e.key === "Escape" && onClose?.();
+
+    const FOCUSABLE =
+      'a[href],button:not([disabled]),textarea,input,select,[tabindex]:not([tabindex="-1"])';
+    const focusable = () =>
+      Array.from(panelRef.current?.querySelectorAll(FOCUSABLE) || []).filter(
+        (el) => el.offsetParent !== null
+      );
+
+    const onKey = (e) => {
+      if (e.key === "Escape") {
+        onClose?.();
+        return;
+      }
+      // Trap Tab focus inside the dialog so keyboard users can't tab out into the
+      // page behind the modal.
+      if (e.key === "Tab") {
+        const items = focusable();
+        if (items.length === 0) {
+          e.preventDefault();
+          panelRef.current?.focus();
+          return;
+        }
+        const first = items[0];
+        const last = items[items.length - 1];
+        const active = document.activeElement;
+        if (e.shiftKey && (active === first || active === panelRef.current)) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && active === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    };
+
     document.addEventListener("keydown", onKey);
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    // Move focus into the dialog for keyboard users.
-    const id = requestAnimationFrame(() => panelRef.current?.focus());
+    // Remember what was focused before opening so we can restore it on close.
+    const previouslyFocused = document.activeElement;
+    // Move focus to the first focusable control (or the dialog) for keyboard users.
+    const id = requestAnimationFrame(() => {
+      const items = focusable();
+      (items[0] || panelRef.current)?.focus();
+    });
     return () => {
       document.removeEventListener("keydown", onKey);
       document.body.style.overflow = prevOverflow;
       cancelAnimationFrame(id);
+      // Restore focus to the trigger element for a seamless keyboard flow.
+      if (previouslyFocused instanceof HTMLElement) previouslyFocused.focus();
     };
   }, [isOpen, onClose]);
 

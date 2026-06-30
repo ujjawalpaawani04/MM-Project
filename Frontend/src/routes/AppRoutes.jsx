@@ -27,6 +27,14 @@ const ForgotPassword = lazy(() => import("../pages/Auth/ForgotPassword"));
 const NotFound = lazy(() => import("../pages/NotFound/NotFound"));
 const Community = lazy(() => import("../pages/Community/Community"));
 
+// Authenticated account section.
+const Profile = lazy(() => import("../pages/Account/Profile"));
+const Orders = lazy(() => import("../pages/Account/Orders"));
+const Addresses = lazy(() => import("../pages/Account/Addresses"));
+const Notifications = lazy(() => import("../pages/Account/Notifications"));
+const Settings = lazy(() => import("../pages/Account/Settings"));
+const Help = lazy(() => import("../pages/Account/Help"));
+
 const withSuspense = (Component) => (
   <Suspense fallback={<RouteFallback />}>
     <Component />
@@ -55,8 +63,17 @@ const router = createBrowserRouter([
       { path: "login", element: withSuspense(Login) },
       { path: "signup", element: withSuspense(Signup) },
       { path: "forgot-password", element: withSuspense(ForgotPassword) },
+      { path: "community", element: withSuspense(Community) },
+
+      // Account section
+      { path: "account", element: withSuspense(Profile) },
+      { path: "orders", element: withSuspense(Orders) },
+      { path: "addresses", element: withSuspense(Addresses) },
+      { path: "notifications", element: withSuspense(Notifications) },
+      { path: "settings", element: withSuspense(Settings) },
+      { path: "help", element: withSuspense(Help) },
+
       { path: "*", element: withSuspense(NotFound) },
-            { path: "community", element: withSuspense(Community) },
     ],
   },
 ]);

@@ -8,7 +8,7 @@ import Button from "../common/Button";
 import FormField from "../common/form/FormField";
 import PasswordField from "../common/form/PasswordField";
 import { useAuth } from "../../context/AuthContext";
-import { EMAIL_PATTERN, PHONE_PATTERN } from "../../utils/validators";
+import { VALIDATION, validateIdentifier } from "../../utils/validators";
 
 import logo from "../../assets/website/mmLogo.png";
 
@@ -22,17 +22,6 @@ import logo from "../../assets/website/mmLogo.png";
  * LoginGate uses to resume whatever the user was trying to do (e.g. add the
  * product they just clicked) and close the modal.
  */
-
-// Accepts either a valid email OR a valid mobile number in the single identifier
-// field (mirrors the validation rules used across the site's forms).
-const validateIdentifier = (value) => {
-  const v = (value || "").trim();
-  return (
-    EMAIL_PATTERN.test(v) ||
-    PHONE_PATTERN.test(v) ||
-    "Enter a valid email or mobile number"
-  );
-};
 
 export default function LoginModal({ isOpen, onClose, onAuthenticated }) {
   const { login, signup } = useAuth();
@@ -128,13 +117,7 @@ export default function LoginModal({ isOpen, onClose, onAuthenticated }) {
               placeholder="Your name"
               autoComplete="name"
               error={errors.name?.message}
-              {...register("name", {
-                required: "Name is required",
-                minLength: {
-                  value: 2,
-                  message: "Please enter at least 2 characters",
-                },
-              })}
+              {...register("name", VALIDATION.name)}
             />
           )}
 
@@ -159,13 +142,7 @@ export default function LoginModal({ isOpen, onClose, onAuthenticated }) {
             }
             autoComplete={isLogin ? "current-password" : "new-password"}
             error={errors.password?.message}
-            {...register("password", {
-              required: "Password is required",
-              minLength: {
-                value: 6,
-                message: "Password must be at least 6 characters",
-              },
-            })}
+            {...register("password", VALIDATION.password)}
           />
 
           {!isLogin && (

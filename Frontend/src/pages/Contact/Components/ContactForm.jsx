@@ -21,6 +21,7 @@ import SelectField from "../../../components/common/form/SelectField";
 import Button from "../../../components/common/Button";
 import { useToast } from "../../../context/ToastContext";
 import { VALIDATION } from "../../../utils/validators";
+import { saveContactRequest } from "../../../utils/forms";
 
 const info = [
   {
@@ -84,8 +85,8 @@ export default function ContactForm() {
 
   const onSubmit = async (data) => {
     await new Promise((r) => setTimeout(r, 600));
-    // No backend - log for demo and confirm to the user.
-    console.info("Contact request:", data);
+    // No backend - persist locally so the request isn't silently lost.
+    saveContactRequest(data);
     toast.success("Message sent! We'll get back to you within 24 hours.");
     reset();
     setFileName(null);
