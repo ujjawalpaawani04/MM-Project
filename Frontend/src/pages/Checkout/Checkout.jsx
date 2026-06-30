@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { FiShoppingBag } from "react-icons/fi";
 import { useCart } from "../../context/CartContext";
+import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../context/ToastContext";
 import { EMAIL_PATTERN } from "../../utils/validators";
 import { createOrder } from "../../utils/orders";
+import { getProfile, getAddresses } from "../../utils/forms";
 import CheckoutHero from "./Components/CheckoutHero";
 import OrderConfirmation from "./Components/OrderConfirmation";
 import ShippingForm from "./Components/ShippingForm";
@@ -60,21 +62,41 @@ const FIELDS = [
 
 export default function Checkout() {
   const { items, subtotal, shipping, total, clearCart } = useCart();
+  const { user } = useAuth();
   const toast = useToast();
   const [placed, setPlaced] = useState(null);
+
+  // Pre-fill the shipping form for signed-in users from their profile and
+  // default saved address - faster checkout and fewer typos.
+  const defaultValues = useMemo(() => {
+    const blank = Object.fromEntries(FIELDS.map((f) => [f.name, ""]));
+    if (!user?.email) return blank;
+    const profile = getProfile(user.email);
+    const [defaultAddress] = getAddresses(user.email);
+    return {
+      ...blank,
+      fullName: user.name || "",
+      email: user.email || "",
+      phone: profile.phone || defaultAddress?.phone || "",
+      address: defaultAddress?.address || "",
+      city: defaultAddress?.city || "",
+      state: defaultAddress?.state || "",
+      pincode: defaultAddress?.pin || "",
+    };
+  }, [user]);
 
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm({
-    defaultValues: Object.fromEntries(FIELDS.map((f) => [f.name, ""])),
-  });
+  } = useForm({ defaultValues });
 
   const placeOrder = async (data) => {
     await new Promise((r) => setTimeout(r, 600));
     // Persist the order (generates a unique tracking number) BEFORE clearing.
+    // Linked to the signed-in account so it appears under their My Orders.
     const order = createOrder({
+      userEmail: user?.email,
       customer: data,
       items,
       subtotal,

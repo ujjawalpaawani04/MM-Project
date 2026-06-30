@@ -4,6 +4,7 @@ import { RouterProvider } from "react-router/dom";
 
 import WebsiteLayout from "../layouts/WebsiteLayout";
 import RouteFallback from "../components/common/RouteFallback";
+import ProtectedRoute from "../components/auth/ProtectedRoute";
 
 // Eager: the landing page is the most common entry point.
 import Home from "../pages/Home/Home";
@@ -41,6 +42,12 @@ const withSuspense = (Component) => (
   </Suspense>
 );
 
+// Account routes require an authenticated session - guests are bounced to
+// /login (and returned here afterwards).
+const protectedRoute = (Component) => (
+  <ProtectedRoute>{withSuspense(Component)}</ProtectedRoute>
+);
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -65,13 +72,13 @@ const router = createBrowserRouter([
       { path: "forgot-password", element: withSuspense(ForgotPassword) },
       { path: "community", element: withSuspense(Community) },
 
-      // Account section
-      { path: "account", element: withSuspense(Profile) },
-      { path: "orders", element: withSuspense(Orders) },
-      { path: "addresses", element: withSuspense(Addresses) },
-      { path: "notifications", element: withSuspense(Notifications) },
-      { path: "settings", element: withSuspense(Settings) },
-      { path: "help", element: withSuspense(Help) },
+      // Account section (auth-guarded)
+      { path: "account", element: protectedRoute(Profile) },
+      { path: "orders", element: protectedRoute(Orders) },
+      { path: "addresses", element: protectedRoute(Addresses) },
+      { path: "notifications", element: protectedRoute(Notifications) },
+      { path: "settings", element: protectedRoute(Settings) },
+      { path: "help", element: protectedRoute(Help) },
 
       { path: "*", element: withSuspense(NotFound) },
     ],

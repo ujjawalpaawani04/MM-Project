@@ -92,20 +92,40 @@ function nextTrackingNumber(existingOrders = []) {
 
 const addDays = (ms, days) => ms + days * MS_PER_DAY;
 
+/** Lowercase/trim an email for stable identity comparison. */
+const normalizeEmail = (email) => String(email || "").trim().toLowerCase();
+
 /**
  * Create and persist an order from checkout details + the current cart.
  * Returns the stored order (including its tracking number).
+ *
+ * The order is linked to the authenticated account via `userEmail` (the stable
+ * identity from the auth session), independent of whatever email is typed into
+ * the shipping form. This is what guarantees the order shows up under that
+ * user's "My Orders" - and only theirs - after logout/login.
  */
-export function createOrder({ customer, items, subtotal, shipping, total }) {
+export function createOrder({
+  userEmail,
+  customer,
+  items,
+  subtotal,
+  shipping,
+  total,
+  paymentMethod = "Cash on Delivery",
+}) {
   const placedAt = Date.now();
   const orders = read();
   const trackingNumber = nextTrackingNumber(orders);
   const order = {
     orderNumber: trackingNumber.replace(`MM-${YEAR}-`, "#MM"),
     trackingNumber,
+    // Owner of the order (the signed-in account). Falls back to the typed
+    // checkout email for guest checkouts.
+    userEmail: normalizeEmail(userEmail || customer?.email),
     placedAt,
     estimatedDeliveryAt: addDays(placedAt, 6),
     carrier: "MohanMaya Express",
+    paymentMethod,
     customer,
     items: items.map((i) => ({
       id: i.id,
@@ -160,14 +180,20 @@ const DEMO_ORDERS = [
 const normalize = (s = "") => s.trim().toUpperCase().replace(/\s+/g, "");
 
 /**
- * All orders placed by a given user (most recent first), matched on the email
- * captured at checkout. Returns [] when signed out or no orders exist.
+ * All orders owned by a given user (most recent first). Matches the account
+ * `userEmail` stamped at checkout, and falls back to the typed checkout email
+ * so orders placed before this link existed (and seeded demo orders) still
+ * resolve. Returns [] when signed out or no orders exist.
  */
 export function getUserOrders(email) {
-  const target = (email || "").trim().toLowerCase();
+  const target = normalizeEmail(email);
   if (!target) return [];
   return read()
-    .filter((o) => (o.customer?.email || "").trim().toLowerCase() === target)
+    .filter(
+      (o) =>
+        normalizeEmail(o.userEmail) === target ||
+        normalizeEmail(o.customer?.email) === target
+    )
     .sort((a, b) => b.placedAt - a.placedAt);
 }
 
@@ -213,5 +239,23 @@ export function getOrderStatus(order) {
     steps,
     statusLabel: STATUS_STEPS[currentStep].label,
     isDelivered: currentStep === STATUS_STEPS.length - 1,
+  };
+}
+
+/**
+ * Derive a payment status for display. Cash-on-Delivery is "Pending" until the
+ * order is delivered, then "Paid"; prepaid methods read "Paid" from the start.
+ * Returns { label, tone } where tone keys into a tailwind colour set.
+ */
+export function getPaymentStatus(order) {
+  const method = order.paymentMethod || "Cash on Delivery";
+  const isCOD = /cash on delivery|cod/i.test(method);
+  const { isDelivered } = getOrderStatus(order);
+  const paid = !isCOD || isDelivered;
+  return {
+    method,
+    paid,
+    label: paid ? "Paid" : "Pending",
+    tone: paid ? "success" : "pending",
   };
 }

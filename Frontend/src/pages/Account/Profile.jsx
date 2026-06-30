@@ -1,6 +1,6 @@
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import { useForm } from "react-hook-form";
-import { FiUser, FiPackage, FiHeart, FiSave } from "react-icons/fi";
+import { FiUser, FiPackage, FiHeart, FiSave, FiCamera, FiTrash2 } from "react-icons/fi";
 import { FaCheckCircle } from "react-icons/fa";
 
 import { useAuth } from "../../context/AuthContext";
@@ -12,6 +12,28 @@ import { VALIDATION } from "../../utils/validators";
 import AccountLayout, { AccountCard, Button } from "./AccountLayout";
 import FormField from "../../components/common/form/FormField";
 import SelectField from "../../components/common/form/SelectField";
+
+const MAX_AVATAR_BYTES = 1024 * 1024; // 1 MB cap keeps localStorage healthy.
+
+/** Round avatar showing the uploaded image, or the user's initial as fallback. */
+function Avatar({ src, initial, size = "w-20 h-20 text-2xl" }) {
+  if (src) {
+    return (
+      <img
+        src={src}
+        alt="Profile"
+        className={`${size} rounded-full object-cover shadow-md`}
+      />
+    );
+  }
+  return (
+    <span
+      className={`grid place-items-center ${size} rounded-full bg-gradient-to-br from-pink-500 to-rose-400 text-white font-bold uppercase shadow-md`}
+    >
+      {initial}
+    </span>
+  );
+}
 
 function Stat({ icon: Icon, label, value }) {
   return (
@@ -30,9 +52,10 @@ function Stat({ icon: Icon, label, value }) {
 }
 
 export default function Profile() {
-  const { user } = useAuth();
+  const { user, updateAccount } = useAuth();
   const { count: wishlistCount } = useWishlist();
   const toast = useToast();
+  const fileRef = useRef(null);
   const verified = user?.verified !== false;
   const initial = user?.name?.trim()?.charAt(0)?.toUpperCase() || "U";
 
@@ -57,8 +80,37 @@ export default function Profile() {
 
   const onSubmit = async (data) => {
     await new Promise((r) => setTimeout(r, 400));
-    saveProfile(user?.email, data);
+    const { name, ...extras } = data;
+    saveProfile(user?.email, extras);
+    // Name lives on the auth record so the header/menu/avatar update instantly.
+    updateAccount({ name });
     toast.success("Profile updated");
+  };
+
+  const onPickAvatar = (e) => {
+    const file = e.target.files?.[0];
+    e.target.value = ""; // allow re-selecting the same file
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please choose an image file.");
+      return;
+    }
+    if (file.size > MAX_AVATAR_BYTES) {
+      toast.error("Image is too large (max 1 MB).");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      updateAccount({ avatar: reader.result });
+      toast.success("Profile picture updated");
+    };
+    reader.onerror = () => toast.error("Couldn't read that image.");
+    reader.readAsDataURL(file);
+  };
+
+  const removeAvatar = () => {
+    updateAccount({ avatar: null });
+    toast.info("Profile picture removed");
   };
 
   return (
@@ -71,9 +123,26 @@ export default function Profile() {
         {/* Identity card */}
         <AccountCard>
           <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-            <span className="grid place-items-center w-20 h-20 rounded-full bg-gradient-to-br from-pink-500 to-rose-400 text-white text-2xl font-bold uppercase shadow-md">
-              {initial}
-            </span>
+            <div className="relative shrink-0">
+              <Avatar src={user?.avatar} initial={initial} />
+              <button
+                type="button"
+                onClick={() => fileRef.current?.click()}
+                aria-label="Change profile picture"
+                className="absolute -bottom-1 -right-1 grid place-items-center w-8 h-8 rounded-full bg-brand-500 text-white shadow-md ring-2 ring-white dark:ring-slate-800 hover:bg-brand-600 transition-colors"
+              >
+                <FiCamera size={15} />
+              </button>
+              <input
+                ref={fileRef}
+                type="file"
+                accept="image/*"
+                onChange={onPickAvatar}
+                className="sr-only"
+                aria-hidden="true"
+                tabIndex={-1}
+              />
+            </div>
             <div className="min-w-0">
               <h2 className="flex items-center gap-2 text-xl font-bold text-gray-900 dark:text-white">
                 {user?.name}
@@ -86,6 +155,24 @@ export default function Profile() {
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
                 {user?.email}
               </p>
+              <div className="mt-2 flex items-center gap-3 text-xs">
+                <button
+                  type="button"
+                  onClick={() => fileRef.current?.click()}
+                  className="font-medium text-brand-500 hover:underline"
+                >
+                  Change photo
+                </button>
+                {user?.avatar && (
+                  <button
+                    type="button"
+                    onClick={removeAvatar}
+                    className="inline-flex items-center gap-1 font-medium text-red-500 hover:underline"
+                  >
+                    <FiTrash2 size={12} /> Remove
+                  </button>
+                )}
+              </div>
             </div>
           </div>
 

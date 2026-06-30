@@ -1,14 +1,23 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router";
-import { FiMail, FiUser, FiLogIn, FiUserPlus, FiX } from "react-icons/fi";
+import {
+  FiMail,
+  FiUser,
+  FiLogIn,
+  FiUserPlus,
+  FiX,
+  FiAlertCircle,
+} from "react-icons/fi";
 
 import Modal from "../common/Modal";
 import Button from "../common/Button";
 import FormField from "../common/form/FormField";
 import PasswordField from "../common/form/PasswordField";
+import PasswordStrengthMeter from "../common/form/PasswordStrengthMeter";
 import { useAuth } from "../../context/AuthContext";
 import { VALIDATION, validateIdentifier } from "../../utils/validators";
+import { isAcceptablePassword } from "../../utils/passwordStrength";
 
 import logo from "../../assets/website/mmLogo.png";
 
@@ -31,7 +40,10 @@ export default function LoginModal({ isOpen, onClose, onAuthenticated }) {
     register,
     handleSubmit,
     reset,
+    watch,
     getValues,
+    setError,
+    clearErrors,
     formState: { errors, isSubmitting },
   } = useForm({
     defaultValues: {
@@ -62,12 +74,25 @@ export default function LoginModal({ isOpen, onClose, onAuthenticated }) {
   };
 
   const onSubmit = async (data) => {
+    clearErrors("root");
     // Simulated latency for a realistic feel (no backend in this project).
     await new Promise((r) => setTimeout(r, 600));
-    if (mode === "login") {
-      login({ email: data.identifier.trim() });
-    } else {
-      signup({ name: data.name.trim(), email: data.identifier.trim() });
+    const result =
+      mode === "login"
+        ? login({
+            email: data.identifier.trim(),
+            password: data.password,
+            remember: data.remember,
+          })
+        : signup({
+            name: data.name.trim(),
+            email: data.identifier.trim(),
+            password: data.password,
+          });
+
+    if (!result.ok) {
+      setError("root", { message: result.error });
+      return;
     }
     // Hand control back to the gate so it can run the pending action (add to
     // cart) and dismiss. Silent by design - no toast/notification.
@@ -109,6 +134,16 @@ export default function LoginModal({ isOpen, onClose, onAuthenticated }) {
           noValidate
           className="mt-7 space-y-5"
         >
+          {errors.root?.message && (
+            <div
+              role="alert"
+              className="flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 dark:border-red-500/30 dark:bg-red-500/10 px-3.5 py-3 text-sm text-red-600 dark:text-red-300"
+            >
+              <FiAlertCircle className="mt-0.5 shrink-0" />
+              <span>{errors.root.message}</span>
+            </div>
+          )}
+
           {!isLogin && (
             <FormField
               label="Full Name"
@@ -134,16 +169,32 @@ export default function LoginModal({ isOpen, onClose, onAuthenticated }) {
             })}
           />
 
-          <PasswordField
-            label="Password"
-            required
-            placeholder={
-              isLogin ? "Enter your password" : "At least 6 characters"
-            }
-            autoComplete={isLogin ? "current-password" : "new-password"}
-            error={errors.password?.message}
-            {...register("password", VALIDATION.password)}
-          />
+          <div>
+            <PasswordField
+              label="Password"
+              required
+              placeholder={
+                isLogin ? "Enter your password" : "At least 8 characters"
+              }
+              autoComplete={isLogin ? "current-password" : "new-password"}
+              error={errors.password?.message}
+              {...register("password", {
+                required: "Password is required",
+                minLength: {
+                  value: 6,
+                  message: "Password must be at least 6 characters",
+                },
+                validate: isLogin
+                  ? undefined
+                  : (v) =>
+                      isAcceptablePassword(v) ||
+                      "Please choose a stronger password.",
+              })}
+            />
+            {!isLogin && (
+              <PasswordStrengthMeter value={watch("password")} showChecklist={false} />
+            )}
+          </div>
 
           {!isLogin && (
             <PasswordField

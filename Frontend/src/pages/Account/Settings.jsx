@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Link } from "react-router";
+import { useForm } from "react-hook-form";
+import { Link, useNavigate } from "react-router";
 import {
   FiSettings,
   FiSun,
@@ -7,13 +8,24 @@ import {
   FiUser,
   FiMapPin,
   FiChevronRight,
+  FiLock,
+  FiLogOut,
+  FiTrash2,
+  FiAlertTriangle,
+  FiShield,
+  FiCheckCircle,
 } from "react-icons/fi";
 
 import { useTheme } from "../../context/ThemeContext";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../context/ToastContext";
 import { getProfile, saveProfile } from "../../utils/forms";
-import AccountLayout, { AccountCard } from "./AccountLayout";
+import { isAcceptablePassword } from "../../utils/passwordStrength";
+import AccountLayout, { AccountCard, Button } from "./AccountLayout";
+import FormField from "../../components/common/form/FormField";
+import PasswordField from "../../components/common/form/PasswordField";
+import PasswordStrengthMeter from "../../components/common/form/PasswordStrengthMeter";
+import Modal from "../../components/common/Modal";
 
 /** Accessible on/off switch. */
 function Toggle({ checked, onChange, label }) {
@@ -51,10 +63,171 @@ function Row({ title, description, children }) {
   );
 }
 
+/* --------------------------------------------------------- change password */
+function ChangePasswordForm() {
+  const { changePassword } = useAuth();
+  const toast = useToast();
+  const {
+    register,
+    handleSubmit,
+    watch,
+    reset,
+    setError,
+    clearErrors,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    defaultValues: { current: "", next: "", confirm: "" },
+  });
+
+  const onSubmit = async (data) => {
+    clearErrors("root");
+    await new Promise((r) => setTimeout(r, 400));
+    const result = changePassword(data.current, data.next);
+    if (!result.ok) {
+      setError("root", { message: result.error });
+      return;
+    }
+    reset();
+    toast.success("Password changed successfully.");
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
+      {errors.root?.message && (
+        <div
+          role="alert"
+          className="flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 dark:border-red-500/30 dark:bg-red-500/10 px-3.5 py-3 text-sm text-red-600 dark:text-red-300"
+        >
+          <FiAlertTriangle className="mt-0.5 shrink-0" />
+          <span>{errors.root.message}</span>
+        </div>
+      )}
+      <PasswordField
+        label="Current Password"
+        required
+        autoComplete="current-password"
+        error={errors.current?.message}
+        {...register("current", { required: "Enter your current password" })}
+      />
+      <div>
+        <PasswordField
+          label="New Password"
+          required
+          placeholder="At least 8 characters"
+          autoComplete="new-password"
+          error={errors.next?.message}
+          {...register("next", {
+            required: "Enter a new password",
+            validate: (v) =>
+              isAcceptablePassword(v) || "Please choose a stronger password.",
+          })}
+        />
+        <PasswordStrengthMeter value={watch("next")} />
+      </div>
+      <PasswordField
+        label="Confirm New Password"
+        required
+        autoComplete="new-password"
+        error={errors.confirm?.message}
+        {...register("confirm", {
+          required: "Please confirm your new password",
+          validate: (value, values) =>
+            value === values.next || "Passwords do not match",
+        })}
+      />
+      <div className="flex justify-end pt-1">
+        <Button type="submit" icon={FiLock} loading={isSubmitting}>
+          Update Password
+        </Button>
+      </div>
+    </form>
+  );
+}
+
+/* ------------------------------------------------------------ delete modal */
+function DeleteAccountModal({ open, onClose }) {
+  const { deleteAccount } = useAuth();
+  const toast = useToast();
+  const navigate = useNavigate();
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setError,
+    clearErrors,
+    formState: { errors, isSubmitting },
+  } = useForm({ defaultValues: { password: "", confirm: "" } });
+
+  const close = () => {
+    reset();
+    onClose();
+  };
+
+  const onSubmit = async (data) => {
+    clearErrors("root");
+    await new Promise((r) => setTimeout(r, 500));
+    const result = deleteAccount(data.password);
+    if (!result.ok) {
+      setError("root", { message: result.error });
+      return;
+    }
+    toast.success("Your account has been deleted.");
+    navigate("/", { replace: true });
+  };
+
+  return (
+    <Modal isOpen={open} onClose={close} size="sm" title="Delete account">
+      <form onSubmit={handleSubmit(onSubmit)} noValidate className="p-5 pt-4 space-y-4">
+        <div className="flex items-start gap-3 rounded-xl bg-red-50 dark:bg-red-500/10 p-3.5">
+          <FiAlertTriangle className="mt-0.5 shrink-0 text-red-500" />
+          <p className="text-sm text-red-600 dark:text-red-300">
+            This permanently removes your profile, addresses, orders, cart and
+            wishlist on this device. This cannot be undone.
+          </p>
+        </div>
+
+        {errors.root?.message && (
+          <p role="alert" className="text-sm text-red-500">
+            {errors.root.message}
+          </p>
+        )}
+
+        <PasswordField
+          label="Confirm your password"
+          required
+          autoComplete="current-password"
+          error={errors.password?.message}
+          {...register("password", { required: "Password is required" })}
+        />
+        <FormField
+          label='Type "DELETE" to confirm'
+          required
+          placeholder="DELETE"
+          error={errors.confirm?.message}
+          {...register("confirm", {
+            required: "Please type DELETE to confirm",
+            validate: (v) => v === "DELETE" || 'Type "DELETE" exactly',
+          })}
+        />
+
+        <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-1">
+          <Button variant="ghost" onClick={close} type="button">
+            Cancel
+          </Button>
+          <Button type="submit" variant="danger" icon={FiTrash2} loading={isSubmitting}>
+            Delete forever
+          </Button>
+        </div>
+      </form>
+    </Modal>
+  );
+}
+
 export default function Settings() {
   const { theme, setTheme } = useTheme();
-  const { user } = useAuth();
+  const { user, logoutEverywhere } = useAuth();
   const toast = useToast();
+  const navigate = useNavigate();
   const isDark = theme === "dark";
 
   const stored = getProfile(user?.email);
@@ -63,6 +236,8 @@ export default function Settings() {
     promotions: stored.prefPromotions ?? true,
     newsletter: stored.prefNewsletter ?? false,
   });
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [logoutAllOpen, setLogoutAllOpen] = useState(false);
 
   const updatePref = (key, value) => {
     const next = { ...prefs, [key]: value };
@@ -75,10 +250,19 @@ export default function Settings() {
     toast.success("Preferences saved");
   };
 
+  const confirmLogoutAll = () => {
+    setLogoutAllOpen(false);
+    const result = logoutEverywhere();
+    if (result.ok) {
+      toast.success("Signed out on all devices.");
+      navigate("/login", { replace: true });
+    }
+  };
+
   return (
     <AccountLayout
       title="Settings"
-      description="Personalise your experience and notification preferences."
+      description="Personalise your experience, security and notification preferences."
       icon={FiSettings}
     >
       <div className="space-y-6">
@@ -90,9 +274,7 @@ export default function Settings() {
                 onClick={() => setTheme("light")}
                 aria-pressed={!isDark}
                 className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
-                  !isDark
-                    ? "bg-brand-500 text-white"
-                    : "text-gray-600 dark:text-gray-300"
+                  !isDark ? "bg-brand-500 text-white" : "text-gray-600 dark:text-gray-300"
                 }`}
               >
                 <FiSun size={15} /> Light
@@ -101,15 +283,22 @@ export default function Settings() {
                 onClick={() => setTheme("dark")}
                 aria-pressed={isDark}
                 className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
-                  isDark
-                    ? "bg-brand-500 text-white"
-                    : "text-gray-600 dark:text-gray-300"
+                  isDark ? "bg-brand-500 text-white" : "text-gray-600 dark:text-gray-300"
                 }`}
               >
                 <FiMoon size={15} /> Dark
               </button>
             </div>
           </Row>
+        </AccountCard>
+
+        {/* Security */}
+        <AccountCard title="Security">
+          <div className="mb-5 flex items-center gap-2 rounded-xl bg-brand-50 dark:bg-brand-500/10 px-3.5 py-2.5 text-sm text-brand-700 dark:text-brand-300">
+            <FiShield className="shrink-0" />
+            Choose a strong, unique password you don't use elsewhere.
+          </div>
+          <ChangePasswordForm />
         </AccountCard>
 
         {/* Notifications */}
@@ -156,9 +345,67 @@ export default function Settings() {
                 <FiChevronRight className="text-gray-400" />
               </Link>
             ))}
+            <Row
+              title="Log out everywhere"
+              description="Sign out of this account on all devices."
+            >
+              <Button
+                size="sm"
+                variant="outline"
+                icon={FiLogOut}
+                onClick={() => setLogoutAllOpen(true)}
+              >
+                Sign out all
+              </Button>
+            </Row>
           </div>
         </AccountCard>
+
+        {/* Danger zone */}
+        <AccountCard className="border-red-200 dark:border-red-500/30">
+          <h2 className="text-lg font-bold text-red-600 dark:text-red-400">
+            Danger Zone
+          </h2>
+          <Row
+            title="Delete account"
+            description="Permanently remove your account and all of its data."
+          >
+            <Button
+              size="sm"
+              variant="danger"
+              icon={FiTrash2}
+              onClick={() => setDeleteOpen(true)}
+            >
+              Delete
+            </Button>
+          </Row>
+        </AccountCard>
       </div>
+
+      <DeleteAccountModal open={deleteOpen} onClose={() => setDeleteOpen(false)} />
+
+      <Modal
+        isOpen={logoutAllOpen}
+        onClose={() => setLogoutAllOpen(false)}
+        size="sm"
+        title="Log out everywhere?"
+      >
+        <div className="p-5 pt-4">
+          <p className="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-300">
+            <FiCheckCircle className="mt-0.5 shrink-0 text-brand-500" />
+            This signs you out of every active session on all devices. You'll
+            need to sign in again here too.
+          </p>
+          <div className="mt-6 flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
+            <Button variant="ghost" onClick={() => setLogoutAllOpen(false)}>
+              Cancel
+            </Button>
+            <Button variant="danger" icon={FiLogOut} onClick={confirmLogoutAll}>
+              Sign out all
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </AccountLayout>
   );
 }

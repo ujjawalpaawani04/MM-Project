@@ -1,16 +1,18 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router";
-import { FiPackage, FiChevronRight } from "react-icons/fi";
+import { FiPackage, FiEye } from "react-icons/fi";
 
 import { useAuth } from "../../context/AuthContext";
 import {
   getUserOrders,
   getOrderStatus,
+  getPaymentStatus,
   formatOrderDate,
 } from "../../utils/orders";
 import { formatCurrency } from "../../utils/formatCurrency";
 import AccountLayout, { AccountCard, Button } from "./AccountLayout";
 import EmptyState from "../../components/common/EmptyState";
+import OrderDetailsModal from "./Components/OrderDetailsModal";
 
 const statusTone = {
   delivered: "bg-green-50 text-green-600 dark:bg-green-500/15 dark:text-green-300",
@@ -19,9 +21,15 @@ const statusTone = {
   default: "bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-300",
 };
 
-function OrderRow({ order }) {
+const payTone = {
+  success: "bg-green-50 text-green-600 dark:bg-green-500/15 dark:text-green-300",
+  pending: "bg-amber-50 text-amber-600 dark:bg-amber-500/15 dark:text-amber-300",
+};
+
+function OrderRow({ order, onView }) {
   const { steps, currentStep, statusLabel } = getOrderStatus(order);
   const tone = statusTone[steps[currentStep].key] || statusTone.default;
+  const payment = getPaymentStatus(order);
   const itemCount = order.items.reduce((n, i) => n + i.quantity, 0);
 
   return (
@@ -47,9 +55,14 @@ function OrderRow({ order }) {
             </p>
           </div>
         </div>
-        <span className={`rounded-full px-3 py-1 text-xs font-semibold ${tone}`}>
-          {statusLabel}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className={`rounded-full px-3 py-1 text-xs font-semibold ${payTone[payment.tone]}`}>
+            {payment.label}
+          </span>
+          <span className={`rounded-full px-3 py-1 text-xs font-semibold ${tone}`}>
+            {statusLabel}
+          </span>
+        </div>
       </div>
 
       <div className="flex items-center gap-4 px-4 sm:px-5 py-4">
@@ -82,15 +95,18 @@ function OrderRow({ order }) {
             {itemCount} item{itemCount !== 1 ? "s" : ""}
           </p>
         </div>
-        <Button
-          to={`/track-order?tracking=${encodeURIComponent(order.trackingNumber)}`}
-          variant="outline"
-          size="sm"
-          icon={FiChevronRight}
-          iconRight
-        >
-          Track
-        </Button>
+        <div className="flex flex-col sm:flex-row gap-2">
+          <Button variant="outline" size="sm" icon={FiEye} onClick={() => onView(order)}>
+            Details
+          </Button>
+          <Button
+            to={`/track-order?tracking=${encodeURIComponent(order.trackingNumber)}`}
+            variant="ghost"
+            size="sm"
+          >
+            Track
+          </Button>
+        </div>
       </div>
     </div>
   );
@@ -99,6 +115,7 @@ function OrderRow({ order }) {
 export default function Orders() {
   const { user } = useAuth();
   const orders = useMemo(() => getUserOrders(user?.email), [user?.email]);
+  const [active, setActive] = useState(null);
 
   return (
     <AccountLayout
@@ -119,7 +136,11 @@ export default function Orders() {
       ) : (
         <div className="space-y-4">
           {orders.map((order) => (
-            <OrderRow key={order.trackingNumber} order={order} />
+            <OrderRow
+              key={order.trackingNumber}
+              order={order}
+              onView={setActive}
+            />
           ))}
           <p className="text-center text-xs text-gray-400 pt-2">
             Have a tracking number from elsewhere?{" "}
@@ -129,6 +150,12 @@ export default function Orders() {
           </p>
         </div>
       )}
+
+      <OrderDetailsModal
+        order={active}
+        isOpen={!!active}
+        onClose={() => setActive(null)}
+      />
     </AccountLayout>
   );
 }

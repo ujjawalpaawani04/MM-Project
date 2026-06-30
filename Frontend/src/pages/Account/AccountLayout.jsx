@@ -93,9 +93,17 @@ export default function AccountLayout({
             <div className="rounded-2xl bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700 shadow-sm overflow-hidden">
               {/* User card */}
               <div className="flex items-center gap-3 p-4 border-b border-gray-100 dark:border-slate-700">
-                <span className="grid place-items-center w-11 h-11 shrink-0 rounded-full bg-gradient-to-br from-pink-500 to-rose-400 text-white font-bold uppercase shadow-sm">
-                  {initial}
-                </span>
+                {user?.avatar ? (
+                  <img
+                    src={user.avatar}
+                    alt=""
+                    className="w-11 h-11 shrink-0 rounded-full object-cover shadow-sm"
+                  />
+                ) : (
+                  <span className="grid place-items-center w-11 h-11 shrink-0 rounded-full bg-gradient-to-br from-pink-500 to-rose-400 text-white font-bold uppercase shadow-sm">
+                    {initial}
+                  </span>
+                )}
                 <div className="min-w-0">
                   <p className="flex items-center gap-1.5 font-semibold text-sm text-gray-900 dark:text-white truncate">
                     {user.name}

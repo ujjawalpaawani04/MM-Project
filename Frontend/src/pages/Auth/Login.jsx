@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import { Link, useNavigate, useLocation } from "react-router";
-import { FiMail, FiLogIn } from "react-icons/fi";
+import { FiMail, FiLogIn, FiAlertCircle } from "react-icons/fi";
 
 import AuthLayout from "./Components/AuthLayout";
 import FormField from "../../components/common/form/FormField";
@@ -20,14 +20,25 @@ export default function Login() {
   const {
     register,
     handleSubmit,
+    setError,
+    clearErrors,
     formState: { errors, isSubmitting },
   } = useForm({ defaultValues: { email: "", password: "", remember: true } });
 
   const onSubmit = async (data) => {
+    clearErrors("root");
     // Simulated request (no backend) - mimics latency for realistic UX.
     await new Promise((r) => setTimeout(r, 600));
-    login({ email: data.email });
-    toast.success("Welcome back! You're now signed in.");
+    const result = login({
+      email: data.email,
+      password: data.password,
+      remember: data.remember,
+    });
+    if (!result.ok) {
+      setError("root", { message: result.error });
+      return;
+    }
+    toast.success(`Welcome back, ${result.user.name}! You're now signed in.`);
     navigate(redirectTo, { replace: true });
   };
 
@@ -48,6 +59,16 @@ export default function Login() {
       }
     >
       <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-5">
+        {errors.root?.message && (
+          <div
+            role="alert"
+            className="flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 dark:border-red-500/30 dark:bg-red-500/10 px-3.5 py-3 text-sm text-red-600 dark:text-red-300"
+          >
+            <FiAlertCircle className="mt-0.5 shrink-0" />
+            <span>{errors.root.message}</span>
+          </div>
+        )}
+
         <FormField
           label="Email"
           type="email"
