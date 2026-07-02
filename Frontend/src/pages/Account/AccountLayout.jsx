@@ -5,6 +5,7 @@ import { FaCheckCircle } from "react-icons/fa";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../context/ToastContext";
 import { ACCOUNT_NAV } from "../../components/website/accountNav";
+import useHeaderOffset from "../../hooks/useHeaderOffset";
 import Seo from "../../components/common/Seo";
 import Button from "../../components/common/Button";
 import EmptyState from "../../components/common/EmptyState";
@@ -27,10 +28,17 @@ export default function AccountLayout({
   const toast = useToast();
   const initial = user?.name?.trim()?.charAt(0)?.toUpperCase() || "U";
   const verified = user?.verified !== false;
+  // Space to leave below the global header so account content never sits under
+  // it. Resolves to 0 while the header is sticky (in-flow) and to the header's
+  // measured height on xl, where it becomes a fixed floating bar. See the hook.
+  const headerOffset = useHeaderOffset();
 
   if (!isAuthenticated) {
     return (
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-16 lg:py-24">
+      <div
+        className="max-w-3xl mx-auto px-4 sm:px-6 py-16 lg:py-24"
+        style={{ marginTop: headerOffset }}
+      >
         <Seo title={title} noindex />
         <EmptyState
           title="Please sign in"
@@ -51,8 +59,11 @@ export default function AccountLayout({
     <>
       <Seo title={title} description={description} noindex />
 
-      {/* Header band */}
-      <section className="bg-gradient-to-br from-brand-50 to-rose-50 dark:from-slate-900 dark:to-slate-800 py-10 lg:py-12">
+      {/* Header band - pushed clear of the global header (see headerOffset) */}
+      <section
+        className="bg-gradient-to-br from-brand-50 to-rose-50 dark:from-slate-900 dark:to-slate-800 py-10 lg:py-12"
+        style={{ marginTop: headerOffset }}
+      >
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <nav aria-label="Breadcrumb">
             <ol className="flex flex-wrap items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400">
