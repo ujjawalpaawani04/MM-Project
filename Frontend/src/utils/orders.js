@@ -53,6 +53,25 @@ export const STATUS_META = {
 // real stores like Amazon/Flipkart gate the "Cancel" action).
 const SHIPPED_STEP_INDEX = STATUS_STEPS.findIndex((s) => s.key === "shipped");
 
+/**
+ * Predefined cancellation reasons shown in the cancel dialog, mirroring the
+ * curated lists used by Amazon/Flipkart. Kept here (data) so the modal stays
+ * presentation-only and a real API can later drive the same options.
+ *
+ * `OTHER_REASON` is the sentinel value that reveals the free-text field; keeping
+ * it as an exported constant avoids magic strings leaking into the UI.
+ */
+export const OTHER_REASON = "Other";
+
+export const CANCELLATION_REASONS = [
+  "Ordered by mistake",
+  "Found a better price elsewhere",
+  "Item won't arrive in time",
+  "Changed my mind",
+  "Want to change payment method",
+  OTHER_REASON,
+];
+
 // Hours after which each step (index) is considered reached. Index 0 is always
 // reached the moment the order is placed.
 const STEP_HOURS = [0, 3, 26, 50, 98, 122];
@@ -231,8 +250,11 @@ export function getUserOrders(email) {
   return read()
     .filter(
       (o) =>
-        normalizeEmail(o.userEmail) === target ||
-        normalizeEmail(o.customer?.email) === target
+        // Cancelled orders are removed from the account, so never list them -
+        // this also hides any order cancelled before delete-on-cancel existed.
+        o.status !== "cancelled" &&
+        (normalizeEmail(o.userEmail) === target ||
+          normalizeEmail(o.customer?.email) === target)
     )
     .sort((a, b) => b.placedAt - a.placedAt);
 }
@@ -242,7 +264,9 @@ export function findOrder(query) {
   const q = normalize(query);
   if (!q) return null;
   const match = (o) =>
-    normalize(o.trackingNumber) === q || normalize(o.orderNumber) === q;
+    // A cancelled order has been removed, so it should no longer be trackable.
+    o.status !== "cancelled" &&
+    (normalize(o.trackingNumber) === q || normalize(o.orderNumber) === q);
   return read().find(match) || DEMO_ORDERS.find(match) || null;
 }
 
@@ -314,6 +338,7 @@ export function getEffectiveStatus(order) {
     isDelivered: false,
     isCancelled: true,
     cancelledAt: order.cancelledAt,
+    cancellationReason: order.cancellationReason || "",
   };
 }
 
@@ -329,14 +354,17 @@ export function canCancelOrder(order) {
 }
 
 /**
- * Cancel an order by tracking number and persist it immediately.
+ * Cancel an order by tracking number and remove it from the account.
  *
- * Freezes the timeline at the step reached at cancellation time and records
- * when it happened. Returns the updated order, or null if it can't be found or
- * is no longer eligible (already shipped/cancelled) - callers should surface an
- * error in that case.
+ * On cancellation the order is deleted from storage entirely, so it no longer
+ * appears in the customer's "My Orders" list. `reason` is the customer-selected
+ * reason - a predefined option or their free-text "Other" note - which a real
+ * backend would receive with the cancellation; it's returned on the removed
+ * order so the caller can log/confirm it. Returns the removed order, or null if
+ * it can't be found or is no longer eligible (already shipped) - callers should
+ * surface an error in that case.
  */
-export function cancelOrder(trackingNumber) {
+export function cancelOrder(trackingNumber, reason = "") {
   const orders = read();
   const idx = orders.findIndex((o) => o.trackingNumber === trackingNumber);
   if (idx === -1) return null;
@@ -344,18 +372,10 @@ export function cancelOrder(trackingNumber) {
   const order = orders[idx];
   if (!canCancelOrder(order)) return null;
 
-  const { currentStep } = getOrderStatus(order);
-  const updated = {
-    ...order,
-    status: "cancelled",
-    cancelledAt: Date.now(),
-    cancelledAtStep: currentStep,
-    // Prepaid orders move to refund; COD simply won't be collected.
-    paymentStatus: isCOD(order.paymentMethod) ? "Cancelled" : "Refund Initiated",
-  };
-  orders[idx] = updated;
+  // Remove the order from the account entirely once cancelled.
+  orders.splice(idx, 1);
   write(orders);
-  return updated;
+  return { ...order, cancellationReason: String(reason || "").trim() };
 }
 
 /**

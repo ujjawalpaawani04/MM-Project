@@ -76,6 +76,12 @@ export default function OrderDetailsModal({ order, isOpen, onClose, onCancel }) 
                     " A refund has been initiated to your original payment method."}
                 </p>
               )}
+              {status.cancellationReason && (
+                <p className="mt-1 text-red-500/80 dark:text-red-300/80">
+                  <span className="font-medium">Reason:</span>{" "}
+                  {status.cancellationReason}
+                </p>
+              )}
             </div>
           </div>
         )}

@@ -16,8 +16,8 @@ import { formatCurrency } from "../../utils/formatCurrency";
 import AccountLayout, { AccountCard, Button } from "./AccountLayout";
 import EmptyState from "../../components/common/EmptyState";
 import OrderStatusBadge from "../../components/common/OrderStatusBadge";
-import ConfirmDialog from "../../components/common/ConfirmDialog";
 import OrderDetailsModal from "./Components/OrderDetailsModal";
+import CancelOrderModal from "./Components/CancelOrderModal";
 
 function OrderRow({ order, onView, onCancel }) {
   const { statusKey, statusLabel } = getEffectiveStatus(order);
@@ -120,7 +120,6 @@ export default function Orders() {
   const [orders, setOrders] = useState(() => getUserOrders(user?.email));
   const [active, setActive] = useState(null); // order shown in the details modal
   const [toCancel, setToCancel] = useState(null); // order awaiting cancel confirmation
-  const [cancelling, setCancelling] = useState(false);
 
   // Re-sync when the signed-in account changes (login / logout / switch).
   useEffect(() => {
@@ -129,26 +128,29 @@ export default function Orders() {
 
   const refresh = () => setOrders(getUserOrders(user?.email));
 
-  const handleConfirmCancel = async () => {
+  // Runs the actual cancellation. Resolves on success (the modal then closes);
+  // throws on failure so the modal can show the error inline and stay open for a
+  // retry. The modal owns the loading UI - this just does the async work.
+  const handleConfirmCancel = async (reason) => {
     if (!toCancel) return;
-    setCancelling(true);
     // Simulated processing latency so the loading state is visible (no backend).
     await new Promise((r) => setTimeout(r, 700));
 
-    const updated = cancelOrder(toCancel.trackingNumber);
-    setCancelling(false);
-    setToCancel(null);
-
-    if (!updated) {
-      toast.error("This order can no longer be cancelled.");
-      return;
+    const removed = cancelOrder(toCancel.trackingNumber, reason);
+    if (!removed) {
+      // Surfaced inline by the modal (e.g. order shipped in another tab).
+      throw new Error("This order can no longer be cancelled.");
     }
-    refresh();
-    // Keep the details modal in sync if it's open on the same order.
+
+    refresh(); // order is gone from storage - drops out of the list instantly
+    // Close the details modal if it's open on the order we just removed.
     setActive((curr) =>
-      curr?.trackingNumber === updated.trackingNumber ? updated : curr
+      curr?.trackingNumber === removed.trackingNumber ? null : curr
     );
-    toast.success(`Order ${updated.orderNumber} has been cancelled.`);
+    setToCancel(null); // close the cancel modal
+    toast.success(
+      `Order ${removed.orderNumber} has been cancelled and removed from your orders.`
+    );
   };
 
   return (
@@ -193,19 +195,12 @@ export default function Orders() {
         onCancel={setToCancel}
       />
 
-      <ConfirmDialog
+      <CancelOrderModal
+        key={toCancel?.trackingNumber}
+        order={toCancel}
         isOpen={!!toCancel}
-        onClose={() => (cancelling ? null : setToCancel(null))}
+        onClose={() => setToCancel(null)}
         onConfirm={handleConfirmCancel}
-        loading={cancelling}
-        title="Cancel this order?"
-        message={
-          toCancel
-            ? `Order ${toCancel.orderNumber} will be cancelled. This can't be undone.`
-            : ""
-        }
-        confirmLabel="Yes, cancel order"
-        cancelLabel="Keep order"
       />
     </AccountLayout>
   );
