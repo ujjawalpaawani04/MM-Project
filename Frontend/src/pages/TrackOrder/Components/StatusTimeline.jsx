@@ -7,6 +7,7 @@ import {
   FiTruck,
   FiMapPin,
   FiHome,
+  FiSlash,
 } from "react-icons/fi";
 import { cn } from "../../../utils/cn";
 
@@ -25,7 +26,40 @@ const ICONS = {
  * `status` comes from getOrderStatus(order): { steps, currentStep, isDelivered }.
  */
 export default function StatusTimeline({ status }) {
-  const { steps, currentStep, isDelivered } = status;
+  const { steps, currentStep, isDelivered, isCancelled } = status;
+
+  // A cancelled order has no live progress to show - present a clear,
+  // self-contained cancelled state instead of the delivery timeline.
+  if (isCancelled) {
+    return (
+      <div className="rounded-3xl bg-white dark:bg-slate-800 border border-red-100 dark:border-red-500/20 shadow-sm p-6 sm:p-8">
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+            Delivery Status
+          </h3>
+          <span className="text-xs font-semibold px-3 py-1 rounded-full bg-red-500 text-white">
+            Cancelled
+          </span>
+        </div>
+        <div className="mt-6 flex items-start gap-4 rounded-2xl bg-red-50 dark:bg-red-500/10 p-5">
+          <span className="grid place-items-center h-12 w-12 shrink-0 rounded-full bg-red-500/10 text-red-500">
+            <FiSlash size={22} />
+          </span>
+          <div>
+            <p className="font-semibold text-red-600 dark:text-red-300">
+              This order was cancelled
+            </p>
+            <p className="mt-1 text-sm text-red-500/80 dark:text-red-300/80">
+              The order is no longer being processed for delivery. If you were
+              charged, a refund has been initiated to your original payment
+              method.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // Inner track spans between the first and last node centres.
   const fill =
     steps.length > 1 ? (currentStep / (steps.length - 1)) * 100 : 0;

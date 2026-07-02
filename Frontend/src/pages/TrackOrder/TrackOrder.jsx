@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router";
 import { AnimatePresence, motion } from "framer-motion";
 
-import { findOrder, getOrderStatus } from "../../utils/orders";
+import { findOrder, getEffectiveStatus } from "../../utils/orders";
 import TrackOrderHero from "./Components/TrackOrderHero";
 import TrackForm from "./Components/TrackForm";
 import OrderDetails from "./Components/OrderDetails";
@@ -52,7 +52,7 @@ export default function TrackOrder() {
     }
   }, [searchParams]);
 
-  const statusInfo = order ? getOrderStatus(order) : null;
+  const statusInfo = order ? getEffectiveStatus(order) : null;
 
   return (
     <>

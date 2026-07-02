@@ -6,10 +6,12 @@ import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../context/ToastContext";
 import { EMAIL_PATTERN } from "../../utils/validators";
 import { createOrder } from "../../utils/orders";
+import { formatCurrency } from "../../utils/formatCurrency";
 import { getProfile, getAddresses } from "../../utils/forms";
 import CheckoutHero from "./Components/CheckoutHero";
 import OrderConfirmation from "./Components/OrderConfirmation";
 import ShippingForm from "./Components/ShippingForm";
+import PaymentMethods, { paymentLabel } from "./Components/PaymentMethods";
 import OrderSummary from "./Components/OrderSummary";
 import EmptyState from "../../components/common/EmptyState";
 import Seo from "../../components/common/Seo";
@@ -60,21 +62,36 @@ const FIELDS = [
   },
 ];
 
+// Only the shipping fields are persisted onto the order - card/UPI details are
+// intentionally NOT stored (they're simulated and sensitive).
+const SHIPPING_KEYS = FIELDS.map((f) => f.name);
+
+// Demo coupon catalogue (front-end only). `pct` = percent off subtotal,
+// `flat` = fixed rupees off.
+const COUPONS = {
+  MOHAN10: { type: "pct", value: 10 },
+  MINI15: { type: "pct", value: 15 },
+  FLAT200: { type: "flat", value: 200 },
+};
+
 export default function Checkout() {
-  const { items, subtotal, shipping, total, clearCart } = useCart();
+  const { items, subtotal, shipping, clearCart } = useCart();
   const { user } = useAuth();
   const toast = useToast();
   const [placed, setPlaced] = useState(null);
+  const [coupon, setCoupon] = useState(null); // { code, amount }
+  const [couponError, setCouponError] = useState("");
 
   // Pre-fill the shipping form for signed-in users from their profile and
   // default saved address - faster checkout and fewer typos.
   const defaultValues = useMemo(() => {
     const blank = Object.fromEntries(FIELDS.map((f) => [f.name, ""]));
-    if (!user?.email) return blank;
+    const base = { ...blank, paymentMethod: "cod" };
+    if (!user?.email) return base;
     const profile = getProfile(user.email);
     const [defaultAddress] = getAddresses(user.email);
     return {
-      ...blank,
+      ...base,
       fullName: user.name || "",
       email: user.email || "",
       phone: profile.phone || defaultAddress?.phone || "",
@@ -88,22 +105,67 @@ export default function Checkout() {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors, isSubmitting },
-  } = useForm({ defaultValues });
+    // shouldUnregister drops hidden payment fields from validation, so e.g. card
+    // fields never block a COD checkout.
+  } = useForm({ defaultValues, shouldUnregister: true });
+
+  const paymentMethod = watch("paymentMethod");
+
+  // Money: discount is capped at the subtotal; shipping comes from the cart.
+  const discount = Math.min(coupon?.amount || 0, subtotal);
+  const total = Math.max(0, subtotal - discount) + shipping;
+  const isCOD = paymentMethod === "cod";
+
+  const applyCoupon = (rawCode) => {
+    const code = rawCode.trim().toUpperCase();
+    const rule = COUPONS[code];
+    if (!rule) {
+      setCoupon(null);
+      setCouponError("That coupon code isn't valid.");
+      return;
+    }
+    const amount =
+      rule.type === "pct"
+        ? Math.round((subtotal * rule.value) / 100)
+        : Math.min(rule.value, subtotal);
+    setCoupon({ code, amount });
+    setCouponError("");
+    toast.success(`Coupon ${code} applied — you saved ${formatCurrency(amount)}!`);
+  };
+
+  const removeCoupon = () => {
+    setCoupon(null);
+    setCouponError("");
+  };
 
   const placeOrder = async (data) => {
-    await new Promise((r) => setTimeout(r, 600));
+    // Simulate payment processing latency (no backend) so the loading state
+    // and "Processing…" button are visible.
+    await new Promise((r) => setTimeout(r, 1200));
+
+    // Store only shipping details on the order (never card/UPI data).
+    const customer = Object.fromEntries(
+      SHIPPING_KEYS.map((k) => [k, data[k]])
+    );
+    const method = paymentLabel(data.paymentMethod);
+    const paymentStatus = isCOD ? "Pending" : "Paid";
+
     // Persist the order (generates a unique tracking number) BEFORE clearing.
-    // Linked to the signed-in account so it appears under their My Orders.
     const order = createOrder({
       userEmail: user?.email,
-      customer: data,
+      customer,
       items,
       subtotal,
       shipping,
+      discount,
       total,
+      paymentMethod: method,
+      paymentStatus,
     });
-    setPlaced({ ...data, order });
+
+    setPlaced({ ...customer, order });
     clearCart();
     window.scrollTo({ top: 0 });
   };
@@ -138,13 +200,26 @@ export default function Checkout() {
           noValidate
           className="mt-8 grid lg:grid-cols-[1fr_360px] gap-8 items-start"
         >
-          <ShippingForm register={register} errors={errors} fields={FIELDS} />
+          <div className="space-y-6">
+            <ShippingForm register={register} errors={errors} fields={FIELDS} />
+            <PaymentMethods
+              register={register}
+              errors={errors}
+              selected={paymentMethod}
+            />
+          </div>
           <OrderSummary
             items={items}
             subtotal={subtotal}
             shipping={shipping}
+            discount={discount}
             total={total}
             isSubmitting={isSubmitting}
+            buttonLabel={isCOD ? "Place Order" : `Pay ${formatCurrency(total)}`}
+            coupon={coupon}
+            couponError={couponError}
+            onApplyCoupon={applyCoupon}
+            onRemoveCoupon={removeCoupon}
           />
         </form>
       </div>

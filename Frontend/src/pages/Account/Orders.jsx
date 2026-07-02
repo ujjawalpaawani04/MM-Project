@@ -1,36 +1,29 @@
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router";
-import { FiPackage, FiEye } from "react-icons/fi";
+import { FiPackage, FiEye, FiXCircle } from "react-icons/fi";
 
 import { useAuth } from "../../context/AuthContext";
+import { useToast } from "../../context/ToastContext";
 import {
   getUserOrders,
-  getOrderStatus,
+  getEffectiveStatus,
   getPaymentStatus,
+  canCancelOrder,
+  cancelOrder,
   formatOrderDate,
 } from "../../utils/orders";
 import { formatCurrency } from "../../utils/formatCurrency";
 import AccountLayout, { AccountCard, Button } from "./AccountLayout";
 import EmptyState from "../../components/common/EmptyState";
+import OrderStatusBadge from "../../components/common/OrderStatusBadge";
+import ConfirmDialog from "../../components/common/ConfirmDialog";
 import OrderDetailsModal from "./Components/OrderDetailsModal";
 
-const statusTone = {
-  delivered: "bg-green-50 text-green-600 dark:bg-green-500/15 dark:text-green-300",
-  "out-for-delivery": "bg-amber-50 text-amber-600 dark:bg-amber-500/15 dark:text-amber-300",
-  shipped: "bg-blue-50 text-blue-600 dark:bg-blue-500/15 dark:text-blue-300",
-  default: "bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-300",
-};
-
-const payTone = {
-  success: "bg-green-50 text-green-600 dark:bg-green-500/15 dark:text-green-300",
-  pending: "bg-amber-50 text-amber-600 dark:bg-amber-500/15 dark:text-amber-300",
-};
-
-function OrderRow({ order, onView }) {
-  const { steps, currentStep, statusLabel } = getOrderStatus(order);
-  const tone = statusTone[steps[currentStep].key] || statusTone.default;
+function OrderRow({ order, onView, onCancel }) {
+  const { statusKey, statusLabel } = getEffectiveStatus(order);
   const payment = getPaymentStatus(order);
   const itemCount = order.items.reduce((n, i) => n + i.quantity, 0);
+  const cancellable = canCancelOrder(order);
 
   return (
     <div className="rounded-2xl border border-gray-100 dark:border-slate-700 overflow-hidden">
@@ -56,16 +49,12 @@ function OrderRow({ order, onView }) {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <span className={`rounded-full px-3 py-1 text-xs font-semibold ${payTone[payment.tone]}`}>
-            {payment.label}
-          </span>
-          <span className={`rounded-full px-3 py-1 text-xs font-semibold ${tone}`}>
-            {statusLabel}
-          </span>
+          <OrderStatusBadge tone={payment.tone} label={payment.label} />
+          <OrderStatusBadge statusKey={statusKey} label={statusLabel} />
         </div>
       </div>
 
-      <div className="flex items-center gap-4 px-4 sm:px-5 py-4">
+      <div className="flex flex-wrap items-center gap-4 px-4 sm:px-5 py-4">
         <div className="flex -space-x-3">
           {order.items.slice(0, 3).map((item) => (
             <img
@@ -106,6 +95,16 @@ function OrderRow({ order, onView }) {
           >
             Track
           </Button>
+          {cancellable && (
+            <Button
+              variant="danger"
+              size="sm"
+              icon={FiXCircle}
+              onClick={() => onCancel(order)}
+            >
+              Cancel
+            </Button>
+          )}
         </div>
       </div>
     </div>
@@ -114,13 +113,48 @@ function OrderRow({ order, onView }) {
 
 export default function Orders() {
   const { user } = useAuth();
-  const orders = useMemo(() => getUserOrders(user?.email), [user?.email]);
-  const [active, setActive] = useState(null);
+  const toast = useToast();
+
+  // Orders are held in state (not a bare useMemo) so cancelling one can
+  // re-render the list instantly, without a page reload.
+  const [orders, setOrders] = useState(() => getUserOrders(user?.email));
+  const [active, setActive] = useState(null); // order shown in the details modal
+  const [toCancel, setToCancel] = useState(null); // order awaiting cancel confirmation
+  const [cancelling, setCancelling] = useState(false);
+
+  // Re-sync when the signed-in account changes (login / logout / switch).
+  useEffect(() => {
+    setOrders(getUserOrders(user?.email));
+  }, [user?.email]);
+
+  const refresh = () => setOrders(getUserOrders(user?.email));
+
+  const handleConfirmCancel = async () => {
+    if (!toCancel) return;
+    setCancelling(true);
+    // Simulated processing latency so the loading state is visible (no backend).
+    await new Promise((r) => setTimeout(r, 700));
+
+    const updated = cancelOrder(toCancel.trackingNumber);
+    setCancelling(false);
+    setToCancel(null);
+
+    if (!updated) {
+      toast.error("This order can no longer be cancelled.");
+      return;
+    }
+    refresh();
+    // Keep the details modal in sync if it's open on the same order.
+    setActive((curr) =>
+      curr?.trackingNumber === updated.trackingNumber ? updated : curr
+    );
+    toast.success(`Order ${updated.orderNumber} has been cancelled.`);
+  };
 
   return (
     <AccountLayout
       title="My Orders"
-      description="Track current orders and revisit your past purchases."
+      description="Track current orders, revisit past purchases and cancel eligible orders."
       icon={FiPackage}
     >
       {orders.length === 0 ? (
@@ -140,6 +174,7 @@ export default function Orders() {
               key={order.trackingNumber}
               order={order}
               onView={setActive}
+              onCancel={setToCancel}
             />
           ))}
           <p className="text-center text-xs text-gray-400 pt-2">
@@ -155,6 +190,22 @@ export default function Orders() {
         order={active}
         isOpen={!!active}
         onClose={() => setActive(null)}
+        onCancel={setToCancel}
+      />
+
+      <ConfirmDialog
+        isOpen={!!toCancel}
+        onClose={() => (cancelling ? null : setToCancel(null))}
+        onConfirm={handleConfirmCancel}
+        loading={cancelling}
+        title="Cancel this order?"
+        message={
+          toCancel
+            ? `Order ${toCancel.orderNumber} will be cancelled. This can't be undone.`
+            : ""
+        }
+        confirmLabel="Yes, cancel order"
+        cancelLabel="Keep order"
       />
     </AccountLayout>
   );

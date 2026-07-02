@@ -4,28 +4,20 @@ import {
   FiTruck,
   FiCalendar,
   FiHash,
+  FiXCircle,
+  FiSlash,
 } from "react-icons/fi";
 
 import Modal from "../../../components/common/Modal";
 import Button from "../../../components/common/Button";
+import OrderStatusBadge from "../../../components/common/OrderStatusBadge";
 import { formatCurrency } from "../../../utils/formatCurrency";
 import {
-  getOrderStatus,
+  getEffectiveStatus,
   getPaymentStatus,
+  canCancelOrder,
   formatOrderDate,
 } from "../../../utils/orders";
-
-const statusTone = {
-  delivered: "bg-green-50 text-green-600 dark:bg-green-500/15 dark:text-green-300",
-  "out-for-delivery": "bg-amber-50 text-amber-600 dark:bg-amber-500/15 dark:text-amber-300",
-  shipped: "bg-blue-50 text-blue-600 dark:bg-blue-500/15 dark:text-blue-300",
-  default: "bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-300",
-};
-
-const payTone = {
-  success: "bg-green-50 text-green-600 dark:bg-green-500/15 dark:text-green-300",
-  pending: "bg-amber-50 text-amber-600 dark:bg-amber-500/15 dark:text-amber-300",
-};
 
 function Meta({ icon: Icon, label, children }) {
   return (
@@ -46,13 +38,15 @@ function Meta({ icon: Icon, label, children }) {
 /**
  * Full order detail dialog: ID, date, fulfilment + payment status, line items
  * (image / name / qty / price), the cost breakdown and the shipping address.
+ * Eligible orders can be cancelled from here via the `onCancel` callback (the
+ * parent owns the confirmation dialog and localStorage write).
  */
-export default function OrderDetailsModal({ order, isOpen, onClose }) {
+export default function OrderDetailsModal({ order, isOpen, onClose, onCancel }) {
   if (!order) return null;
 
-  const { steps, currentStep, statusLabel } = getOrderStatus(order);
-  const tone = statusTone[steps[currentStep].key] || statusTone.default;
+  const status = getEffectiveStatus(order);
   const payment = getPaymentStatus(order);
+  const cancellable = canCancelOrder(order);
   const c = order.customer || {};
 
   return (
@@ -60,15 +54,31 @@ export default function OrderDetailsModal({ order, isOpen, onClose }) {
       <div className="p-5 sm:p-6 space-y-6">
         {/* Status row */}
         <div className="flex flex-wrap items-center gap-2">
-          <span className={`rounded-full px-3 py-1 text-xs font-semibold ${tone}`}>
-            {statusLabel}
-          </span>
-          <span
-            className={`rounded-full px-3 py-1 text-xs font-semibold ${payTone[payment.tone]}`}
-          >
-            Payment: {payment.label}
-          </span>
+          <OrderStatusBadge statusKey={status.statusKey} label={status.statusLabel} />
+          <OrderStatusBadge
+            tone={payment.tone}
+            label={`Payment: ${payment.label}`}
+          />
         </div>
+
+        {/* Cancelled banner */}
+        {status.isCancelled && (
+          <div className="flex items-start gap-3 rounded-2xl border border-red-100 bg-red-50 dark:border-red-500/20 dark:bg-red-500/10 p-4">
+            <FiSlash className="text-red-500 shrink-0 mt-0.5" size={18} />
+            <div className="text-sm">
+              <p className="font-semibold text-red-600 dark:text-red-300">
+                This order was cancelled
+              </p>
+              {status.cancelledAt && (
+                <p className="text-red-500/80 dark:text-red-300/80">
+                  Cancelled on {formatOrderDate(status.cancelledAt)}.
+                  {payment.label === "Refund Initiated" &&
+                    " A refund has been initiated to your original payment method."}
+                </p>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Meta grid */}
         <div className="grid sm:grid-cols-2 gap-4">
@@ -85,7 +95,9 @@ export default function OrderDetailsModal({ order, isOpen, onClose }) {
             {payment.method}
           </Meta>
           <Meta icon={FiTruck} label="Estimated Delivery">
-            {formatOrderDate(order.estimatedDeliveryAt)} · {order.carrier}
+            {status.isCancelled
+              ? "—"
+              : `${formatOrderDate(order.estimatedDeliveryAt)} · ${order.carrier}`}
           </Meta>
         </div>
 
@@ -133,6 +145,12 @@ export default function OrderDetailsModal({ order, isOpen, onClose }) {
                 <dt>Subtotal</dt>
                 <dd>{formatCurrency(order.subtotal)}</dd>
               </div>
+              {order.discount > 0 && (
+                <div className="flex justify-between text-green-600 dark:text-green-400">
+                  <dt>Discount</dt>
+                  <dd>−{formatCurrency(order.discount)}</dd>
+                </div>
+              )}
               <div className="flex justify-between text-gray-600 dark:text-gray-300">
                 <dt>Shipping</dt>
                 <dd>{order.shipping ? formatCurrency(order.shipping) : "Free"}</dd>
@@ -167,12 +185,23 @@ export default function OrderDetailsModal({ order, isOpen, onClose }) {
           <Button variant="ghost" onClick={onClose}>
             Close
           </Button>
-          <Button
-            to={`/track-order?tracking=${encodeURIComponent(order.trackingNumber)}`}
-            icon={FiTruck}
-          >
-            Track Order
-          </Button>
+          {cancellable && onCancel && (
+            <Button
+              variant="danger"
+              icon={FiXCircle}
+              onClick={() => onCancel(order)}
+            >
+              Cancel Order
+            </Button>
+          )}
+          {!status.isCancelled && (
+            <Button
+              to={`/track-order?tracking=${encodeURIComponent(order.trackingNumber)}`}
+              icon={FiTruck}
+            >
+              Track Order
+            </Button>
+          )}
         </div>
       </div>
     </Modal>

@@ -4,13 +4,16 @@ import {
   FiTruck,
   FiCalendar,
   FiHash,
+  FiCreditCard,
 } from "react-icons/fi";
 import Button from "../../../components/common/Button";
+import OrderStatusBadge from "../../../components/common/OrderStatusBadge";
 import { formatCurrency } from "../../../utils/formatCurrency";
-import { formatOrderDate } from "../../../utils/orders";
+import { formatOrderDate, getPaymentStatus } from "../../../utils/orders";
 
 export default function OrderConfirmation({ placed }) {
   const { order } = placed;
+  const payment = getPaymentStatus(order);
   return (
     <div className="max-w-xl mx-auto px-4 lg:pt-40 lg:pb-28 pt-16 pb-16">
       <div className="text-center">
@@ -38,7 +41,29 @@ export default function OrderConfirmation({ placed }) {
             label="Estimated Delivery"
             value={formatOrderDate(order.estimatedDeliveryAt)}
           />
+          <Detail icon={FiCreditCard} label="Payment Method" value={payment.method} />
+          <div className="flex items-start gap-3">
+            <span className="grid place-items-center h-9 w-9 rounded-lg bg-brand-50 dark:bg-slate-700 text-brand-500 dark:text-brand-300 shrink-0">
+              <FiCheckCircle size={16} />
+            </span>
+            <div className="min-w-0">
+              <p className="text-xs uppercase tracking-wide text-gray-400">
+                Payment Status
+              </p>
+              <OrderStatusBadge
+                tone={payment.tone}
+                label={payment.label}
+                className="mt-1"
+              />
+            </div>
+          </div>
         </div>
+        {order.discount > 0 && (
+          <div className="mt-4 flex justify-between items-center text-sm text-green-600 dark:text-green-400">
+            <span>Discount applied</span>
+            <span>−{formatCurrency(order.discount)}</span>
+          </div>
+        )}
         <div className="mt-6 flex justify-between items-center border-t border-gray-100 dark:border-slate-700 pt-4">
           <span className="text-sm text-gray-500 dark:text-gray-400">
             Order Total

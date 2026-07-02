@@ -7,6 +7,7 @@ import {
   FiActivity,
 } from "react-icons/fi";
 import { formatOrderDate } from "../../../utils/orders";
+import OrderStatusBadge from "../../../components/common/OrderStatusBadge";
 
 function Meta({ icon: Icon, label, value, className = "", accent = false }) {
   return (
@@ -43,15 +44,7 @@ export default function OrderDetails({ order, status }) {
             {order.orderNumber}
           </p>
         </div>
-        <span
-          className={`text-xs font-semibold px-3 py-1.5 rounded-full ${
-            status.isDelivered
-              ? "bg-green-500 text-white"
-              : "bg-brand-50 dark:bg-slate-700 text-brand-600 dark:text-brand-300"
-          }`}
-        >
-          {status.statusLabel}
-        </span>
+        <OrderStatusBadge statusKey={status.statusKey} label={status.statusLabel} />
       </div>
 
       <div className="grid sm:grid-cols-2 gap-6 mt-6">
